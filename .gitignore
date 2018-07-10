@@ -3,9 +3,6 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# C extensions
-*.so
-
 # Distribution / packaging
 .Python
 env/
@@ -89,3 +86,7 @@ ENV/
 .ropeproject
 
 log*/
+generate/ctp_data_type.py
+py_ctp*/
+ctp_c*/
+cs_ctp*/
