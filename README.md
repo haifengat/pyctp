@@ -7,6 +7,8 @@
     * Windows
         * 设置项目为x64,否则会提示找不到windows.h
         * 编译后生成的dll放在dll目录下
+        * 复制 ctp_20180109\*.dll 到dll目录下
+        * 打开cs_ctp\test_ctp 项目进行调试
     * Linux
         * 设置系统语言为：zh_CN.UTF-8
         * 复制文件到linux ctp_c\*.h *.cpp 到ctp_c目录下

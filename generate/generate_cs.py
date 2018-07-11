@@ -149,14 +149,14 @@ namespace HaiFeng
 		IntPtr _handle = IntPtr.Zero, _api = IntPtr.Zero, _spi = IntPtr.Zero;
 		delegate IntPtr Create();
 		delegate IntPtr DeleRegisterSpi(IntPtr api, IntPtr pSpi);
-		public ctp_{0}(string pFile)
+		public ctp_{0}(string pAbsoluteFilePath)
 		{{
 			string curPath = Environment.CurrentDirectory;
-			Environment.CurrentDirectory = new FileInfo(pFile).DirectoryName;
-			_handle = LoadLibrary(pFile);// Environment.CurrentDirectory + "\\" + pFile);
+			Environment.CurrentDirectory = new FileInfo(pAbsoluteFilePath).DirectoryName;
+			_handle = LoadLibrary(pAbsoluteFilePath);
 			if (_handle == IntPtr.Zero)
 			{{
-				throw (new Exception(String.Format("没有找到:", Environment.CurrentDirectory + "\\\\" + pFile)));
+				throw (new Exception(String.Format("没有找到:", pAbsoluteFilePath)));
 			}}
 			Environment.CurrentDirectory = curPath;
 			Directory.CreateDirectory("log");
@@ -396,9 +396,9 @@ namespace HaiFeng
 
 if __name__ == '__main__':
     # 构建quote  cb, func
-    g = Generate('../ctp_20160606', 'trade')
+    g = Generate('../ctp_20180109', 'trade')
     g.run()
-    g = Generate('../ctp_20160606', 'quote')
+    g = Generate('../ctp_20180109', 'quote')
     g.run()
 
     # 运行generate_struct.py 和 generate_enum.py即可
