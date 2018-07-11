@@ -7,6 +7,10 @@
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceRoot}"
+            },
             "program": "${file}"
         },
         {

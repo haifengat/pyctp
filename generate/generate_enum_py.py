@@ -37,7 +37,7 @@ class Generate():
 
             # /// TFtdcInvestorRangeType是一个投资者范围类型 ==> """投资者范围类型"""
             if py_line.find('是一个') > 0:
-                self.enum_comment[py_line[py_line.find('Ftdc') + 4:py_line.find('是一个')]] = '\t"""%s"""\n' % py_line[py_line.find('是一个') + 3:-1]
+                self.enum_comment[py_line[py_line.find('Ftdc') + 4:py_line.find('是一个')]] = '    """%s"""\n' % py_line[py_line.find('是一个') + 3:-1]
 
         elif 'typedef' in line:  # 类型申明
             # typedef char TThostFtdcInvestorRangeType; ==> typedefDict["TThostFtdcInvestorRangeType"] = "c_char"
@@ -54,15 +54,15 @@ class Generate():
                 enum_line = 'class %s(Enum):\n' % key
                 enum_line += self.enum_comment[key]
                 for l in self.defline:
-                    enum_line += '\t%s\n' % l
-                enum_line += '\n\t#----------------------------------------------------------------------\n'
-                enum_line += '\tdef __int__(self):\n'
-                enum_line += '\t\t"""return int value"""\n'
-                enum_line += '\t\treturn self.value\n\n'
-                enum_line += '\t#----------------------------------------------------------------------\n'
-                enum_line += '\tdef __char__(self):\n'
-                enum_line += '\t\t"""return char value"""\n'
-                enum_line += '\t\treturn chr(self.value)\n\n'
+                    enum_line += '    %s\n' % l
+                enum_line += '\n    #----------------------------------------------------------------------\n'
+                enum_line += '    def __int__(self):\n'
+                enum_line += '        """return int value"""\n'
+                enum_line += '        return self.value\n\n'
+                enum_line += '    #----------------------------------------------------------------------\n'
+                enum_line += '    def __char__(self):\n'
+                enum_line += '        """return char value"""\n'
+                enum_line += '        return chr(self.value)\n\n'
 
                 self.fenum.write(enum_line)
             self.defline.clear()
@@ -152,4 +152,6 @@ from enum import Enum\n''')
 
 
 if __name__ == '__main__':
-    Generate('../ctp_20160606').run()
+    os.chdir('./generate')
+    dir = '../ctp_20180109'
+    Generate(dir).run()

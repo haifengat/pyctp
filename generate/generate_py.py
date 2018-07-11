@@ -82,57 +82,61 @@ class Generate:
                 struct_dict[key] = o._fields_
 
         self.f_py.write(
-            """
+            """#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from py_ctp.ctp_struct import *
 import os
 import sys
 import platform
 
+
 def isWindowsSystem():
-	return 'Windows' in platform.system()
+    return 'Windows' in platform.system()
+
 
 class {0}:
 
-	def __init__(self):
+    def __init__(self, absolute_dllfile_path: str):
 
-		# make log dir for api log
-		logdir = os.path.join(sys.path[0], "log")
-		if not os.path.exists(logdir):
-			os.mkdir(logdir)
+        if not os.path.exists(absolute_dllfile_path):
+            print('缺少DLL接口文件')
+            return
 
-		dlldir = os.path.join(os.path.split(os.path.realpath(__file__))[0], '..', 'dll')
-		if not os.path.exists(dlldir):
-			print('缺少DLL借口文件')
-			return
+        # make log dir for api log
+        logdir = os.path.join(os.getcwd(), 'log')
+        if not os.path.exists(logdir):
+            os.mkdir(logdir)
 
-		# change work directory
-		cur_path = os.getcwd()
-		os.chdir(dlldir)
+        dlldir = os.path.split(absolute_dllfile_path)[0]
+        # change work directory
+        cur_path = os.getcwd()
+        os.chdir(dlldir)
 
-		if isWindowsSystem():
-			self.h = CDLL("ctp_{0}.dll")
-		else:
-			self.h = cdll.LoadLibrary("./ctp_{1}.so")
+        if isWindowsSystem():
+            self.h = CDLL(absolute_dllfile_path)
+        else:
+            self.h = cdll.LoadLibrary(absolute_dllfile_path)
 
-		self.h.CreateApi.argtypes = []
-		self.h.CreateApi.restype = c_void_p
+        self.h.CreateApi.argtypes = []
+        self.h.CreateApi.restype = c_void_p
 
-		self.h.CreateSpi.argtypes = []
-		self.h.CreateSpi.restype = c_void_p
+        self.h.CreateSpi.argtypes = []
+        self.h.CreateSpi.restype = c_void_p
 
-		self.api = None
-		self.spi = None
-		self.nRequestID = 0
+        self.api = None
+        self.spi = None
+        self.nRequestID = 0
 """.format(self.ClassName, self.ClassName.lower()))
         funcs = []
         funcs.append("""
-	def {0}(self{1}):
-		self.api = self.h.{0}({1})
-		return self.api\n""".format("CreateApi", ""))
+    def {0}(self{1}):
+        self.api = self.h.{0}({1})
+        return self.api\n""".format("CreateApi", ""))
         funcs.append("""
-	def {0}(self{1}):
-		self.spi = self.h.{0}({1})
-		return self.spi\n""".format("CreateSpi", ""))
+    def {0}(self{1}):
+        self.spi = self.h.{0}({1})
+        return self.spi\n""".format("CreateSpi", ""))
 
         type_dict = {'int': 'c_int32', 'char': 'c_char_p', 'double': 'c_double', 'short': 'c_int32', 'string': 'c_char_p', 'bool': 'c_bool'}
 
@@ -152,10 +156,10 @@ class {0}:
             # 对合约订阅与要的特别处理
             if self.ClassName.lower() == 'quote' and (fcName.find('Subscribe') == 0 or fcName.find('Subscribe') == 2):
                 func = '''
-	def {0}(self, pInstrumentID):
-		self.h.{0}.argtypes = [c_void_p , c_char_p*1, c_int32]
-		self.h.{0}.restype = c_void_p
-		self.h.{0}(self.api, (c_char_p*1)(bytes(pInstrumentID, encoding = 'ascii')), 1)\n'''.format(fcName)
+    def {0}(self, pInstrumentID):
+        self.h.{0}.argtypes = [c_void_p , c_char_p*1, c_int32]
+        self.h.{0}.restype = c_void_p
+        self.h.{0}(self.api, (c_char_p*1)(bytes(pInstrumentID, encoding = 'ascii')), 1)\n'''.format(fcName)
             else:
                 # 类型声明时的argtypes用
                 types = ''
@@ -179,7 +183,7 @@ class {0}:
                         params += ', ' + args
                     else:  # 非基础类型的参数
                         if type in struct_dict.keys():
-                            struct_init = '\n\t\tstruc = {0}()\n'.format(type)
+                            struct_init = '\n        struc = {0}()\n'.format(type)
                             for field in struct_dict[type]:
                                 tt = str(field[1]).split('.')[-1].split('\'')[0]
                                 # 对于c_char的参数需要有默认值,以防止调用时不赋值报错
@@ -187,13 +191,13 @@ class {0}:
                                 if tt.find('c_char') >= 0:
                                     if tt.find('Array') > 0:
                                         params += ", {0} = ''".format(field[0])
-                                        struct_init += "\t\tstruc.{0} = bytes({0}, encoding='ascii')\n".format(field[0])
+                                        struct_init += "        struc.{0} = bytes({0}, encoding='ascii')\n".format(field[0])
                                     else:  # 处理enum类型
                                         params += ", {0} = ''".format(field[0])
-                                        struct_init += "\t\tstruc.{0} = list({0}Type)[0].value if {0}=='' else {0}.value\n".format(field[0])
+                                        struct_init += "        struc.{0} = list({0}Type)[0].value if {0}=='' else {0}.value\n".format(field[0])
                                 else:
                                     params += ', {0} = 0'.format(field[0])
-                                    struct_init += "\t\tstruc.{0} = {0}\n".format(field[0])
+                                    struct_init += "        struc.{0} = {0}\n".format(field[0])
                             # 构造struct的语句
                             struct_init_dict[fcName] = struct_init
                             values += ', byref({0})'.format('struc')
@@ -202,22 +206,22 @@ class {0}:
                             params += ', ' + args
                         types += ' , c_void_p'
 
-                line = '''\t\tself.h.{0}.argtypes = [c_void_p{1}]
-		self.h.{0}.restype = c_void_p\n'''.format(fcName, types)
+                line = '''        self.h.{0}.argtypes = [c_void_p{1}]
+        self.h.{0}.restype = c_void_p\n'''.format(fcName, types)
                 self.f_py.write(line)
 
                 # 处理参数为Structure的情况:加入structu构造,去掉reqid
                 if fcName in struct_init_dict.keys():
                     func = '''
-	def {0}(self{1}):{3}
-		self.nRequestID += 1
-		self.h.{0}(self.api{2}, self.nRequestID)
-			'''.format(fcName, params.replace(', nRequestID', ''), values.replace(', nRequestID', ''), struct_init_dict[fcName])
+    def {0}(self{1}):{3}
+        self.nRequestID += 1
+        self.h.{0}(self.api{2}, self.nRequestID)
+            '''.format(fcName, params.replace(', nRequestID', ''), values.replace(', nRequestID', ''), struct_init_dict[fcName])
                 else:
                     func = '''
-	def {0}(self{1}):
-		self.h.{0}(self.api{2})
-			'''.format(fcName, params, values)
+    def {0}(self{1}):
+        self.h.{0}(self.api{2})
+            '''.format(fcName, params, values)
 
             funcs.append(func)
 
@@ -260,36 +264,36 @@ class {0}:
                 param_trans += ref if param_trans == '' else (', ' + ref)
 
             line = """
-		self.h.Set{0}.argtypes = [c_void_p, c_void_p]
-		self.h.Set{0}.restype = c_void_p
-		self.ev{0} = CFUNCTYPE(c_void_p{1})(self.__{0})
-		self.h.Set{0}(self.spi, self.ev{0})
+        self.h.Set{0}.argtypes = [c_void_p, c_void_p]
+        self.h.Set{0}.restype = c_void_p
+        self.ev{0} = CFUNCTYPE(c_void_p{1})(self.__{0})
+        self.h.Set{0}(self.spi, self.ev{0})
 """.format(cbName, paramtype)
             cbRegs.append(line)
 
             cb__Funcs.append("""
-	def __{0}(self{1}):
-		self.{0}({2})
-	""".format(cbName, params__, param_trans))
+    def __{0}(self{1}):
+        self.{0}({2})
+    """.format(cbName, params__, param_trans))
 
             cbFuncs.append("""
-	def {0}(self{1}):
-		print('{0}:{1}')\n""".format(cbName, params))
+    def {0}(self{1}):
+        print('{0}:{1}')\n""".format(cbName, params))
             for param in params__.replace(' ', '').split(','):
                 if param != '':
-                    cbFuncs.append("\t\tprint({0})\n".format(param))
+                    cbFuncs.append("        print({0})\n".format(param))
 
         self.f_py.write('''
-		# restore work directory
-		os.chdir(cur_path)
+        # restore work directory
+        os.chdir(cur_path)
 
 ''')
         # 以上为__init__函数内容
 
         # 事件注册函数
         self.f_py.write('''
-	def RegCB(self):
-		"""在createapi, createspi后调用"""
+    def RegCB(self):
+        """在createapi, createspi后调用"""
 ''')
 
         for reg in cbRegs:
@@ -321,9 +325,12 @@ class {0}:
 
 if __name__ == '__main__':
     # 构建quote  cb, func
-    g = Generate('trade')
+    os.chdir('./generate')
+    dir = '../ctp_20180109'
+    # 构建quote  cb, func
+    g = Generate(dir, 'trade')
     g.run()
-    g = Generate('quote')
+    g = Generate(dir, 'quote')
     g.run()
 
     # 运行generate_struct.py 和 generate_enum.py即可

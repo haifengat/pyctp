@@ -7,12 +7,12 @@ __mtime__ = '2016/9/13'
 """
 import sys
 import os
+import platform
 sys.path.append(os.path.join(sys.path[0], '..'))  # 调用父目录下的模块
 
-
-import ctp_struct as ctp
-from trade import Trade
-from quote import Quote
+import py_ctp.ctp_struct as ctp
+from py_ctp.quote import Quote
+from py_ctp.trade import Trade
 import _thread
 from time import sleep
 
@@ -21,8 +21,9 @@ class Test:
 
     def __init__(self):
         self.Session = ''
-        self.q = Quote()
-        self.t = Trade()
+        dllpath = os.path.join(os.path.split(os.path.realpath(__file__))[0], '..', 'dll')
+        self.q = Quote(os.path.join(dllpath, 'ctp_quote.' + ('dll' if 'Windows' in platform.system() else 'so')))
+        self.t = Trade(os.path.join(dllpath, 'ctp_trade.' + ('dll' if 'Windows' in platform.system() else 'so')))
         self.req = 0
         self.ordered = False
         self.needAuth = False
