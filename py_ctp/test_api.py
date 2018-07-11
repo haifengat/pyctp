@@ -154,20 +154,18 @@ class Test:
         self.t.OnRtnInstrumentStatus = self.OnRtnInstrumentStatus
         self.t.OnRspOrderInsert = self.OnRspOrderInsert
         self.t.OnRtnOrder = self.OnRtnOrder
-        _thread.start_new_thread(self.Qry, ())
-
+        # _thread.start_new_thread(self.Qry, ())
         self.t.RegCB()
 
         self.frontAddr = 'tcp://180.168.146.187:10000,tcp://180.168.146.187:10010'
         self.broker = '9999'
         self.investor = '008107'
         self.pwd = '1'
-
         self.t.RegisterFront(self.frontAddr.split(',')[0])
         self.t.SubscribePrivateTopic(nResumeType=2)  # quick
         self.t.SubscribePrivateTopic(nResumeType=2)
         self.t.Init()
-        self.t.Join()
+        # self.t.Join()
 
 
 if __name__ == '__main__':

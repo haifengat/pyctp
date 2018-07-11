@@ -263,9 +263,9 @@ DLL_EXPORT_C_DECL void* WINAPI CreateSpi(){{return new {0}();}}
 
 if __name__ == '__main__':
     # 构建quote  cb, func
-    g = Generate('../ctp_20160628', 'trade')
+    g = Generate('../ctp_20180109', 'trade')
     g.run()
-    g = Generate('../ctp_20160628', 'quote')
+    g = Generate('../ctp_20180109', 'quote')
     g.run()
 
     # 运行generate_struct.py 和 generate_enum.py即可
