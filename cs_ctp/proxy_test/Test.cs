@@ -149,15 +149,19 @@ namespace HaiFeng
 			if (e.Value == 0)
 			{
 				Log("登录成功");
-				new Thread(() =>
-				{
-					// 需要另启线程,在onrsp中处理,会导致线程被阻塞,后续的查询无法返回.
-					Thread.Sleep(3000);
-					foreach (var v in _t.DicPositionField.Values)
-					{
-						Log($"posi:{v.InstrumentID}\t{v.Direction}\t{v.Price}\t{v.Position}");
-					}
-				}).Start();
+                foreach (var v in _t.DicPositionField.Values)
+                {
+                    Log($"posi:{v.InstrumentID}\t{v.Direction}\t{v.Price}\t{v.Position}");
+                }
+    //            new Thread(() =>
+				//{
+				//	// 需要另启线程,在onrsp中处理,会导致线程被阻塞,后续的查询无法返回.
+				//	Thread.Sleep(3000);
+				//	foreach (var v in _t.DicPositionField.Values)
+				//	{
+				//		Log($"posi:{v.InstrumentID}\t{v.Direction}\t{v.Price}\t{v.Position}");
+				//	}
+				//}).Start();
 				//_t.ReqOrderInsert(_inst, DirectionType.Buy, OffsetType.Open, _price, 1, 1000);
 			}
 			else

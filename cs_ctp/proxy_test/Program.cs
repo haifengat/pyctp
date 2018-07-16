@@ -35,6 +35,6 @@ namespace HaiFeng
 			tt.Release();
 			tq.Release();
 			Console.ReadKey(true);
-		}
+        }
 	}
 }

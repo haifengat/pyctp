@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ctp_test", "ctp_test\ctp_te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Proxy", "proxy\Proxy.csproj", "{EC96CF69-CBA4-4620-B7C4-204001025151}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CTPTest", "proxy_test\CTPTest.csproj", "{38924468-F70E-4490-8AB9-3D357762CF7C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProxyTest", "proxy_test\ProxyTest.csproj", "{38924468-F70E-4490-8AB9-3D357762CF7C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
