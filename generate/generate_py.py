@@ -255,7 +255,7 @@ class {0}:
                 # if params == '':
                 #     params += '{0} = {1}'.format(param, t)
                 # else:
-                params += ', {0} = {1}'.format(param, t)
+                params += ', {0} : {1}'.format(param, t)
 # def __OnRspSubMarketData(self, pSpecificInstrument, pRspInfo, nRequestID, bIsLast):
 # self.OnRspSubMarketData(POINTER(CThostFtdcSpecificInstrumentField).from_param(pSpecificInstrument).contents, POINTER(CThostFtdcRspInfoField).from_param(pRspInfo).contents, nRequestID, bIsLast)
                 ref = param

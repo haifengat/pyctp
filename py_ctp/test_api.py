@@ -123,7 +123,7 @@ class Test:
             return
 
     def OnRtnInstrumentStatus(self, pInstrumentStatus: ctp.CThostFtdcInstrumentStatusField):
-        pass
+        print(pInstrumentStatus.getInstrumentStatus())
 
     def OnRspOrderInsert(self, pInputOrder: ctp.CThostFtdcInputOrderField, pRspInfo: ctp.CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
         print(pRspInfo)
