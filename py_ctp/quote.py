@@ -13,20 +13,25 @@ import os
 
 import sys
 sys.path.append('.')
+sys.path.append('..')
 from py_ctp.structs import InfoField, Tick
 from py_ctp.ctp_quote import Quote
-from py_ctp.ctp_struct import CThostFtdcRspUserLoginField, CThostFtdcRspInfoField, CThostFtdcDepthMarketDataField
+from py_ctp.ctp_struct import CThostFtdcRspUserLoginField, CThostFtdcRspInfoField, CThostFtdcDepthMarketDataField, CThostFtdcSpecificInstrumentField
 
 
 class CtpQuote(object):
     """"""
 
-    def __init__(self):
-        dllpath = os.path.join(os.path.split(os.path.realpath(__file__))[0], '..', 'dll')
-        self.q = Quote(os.path.join(dllpath, 'ctp_quote.' + ('dll' if 'Windows' in platform.system() else 'so')))
+    def __init__(self, dll_relative_path: str = 'dll'):
+        self.q = Quote(os.path.join(os.getcwd(), dll_relative_path, 'ctp_quote.' + ('dll' if 'Windows' in platform.system() else 'so')))
         self.inst_tick = {}
 
     def ReqConnect(self, pAddress: str):
+        """
+        连接行情前置
+            :param self: 
+            :param pAddress:str: 
+        """
         self.q.CreateApi()
         spi = self.q.CreateSpi()
         self.q.RegisterSpi(spi)
@@ -35,6 +40,7 @@ class CtpQuote(object):
         self.q.OnFrontDisconnected = self._OnFrontDisConnected
         self.q.OnRspUserLogin = self._OnRspUserLogin
         self.q.OnRtnDepthMarketData = self._OnRtnDepthMarketData
+        self.q.OnRspSubMarketData = self._OnRspSubMarketData
 
         self.q.RegCB()
 
@@ -42,12 +48,28 @@ class CtpQuote(object):
         self.q.Init()
 
     def ReqUserLogin(self, user: str, pwd: str, broker: str):
+        """
+        登录
+            :param self: 
+            :param user:str: 
+            :param pwd:str: 
+            :param broker:str: 
+        """
         self.q.ReqUserLogin(BrokerID=broker, UserID=user, Password=pwd)
 
     def ReqSubscribeMarketData(self, pInstrument: str):
+        """
+        订阅合约行情
+            :param self:
+            :param pInstrument:str:
+        """
         self.q.SubscribeMarketData(pInstrument)
 
-    def Release(self):
+    def ReqUserLogout(self):
+        """
+        退出接口
+            :param self: 
+        """
         self.q.Release()
         _thread.start_new_thread(self.OnDisConnected, (self, 0))
 
@@ -66,6 +88,9 @@ class CtpQuote(object):
         info.ErrorMsg = pRspInfo.getErrorMsg()
         self.IsLogin = True
         _thread.start_new_thread(self.OnUserLogin, (self, info))
+
+    def _OnRspSubMarketData(self, pSpecificInstrument: CThostFtdcSpecificInstrumentField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
+        pass
 
     def _OnRtnDepthMarketData(self, pDepthMarketData: CThostFtdcDepthMarketDataField):
         """"""

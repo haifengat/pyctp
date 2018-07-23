@@ -24,8 +24,7 @@ from py_ctp.ctp_enum import ActionFlagType, ContingentConditionType, DirectionTy
 class CtpTrade():
     """"""
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, dll_relative_path: str = 'dll'):
         self.front_address = ''
         self.investor = ''
         self.password = ''
@@ -47,8 +46,7 @@ class CtpTrade():
         self._orderid_sysid = {}
         self._posi = []
 
-        dllpath = os.path.join(os.path.split(os.path.realpath(__file__))[0], '..', 'dll')
-        self.t = Trade(os.path.join(dllpath, 'ctp_trade.' + ('dll' if 'Windows' in platform.system() else 'so')))
+        self.t = Trade(os.path.join(os.getcwd(), dll_relative_path, 'ctp_trade.' + ('dll' if 'Windows' in platform.system() else 'so')))
 
     def _OnFrontConnected(self):
         _thread.start_new_thread(self.OnConnected, (self,))
@@ -378,11 +376,11 @@ class CtpTrade():
 
     def ReqConnect(self, front: str):
         """
-        连接
-            :param self: 
-            :param front:str: 
+        连接交易前置
+            :param self:
+            :param front:str:
         """
-        api = self.t.CreateApi()
+        self.t.CreateApi()
         spi = self.t.CreateSpi()
         self.t.RegisterSpi(spi)
 
