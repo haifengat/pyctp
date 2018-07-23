@@ -11,8 +11,8 @@ import platform
 sys.path.append(os.path.join(sys.path[0], '..'))  # 调用父目录下的模块
 
 import py_ctp.ctp_struct as ctp
-from py_ctp.quote import Quote
-from py_ctp.trade import Trade
+from py_ctp.ctp_quote import Quote
+from py_ctp.ctp_trade import Trade
 import _thread
 from time import sleep
 
@@ -79,6 +79,9 @@ class Test:
             self.t.ReqAuthenticate(self.broker, self.investor, '@haifeng', '8MTL59FK1QGLKQW2')
         else:
             self.t.ReqUserLogin(BrokerID=self.broker, UserID=self.investor, Password=self.pwd, UserProductInfo='@haifeng')
+
+    def OnFrontDisconnected(self, reason: int):
+        print(reason)
 
     def OnRspAuthenticate(self, pRspAuthenticateField: ctp.CThostFtdcRspAuthenticateField, pRspInfo: ctp.CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
         print('auth：{0}:{1}'.format(pRspInfo.getErrorID(), pRspInfo.getErrorMsg()))
@@ -149,6 +152,7 @@ class Test:
         self.t.RegisterSpi(spi)
 
         self.t.OnFrontConnected = self.OnFrontConnected
+        self.t.OnFrontDisconnected = self.OnFrontDisconnected
         self.t.OnRspUserLogin = self.OnRspUserLogin
         self.t.OnRspSettlementInfoConfirm = self.OnRspSettlementInfoConfirm
         self.t.OnRspAuthenticate = self.OnRspAuthenticate
@@ -172,4 +176,6 @@ class Test:
 if __name__ == '__main__':
     t = Test()
     t.Run()
+    input()
+    t.t.Release()
     input()

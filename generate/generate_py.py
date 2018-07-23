@@ -34,7 +34,7 @@ class Generate:
 
         self.fcpp = open(os.path.join(self.ctp_dir, self.HFile + '.h'), 'r')
 
-        self.f_py = open(os.path.join('..\py_ctp', '{0}.py'.format(apiName)), 'w', encoding='utf-8')
+        self.f_py = open(os.path.join('..\py_ctp', 'ctp_{0}.py'.format(apiName)), 'w', encoding='utf-8')
 
     def processCallBack(self, line):
         line = line.replace('\tvirtual void ', '')  # 删除行首的无效内容
@@ -74,11 +74,21 @@ class Generate:
         import sys
         sys.path.append('..')
         m = __import__('py_ctp.ctp_struct')
+        char_type_def = getattr(getattr(m, 'ctp_struct'), 'char_type_def')
         for line in fstruct:
             if line.find('Structure') >= 0:
                 key = line.split(' ')[1].split('(')[0]
                 c = getattr(getattr(m, 'ctp_struct'), key)
                 o = c()
+                # 替换char为enum类型
+                # fs = []
+                # for field in o._fields_:
+                # if str(field[1])[-8:-2] == 'c_char':
+                #     print(key + '.' + field[0])
+                #     fs.append((field[0], cd[key + '.' + field[0]]))
+                # else:
+                # fs.append(field)
+                # struct_dict[key] = fs
                 struct_dict[key] = o._fields_
 
         self.f_py.write(
@@ -190,13 +200,15 @@ class {0}:
                                 # 合成structure bytes('9999', encoding='ascii')
                                 if tt.find('c_char') >= 0:
                                     if tt.find('Array') > 0:
-                                        params += ", {0} = ''".format(field[0])
+                                        params += ", {0}: str = ''".format(field[0])
                                         struct_init += "        struc.{0} = bytes({0}, encoding='ascii')\n".format(field[0])
                                     else:  # 处理enum类型
-                                        params += ", {0} = ''".format(field[0])
-                                        struct_init += "        struc.{0} = list({0}Type)[0].value if {0}=='' else {0}.value\n".format(field[0])
+                                        t_name = char_type_def[type + '.' + field[0]]
+                                        params += ", {0}: {1} = list({1})[0]".format(field[0], t_name)
+                                        # params += ", {0}: {0}Type = list({0}Type)[0]".format(field[0])
+                                        struct_init += "        struc.{0} = {0}.value\n".format(field[0])
                                 else:
-                                    params += ', {0} = 0'.format(field[0])
+                                    params += ', {0}: int = 0'.format(field[0])
                                     struct_init += "        struc.{0} = {0}\n".format(field[0])
                             # 构造struct的语句
                             struct_init_dict[fcName] = struct_init
@@ -255,7 +267,7 @@ class {0}:
                 # if params == '':
                 #     params += '{0} = {1}'.format(param, t)
                 # else:
-                params += ', {0} : {1}'.format(param, t)
+                params += ', {0}: {1}'.format(param, t)
 # def __OnRspSubMarketData(self, pSpecificInstrument, pRspInfo, nRequestID, bIsLast):
 # self.OnRspSubMarketData(POINTER(CThostFtdcSpecificInstrumentField).from_param(pSpecificInstrument).contents, POINTER(CThostFtdcRspInfoField).from_param(pRspInfo).contents, nRequestID, bIsLast)
                 ref = param

@@ -21,7 +21,7 @@ class Generate:
 
         fpy.write('#!/usr/bin/env python\n')
         fpy.write('# -*- coding: utf-8 -*-\n\n\n')
-        fpy.write('from ctypes import *\n')
+        fpy.write('from ctypes import *\n\n')
         fpy.write('from py_ctp.ctp_enum import *\n')
 
         fpy.write('\n')
@@ -35,6 +35,7 @@ class Generate:
         py_clone = ''
         py_str_idx = 0
         py_str_format = ''
+        py_char_type = ''
 
         for no, line in enumerate(fcpp):
 
@@ -65,8 +66,10 @@ class Generate:
                 type_ = typedefDict[typedef]
                 variable = content[2].replace(';\n', "")
                 # fields
-                py_line = '        #%s\n' % remark
-                py_line += '        ("%s", %s),\n' % (variable, type_)
+                py_line = '        # %s\n' % remark
+                py_line += '        ("{}", {}),\n'.format(variable, type_)
+                # CThostxxxx.Tradingday="TThostTradingdayType"
+                py_char_type += 'char_type_def["{}.{}"] = "{}"\n'.format(name, variable, typedef[10:])
 
                 #
                 if type_.find('c_char*') >= 0:
@@ -118,6 +121,7 @@ class Generate:
                 continue
 
             fpy.write(py_line)
+        fpy.write(py_char_type)
 
 
 if __name__ == '__main__':
