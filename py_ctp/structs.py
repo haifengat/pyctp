@@ -319,6 +319,9 @@ class Tick:
         '''时间'''
         self.UpdateTime = ''
         '''时间'''
+        '''毫秒'''
+        self.UpdateMillisec = 0
+        '''毫秒'''
         '''成交量'''
         self.Volume = 1
         '''成交量'''

@@ -29,7 +29,7 @@ class CtpTrade():
         self.investor = ''
         self.password = ''
         self.broker = ''
-        self.logged = False
+        self.logined = False
         self.tradingday = ''
 
         self.instruments = {}
@@ -52,7 +52,7 @@ class CtpTrade():
         _thread.start_new_thread(self.OnConnected, (self,))
 
     def _OnFrontDisconnected(self, nReason):
-        self.logged = False
+        self.logined = False
         print(nReason)
         # 下午收盘后会不停断开再连接 4097错误
         if nReason == 4097 or nReason == 4098:
@@ -77,7 +77,7 @@ class CtpTrade():
             self.session = pRspUserLogin.getSessionID()
             self.tradingday = pRspUserLogin.getTradingDay()
             self.t.ReqSettlementInfoConfirm(self.broker, self.investor)
-        elif self.logged:
+        elif self.logined:
             _thread.start_new_thread(self._relogin, ())
         else:
             info = InfoField()
@@ -122,17 +122,17 @@ class CtpTrade():
         self.t.ReqQryTradingAccount(self.broker, self.investor)
         time.sleep(1.1)
 
-        self.logged = True
+        self.logined = True
         info = InfoField()
         info.ErrorID = 0
         info.ErrorMsg = '正确'
         _thread.start_new_thread(self.OnUserLogin, (self, info))
         # 调用Release后程序异常退出,但不报错误:接口断开了仍然调用了查询指令
-        while self.logged:
+        while self.logined:
             """查询持仓与权益"""
             self.t.ReqQryInvestorPosition(self.broker, self.investor)
             time.sleep(1.1)
-            if not self.logged:
+            if not self.logined:
                 return
             self.t.ReqQryTradingAccount(self.broker, self.investor)
             time.sleep(1.1)
@@ -368,7 +368,7 @@ class CtpTrade():
 
     def _OnRspOrderAction(self, pInputOrderAction: CThostFtdcInputOrderActionField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
         id = "{0}|{1}|{2}".format(pInputOrderAction.getSessionID(), pInputOrderAction.getFrontID(), pInputOrderAction.getOrderRef())
-        if self.logged and id in self.orders:
+        if self.logined and id in self.orders:
             info = InfoField()
             info.ErrorID = pRspInfo.ErrorID
             info.ErrorMsg = pRspInfo.ErrorMsg
@@ -507,7 +507,7 @@ class CtpTrade():
         退出接口
             :param self:
         """
-        self.logged = False
+        self.logined = False
         time.sleep(3)
         self.t.ReqUserLogout(BrokerID=self.broker, UserID=self.investor)
         self.t.RegisterSpi(None)

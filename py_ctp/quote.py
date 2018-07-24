@@ -25,6 +25,7 @@ class CtpQuote(object):
     def __init__(self, dll_relative_path: str = 'dll'):
         self.q = Quote(os.path.join(os.getcwd(), dll_relative_path, 'ctp_quote.' + ('dll' if 'Windows' in platform.system() else 'so')))
         self.inst_tick = {}
+        self.logined = False
 
     def ReqConnect(self, pAddress: str):
         """
@@ -86,7 +87,7 @@ class CtpQuote(object):
         info = InfoField()
         info.ErrorID = pRspInfo.getErrorID()
         info.ErrorMsg = pRspInfo.getErrorMsg()
-        self.IsLogin = True
+        self.logined = True
         _thread.start_new_thread(self.OnUserLogin, (self, info))
 
     def _OnRspSubMarketData(self, pSpecificInstrument: CThostFtdcSpecificInstrumentField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
@@ -105,11 +106,15 @@ class CtpQuote(object):
         tick.OpenInterest = pDepthMarketData.getOpenInterest()
         tick.Volume = pDepthMarketData.getVolume()
 
-        day = pDepthMarketData.getTradingDay()
-        str = day + ' ' + pDepthMarketData.getUpdateTime()
-        if day is None or day == ' ':
-            str = time.strftime('%Y%m%d %H:%M:%S', time.localtime())
-        tick.UpdateTime = str  # time.strptime(str, '%Y%m%d %H:%M:%S')
+        # 用tradingday替代Actionday不可取
+        # day = pDepthMarketData.getTradingDay()
+        # str = day + ' ' + pDepthMarketData.getUpdateTime()
+        # if day is None or day == ' ':
+        #     str = time.strftime('%Y%m%d %H:%M:%S', time.localtime())
+        # tick.UpdateTime = str  # time.strptime(str, '%Y%m%d %H:%M:%S')
+
+        tick.UpdateTime = pDepthMarketData.getUpdateTime()
+        tick.UpdateMillisec = pDepthMarketData.getUpdateMillisec()
         self.inst_tick[tick.Instrument] = tick
         _thread.start_new_thread(self.OnTick, (self, tick))
         # self.OnRtnTick(tick)
