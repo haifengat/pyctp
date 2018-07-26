@@ -39,8 +39,6 @@ class CtpTrade():
         self.positions = {}
         self.instrument_status = {}
 
-        '''防止重连时启用太多查询线程'''
-        self._qryStart = False
         self._req = 0
         self._session = ''
         self._orderid_sysid = {}
@@ -64,7 +62,6 @@ class CtpTrade():
         if sum([1 if stat == 'Continous' else 0 for exc, stat in self.instrument_status.items()]) == 0:
             print(time.strftime('%Y%m%d %H:%M:%S', time.localtime()))
             self.t.Release()
-            self._qryStart = False
             time.sleep(600)
             self.ReqConnect(self._addr)
 
@@ -100,14 +97,13 @@ class CtpTrade():
             pRspInfo: CThostFtdcRspInfoField,
             nRequestID: int,
             bIsLast: bool):
-        if not self._qryStart:
+        if not self.logined:
             time.sleep(0.5)
             """查询合约/持仓/权益"""
             _thread.start_new_thread(self._qry, ())  # 开启查询
 
     def _qry(self):
         """查询帐号相关信息"""
-        self._qryStart = True
         # restart 模式, 待rtnorder 处理完毕后再进行查询,否则会造成position混乱
         ord_cnt = 0
         while True:

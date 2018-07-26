@@ -121,6 +121,7 @@ class Generate:
                 continue
 
             fpy.write(py_line)
+        fpy.write('char_type_def = {}\n')
         fpy.write(py_char_type)
 
 
