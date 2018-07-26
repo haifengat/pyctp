@@ -87,7 +87,7 @@ namespace HaiFeng
             if (pRspInfo.ErrorID == 0)
             {
                 //IsLogin = true; //position中完成
-                this.TradingDay = Marshal.PtrToStringAnsi(_t.GetTradingDay());
+                this.TradingDay = pRspUserLogin.TradingDay; // Marshal.PtrToStringAnsi(_t.GetTradingDay());
                 _session = pRspUserLogin.SessionID;
                 _front = pRspUserLogin.FrontID;
                 //_orderref = pRspUserLogin.MaxOrderRef;

@@ -185,7 +185,7 @@ namespace HaiFeng
 			var tmp = insts;
 			for (int i = 0; i < pInstrument.Length; i++, tmp += size)
 			{
-				Marshal.StructureToPtr(pInstrument[i], tmp, false);
+				Marshal.StructureToPtr(Marshal.StringToHGlobalAnsi(pInstrument[i]), tmp, false);
 			}
 			return (int)_q.UnSubscribeMarketData(insts, pInstrument.Length);
 		}
