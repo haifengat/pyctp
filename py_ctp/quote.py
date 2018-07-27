@@ -72,7 +72,8 @@ class CtpQuote(object):
             :param self: 
         """
         self.q.Release()
-        _thread.start_new_thread(self.OnDisConnected, (self, 0))
+        self._OnFrontDisConnected(0)
+        # _thread.start_new_thread(self.OnDisConnected, (self, 0))
 
     def _OnFrontConnected(self):
         """"""
@@ -80,6 +81,8 @@ class CtpQuote(object):
 
     def _OnFrontDisConnected(self, reason: int):
         """"""
+        # 确保隔夜或重新登录时的第1个tick不被发送到客户端
+        self.inst_tick.clear()
         _thread.start_new_thread(self.OnDisConnected, (self, reason))
 
     def _OnRspUserLogin(self, pRspUserLogin: CThostFtdcRspUserLoginField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
@@ -115,6 +118,7 @@ class CtpQuote(object):
 
         tick.UpdateTime = pDepthMarketData.getUpdateTime()
         tick.UpdateMillisec = pDepthMarketData.getUpdateMillisec()
+
         # 第一个tick不送给客户端(以处理隔夜早盘时收到夜盘的数据的问题)
         if tick.Instrument not in self.inst_tick:
             self.inst_tick[tick.Instrument] = tick
