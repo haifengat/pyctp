@@ -13,7 +13,6 @@ import os
 import platform
 
 import sys
-sys.path.append('.')
 from py_ctp.enums import OrderType, InstrumentStatus
 from py_ctp.structs import DirectType, InfoField, InstrumentField, OffsetType, OrderField, OrderStatus, PositionField, TradeField, TradingAccount
 from py_ctp.ctp_trade import Trade
@@ -330,7 +329,7 @@ class CtpTrade():
             l = int(pInputOrder.getOrderRef())
             of.Custom = l % 1000000
             of.InstrumentID = pInputOrder.getInstrumentID()
-            of.InsertTime = time.strftime('%Y%M%d %H:%M:%S', time.localtime())
+            of.InsertTime = time.strftime('%H:%M:%S', time.localtime())
             # 对direction需特别处理（具体见ctp_struct）
             of.Direction = DirectType.Buy if DirectionType(pInputOrder.getDirection()) == DirectionType.Buy else DirectType.Sell
             ot = OffsetFlagType(ord(pInputOrder.getCombOffsetFlag()[0]))

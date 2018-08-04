@@ -98,9 +98,8 @@ class CtpQuote(object):
     def _OnRtnDepthMarketData(self, pDepthMarketData: CThostFtdcDepthMarketDataField):
         """"""
         tick: Tick = None
-        first_tick = pDepthMarketData.getInstrumentID() not in self.inst_tick
-        # 第一个tick不送给客户端(以处理隔夜早盘时收到夜盘的数据的问题)
-        if first_tick:
+        # 这个逻辑交由应用端处理更合理 ==> 第一个tick不送给客户端(以处理隔夜早盘时收到夜盘的数据的问题)
+        if pDepthMarketData.getInstrumentID() not in self.inst_tick:
             tick = Tick()
             self.inst_tick[tick.Instrument] = tick
         else:
@@ -128,8 +127,7 @@ class CtpQuote(object):
 
         # 用线程会导入多数据入库时报错
         # _thread.start_new_thread(self.OnTick, (self, tick))
-        if not first_tick:
-            self.OnTick(self, tick)
+        self.OnTick(self, tick)
 
     def OnDisConnected(self, obj, error: int):
         """"""
