@@ -62,7 +62,7 @@ class CtpTrade():
             print(time.strftime('%Y%m%d %H:%M:%S', time.localtime()))
             self.t.Release()
             time.sleep(600)
-            self.ReqConnect(self._addr)
+            self.ReqConnect(self.front_address)
 
     # def _OnRspUserLogout(self, pUserLogout: CThostFtdcUserLogoutField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
     #     pass
