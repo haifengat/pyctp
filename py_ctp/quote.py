@@ -99,11 +99,12 @@ class CtpQuote(object):
         """"""
         tick: Tick = None
         # 这个逻辑交由应用端处理更合理 ==> 第一个tick不送给客户端(以处理隔夜早盘时收到夜盘的数据的问题)
-        if pDepthMarketData.getInstrumentID() not in self.inst_tick:
+        inst = pDepthMarketData.getInstrumentID()
+        if inst not in self.inst_tick:
             tick = Tick()
-            self.inst_tick[tick.Instrument] = tick
+            self.inst_tick[inst] = tick
         else:
-            tick = self.inst_tick[tick.Instrument]
+            tick = self.inst_tick[inst]
 
         tick.AskPrice = pDepthMarketData.getAskPrice1()
         tick.AskVolume = pDepthMarketData.getAskVolume1()
