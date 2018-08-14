@@ -331,6 +331,12 @@ class Tick:
         '''均价'''
         self.AveragePrice = 0.0
         '''均价'''
+        '''涨板价'''
+        self.UpperLimitPrice = 0.0
+        '''涨板价'''
+        '''跌板价'''
+        self.LowerLimitPrice = 0.0
+        '''跌板价'''
 
     def __str__(self):
         """"""

@@ -125,6 +125,8 @@ class CtpQuote(object):
 
         tick.UpdateTime = pDepthMarketData.getUpdateTime()
         tick.UpdateMillisec = pDepthMarketData.getUpdateMillisec()
+        tick.UpperLimitPrice = pDepthMarketData.getUpperLimitPrice()
+        tick.LowerLimitPrice = pDepthMarketData.getLowerLimitPrice()
 
         # 用线程会导入多数据入库时报错
         # _thread.start_new_thread(self.OnTick, (self, tick))

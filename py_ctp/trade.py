@@ -105,11 +105,13 @@ class CtpTrade():
         """查询帐号相关信息"""
         # restart 模式, 待rtnorder 处理完毕后再进行查询,否则会造成position混乱
         ord_cnt = 0
+        trd_cnt = 0
         while True:
             time.sleep(0.5)
-            if len(self.orders) == ord_cnt:
+            if len(self.orders) == ord_cnt and len(self.trades) == trd_cnt:
                 break
             ord_cnt = len(self.orders)
+            trd_cnt = len(self.trades)
         self.t.ReqQryInstrument()
         time.sleep(1.1)
         self.t.ReqQryInvestorPosition(self.broker, self.investor)
@@ -288,7 +290,7 @@ class CtpTrade():
             of.StatusMsg = '部分成交'
         # 更新持仓 *****
         if tf.Offset == OffsetType.Open:
-            key = '{0}_{1}'.format(tf.InstrumentID, tf.Direction)
+            key = '{0}_{1}'.format(tf.InstrumentID, 'Buy' if tf.Direction == DirectType.Buy else 'Sell')
             pf = self.positions.get(key)
             if not pf:
                 pf = PositionField()
@@ -631,6 +633,7 @@ def main():
     tt.run()
 
     time.sleep(6)
+    input()
     tt.release()
 
 
