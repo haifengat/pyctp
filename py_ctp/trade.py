@@ -13,11 +13,11 @@ import os
 import platform
 
 import sys
-from py_ctp.enums import OrderType, InstrumentStatus
-from py_ctp.structs import DirectType, InfoField, InstrumentField, OffsetType, OrderField, OrderStatus, PositionField, TradeField, TradingAccount
-from py_ctp.ctp_trade import Trade
-from py_ctp.ctp_struct import CThostFtdcInputOrderActionField, CThostFtdcInputOrderField, CThostFtdcInstrumentField, CThostFtdcInstrumentStatusField, CThostFtdcInvestorPositionField, CThostFtdcOrderField, CThostFtdcRspInfoField, CThostFtdcRspUserLoginField, CThostFtdcSettlementInfoConfirmField, CThostFtdcTradingAccountField
-from py_ctp.ctp_enum import ActionFlagType, ContingentConditionType, DirectionType, OffsetFlagType, ForceCloseReasonType, HedgeFlagType, OrderPriceTypeType, PosiDirectionType, TimeConditionType, VolumeConditionType, OrderStatusType, InstrumentStatusType
+from .enums import OrderType, InstrumentStatus
+from .structs import DirectType, InfoField, InstrumentField, OffsetType, OrderField, OrderStatus, PositionField, TradeField, TradingAccount
+from .ctp_trade import Trade
+from .ctp_struct import CThostFtdcInputOrderActionField, CThostFtdcInputOrderField, CThostFtdcInstrumentField, CThostFtdcInstrumentStatusField, CThostFtdcInvestorPositionField, CThostFtdcOrderField, CThostFtdcRspInfoField, CThostFtdcRspUserLoginField, CThostFtdcSettlementInfoConfirmField, CThostFtdcTradingAccountField
+from .ctp_enum import ActionFlagType, ContingentConditionType, DirectionType, OffsetFlagType, ForceCloseReasonType, HedgeFlagType, OrderPriceTypeType, PosiDirectionType, TimeConditionType, VolumeConditionType, OrderStatusType, InstrumentStatusType
 
 
 class CtpTrade():

@@ -14,9 +14,9 @@ import os
 import sys
 sys.path.append('.')
 sys.path.append('..')
-from py_ctp.structs import InfoField, Tick
-from py_ctp.ctp_quote import Quote
-from py_ctp.ctp_struct import CThostFtdcRspUserLoginField, CThostFtdcRspInfoField, CThostFtdcDepthMarketDataField, CThostFtdcSpecificInstrumentField
+from .structs import InfoField, Tick
+from .ctp_quote import Quote
+from .ctp_struct import CThostFtdcRspUserLoginField, CThostFtdcRspInfoField, CThostFtdcDepthMarketDataField, CThostFtdcSpecificInstrumentField
 
 
 class CtpQuote(object):
