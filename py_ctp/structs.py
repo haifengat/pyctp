@@ -337,6 +337,8 @@ class Tick:
         '''跌板价'''
         self.LowerLimitPrice = 0.0
         '''跌板价'''
+        '''昨结算价'''
+        self.PreOpenInterest = 0.0
 
     def __str__(self):
         """"""

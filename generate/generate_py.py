@@ -95,10 +95,10 @@ class Generate:
             """#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from py_ctp.ctp_struct import *
 import os
-import sys
 import platform
+from ctypes import *
+from .ctp_struct import *
 
 
 def isWindowsSystem():

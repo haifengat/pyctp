@@ -6,13 +6,12 @@ __author__ = 'HaiFeng'
 __mtime__ = '2016/9/22'
 """
 
-import _thread
+import threading
 import itertools
 import time
 import os
 import platform
 
-import sys
 from .enums import OrderType, InstrumentStatus
 from .structs import DirectType, InfoField, InstrumentField, OffsetType, OrderField, OrderStatus, PositionField, TradeField, TradingAccount
 from .ctp_trade import Trade
@@ -46,16 +45,16 @@ class CtpTrade():
         self.t = Trade(os.path.join(os.getcwd(), dll_relative_path, 'ctp_trade.' + ('dll' if 'Windows' in platform.system() else 'so')))
 
     def _OnFrontConnected(self):
-        _thread.start_new_thread(self.OnConnected, (self,))
+        threading.Thread(target=self.OnConnected, args=(self,)).start()
 
     def _OnFrontDisconnected(self, nReason):
         self.logined = False
         print(nReason)
         # 下午收盘后会不停断开再连接 4097错误
         if nReason == 4097 or nReason == 4098:
-            _thread.start_new_thread(self._reconnect, ())
+            threading.Thread(target=self._reconnect).start()
         else:
-            _thread.start_new_thread(self.OnDisConnected, (self, nReason))
+            threading.Thread(target=self.OnDisConnected, args=(self, nReason)).start()
 
     def _reconnect(self):
         if sum([1 if stat == 'Continous' else 0 for exc, stat in self.instrument_status.items()]) == 0:
@@ -74,12 +73,12 @@ class CtpTrade():
             self.tradingday = pRspUserLogin.getTradingDay()
             self.t.ReqSettlementInfoConfirm(self.broker, self.investor)
         elif self.logined:
-            _thread.start_new_thread(self._relogin, ())
+            threading.Thread(target=self._relogin).start()
         else:
             info = InfoField()
             info.ErrorID = pRspInfo.getErrorID()
             info.ErrorMsg = pRspInfo.getErrorMsg()
-            _thread.start_new_thread(self.OnUserLogin, (self, info))
+            threading.Thread(target=self.OnUserLogin, args=(self, info)).start()
 
     def _relogin(self):
         # 隔夜重连=>处理'初始化'错误
@@ -99,7 +98,7 @@ class CtpTrade():
         if not self.logined:
             time.sleep(0.5)
             """查询合约/持仓/权益"""
-            _thread.start_new_thread(self._qry, ())  # 开启查询
+            threading.Thread(target=self._qry).start()  # 开启查询
 
     def _qry(self):
         """查询帐号相关信息"""
@@ -123,7 +122,7 @@ class CtpTrade():
         info = InfoField()
         info.ErrorID = 0
         info.ErrorMsg = '正确'
-        _thread.start_new_thread(self.OnUserLogin, (self, info))
+        threading.Thread(target=self.OnUserLogin, args=(self, info)).start()
         # 调用Release后程序异常退出,但不报错误:接口断开了仍然调用了查询指令
         while self.logined:
             """查询持仓与权益"""
@@ -148,7 +147,6 @@ class CtpTrade():
             status = InstrumentStatus.NoTrading
         self.instrument_status[pInstrumentStatus.getInstrumentID()] = status
         self.OnInstrumentStatus(self, pInstrumentStatus.getInstrumentID(), status)
-        # _thread.start_new_thread(self.OnInstrumentStatus, (self, pInstrumentStatus.getInstrumentID(), status))
 
     def _OnRspQryInstrument(self, pInstrument: CThostFtdcInstrumentField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
         """"""
@@ -240,7 +238,7 @@ class CtpTrade():
             of.Volume = pOrder.getVolumeTotalOriginal()
             of.VolumeLeft = of.Volume
             self.orders[id] = of
-            _thread.start_new_thread(self.OnOrder, (self, of))
+            threading.Thread(target=self.OnOrder, args=(self, of)).start()
         elif pOrder.getOrderStatus() == OrderStatusType.Canceled:
             of.Status = OrderStatus.Canceled
             of.StatusMsg = pOrder.getStatusMsg()
@@ -249,9 +247,9 @@ class CtpTrade():
                 info = InfoField()
                 info.ErrorID = -1
                 info.ErrorMsg = of.StatusMsg
-                _thread.start_new_thread(self.OnErrOrder, (self, of, info))
+                threading.Thread(target=self.OnErrOrder, args=(self, of, info)).start()
             else:
-                _thread.start_new_thread(self.OnCancel, (self, of))
+                threading.Thread(target=self.OnCancel, args=(self, of)).start()
         else:
             if pOrder.getOrderSysID():
                 of.SysID = pOrder.getOrderSysID()
@@ -312,7 +310,7 @@ class CtpTrade():
                         pf.TdPosition -= tdclose
                     pf.YdPosition -= max(0, tf.Volume - tdclose)
                 pf.Position -= tf.Volume
-        _thread.start_new_thread(self._onRtn, (of, tf))
+        threading.Thread(target=self._onRtn, args=(of, tf)).start()
 
     def _onRtn(self, of, tf):
         self.OnOrder(self, of)
@@ -347,7 +345,7 @@ class CtpTrade():
 
         of.Status = OrderStatus.Error
         of.StatusMsg = '{0}:{1}'.format(info.ErrorID, info.ErrorMsg)
-        _thread.start_new_thread(self.OnErrOrder, (self, of, info))
+        threading.Thread(target=self.OnErrOrder, args=(self, of, info)).start()
 
     def _OnErrOrder(self, pInputOrder: CThostFtdcInputOrderField, pRspInfo: CThostFtdcRspInfoField):
         """"""
@@ -361,7 +359,7 @@ class CtpTrade():
         if of and of.IsLocal:
             of.Status = OrderStatus.Error
             of.StatusMsg = '{0}:{1}'.format(pRspInfo.getErrorID(), pRspInfo.getErrorMsg())
-            _thread.start_new_thread(self.OnErrOrder, (self, of, info))
+            threading.Thread(target=self.OnErrOrder, args=(self, of, info)).start()
 
     def _OnRspOrderAction(self, pInputOrderAction: CThostFtdcInputOrderActionField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
         id = "{0}|{1}|{2}".format(pInputOrderAction.getSessionID(), pInputOrderAction.getFrontID(), pInputOrderAction.getOrderRef())
@@ -369,7 +367,7 @@ class CtpTrade():
             info = InfoField()
             info.ErrorID = pRspInfo.ErrorID
             info.ErrorMsg = pRspInfo.ErrorMsg
-            _thread.start_new_thread(self.OnErrCancel, (self, self.orders[id], info))
+            threading.Thread(target=self.OnErrCancel, args=(self, self.orders[id], info)).start()
 
     def ReqConnect(self, front: str):
         """
@@ -509,7 +507,7 @@ class CtpTrade():
         self.t.ReqUserLogout(BrokerID=self.broker, UserID=self.investor)
         self.t.RegisterSpi(None)
         self.t.Release()
-        _thread.start_new_thread(self.OnDisConnected, (self, 0))
+        threading.Thread(target=self.OnDisConnected, args=(self, 0)).start()
 
     def OnConnected(self, obj):
         """
