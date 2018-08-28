@@ -169,20 +169,29 @@ class InstrumentField:
         """Constructor"""
         '''合约'''
         self.InstrumentID = ''
+        '''合约'''
         '''品种'''
         self.ProductID = ''
+        '''品种'''
         '''交易所'''
         self.ExchangeID = ''
+        '''交易所'''
         '''合约乘数'''
         self.VolumeMultiple = ''
+        '''合约乘数'''
         '''每跳价格变动'''
         self.PriceTick = 0.0
+        '''每跳价格变动'''
         '''最大单笔下单量'''
         self.MaxOrderVolume = 9999
+        '''最大单笔下单量'''
+        '''类型 Futures/Options/Combination/Spot/EFP/SpotOption'''
+        self.ProductType = 'Future'
+        '''类型 Futures/Options/Combination/Spot/EFP/SpotOption'''
 
     def __str__(self):
         """"""
-        return '{self.InstrumentID}, {self.ProductID}, {self.ExchangeID}, {self.VolumeMultiple}, {self.PriceTick}, {self.MaxOrderVolume}'.format(
+        return '{self.InstrumentID}, {self.ProductID}, {self.ExchangeID}, {self.VolumeMultiple}, {self.PriceTick}, {self.MaxOrderVolume}, {self.ProductType}'.format(
             self=self)
 
     @property
@@ -193,7 +202,8 @@ class InstrumentField:
             'ExchangeID': self.ExchangeID,
             'VolumeMultiple': self.VolumeMultiple,
             'PriceTick': self.PriceTick,
-            'MaxOrderVolume': self.MaxOrderVolume
+            'MaxOrderVolume': self.MaxOrderVolume,
+            'ProductType': self.ProductType
         }
 
 
