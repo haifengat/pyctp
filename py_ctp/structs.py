@@ -352,20 +352,19 @@ class Tick:
 
     def __str__(self):
         """"""
-        return '{self.Instrument}, {self.LastPrice}, {self.AskPrice}, {self.AskVolume}, {self.BidPrice}, {self.BidVolume}, {self.UpdateTime}, {self.Volume}, {self.OpenInterest}, {self.AveragePrice}'.format(
-            self=self)
+        return '{self.Instrument}, {self.LastPrice}, {self.AskPrice}, {self.AskVolume}, {self.BidPrice}, {self.BidVolume}, {self.UpdateTime}, {self.Volume}, {self.OpenInterest}, {self.AveragePrice}, {self.UpperLimitPrice}, {self.LowerLimitPrice}, {self.PreOpenInterest}'.format(self=self)
 
-    @property
-    def __dict__(self):
-        return {
-            'Instrument': self.Instrument,
-            'LastPrice': self.LastPrice,
-            'AskPrice': self.AskPrice,
-            'AskVolume': self.AskVolume,
-            'BidPrice': self.BidPrice,
-            'BidVolume': self.BidVolume,
-            'UpdateTime': self.UpdateTime,
-            'Volume': self.Volume,
-            'OpenInterest': self.OpenInterest,
-            'AveragePrice': self.AveragePrice
-        }
+    # @property
+    # def __dict__(self):
+    #     return {
+    #         'Instrument': self.Instrument,
+    #         'LastPrice': self.LastPrice,
+    #         'AskPrice': self.AskPrice,
+    #         'AskVolume': self.AskVolume,
+    #         'BidPrice': self.BidPrice,
+    #         'BidVolume': self.BidVolume,
+    #         'UpdateTime': self.UpdateTime,
+    #         'Volume': self.Volume,
+    #         'OpenInterest': self.OpenInterest,
+    #         'AveragePrice': self.AveragePrice
+    #     }
