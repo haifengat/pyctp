@@ -28,7 +28,7 @@ class InfoField:
 
     @property
     def __dict__(self):
-        return {'ErrorID': self.ErrorID, 'ErrorMsg': self.ErrorMsg}
+        return {'ErrorID': self.ErrorID, 'ErrorMsg': str(self.ErrorMsg, 'GB2312')}
 
 
 class OrderField:
