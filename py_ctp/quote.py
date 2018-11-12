@@ -18,8 +18,8 @@ from .ctp_struct import CThostFtdcRspUserLoginField, CThostFtdcRspInfoField, CTh
 class CtpQuote(object):
     """"""
 
-    def __init__(self, dll_relative_path: str = 'lib'):
-        self.q = Quote(os.path.join(os.path.abspath(os.path.dirname(__file__)), dll_relative_path, 'ctp_quote.' + ('dll' if 'Windows' in platform.system() else 'so')))
+    def __init__(self):
+        self.q = Quote(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'lib', 'ctp_quote.' + ('dll' if 'Windows' in platform.system() else 'so')))
         self.inst_tick = {}
         self.logined = False
 

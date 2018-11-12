@@ -22,7 +22,7 @@ from .ctp_enum import ActionFlagType, ContingentConditionType, DirectionType, Of
 class CtpTrade():
     """"""
 
-    def __init__(self, dll_relative_path: str = 'lib'):
+    def __init__(self):
         self.front_address = ''
         self.investor = ''
         self.password = ''
@@ -42,7 +42,7 @@ class CtpTrade():
         self._orderid_sysid = {}
         self._posi = []
 
-        self.t = Trade(os.path.join(os.path.abspath(os.path.dirname(__file__)), dll_relative_path, 'ctp_trade.' + ('dll' if 'Windows' in platform.system() else 'so')))
+        self.t = Trade(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'lib', 'ctp_trade.' + ('dll' if 'Windows' in platform.system() else 'so')))
 
     def _OnFrontConnected(self):
         threading.Thread(target=self.OnConnected, args=(self,)).start()
