@@ -18,6 +18,7 @@ namespace HaiFeng
 
             t.SetOnFrontConnected(t_connected);
             t.SetOnRspUserLogin(t_login);
+            t.SetOnRtnTradingNotice(t_notice);
 
             q.SetOnFrontConnected(connected);
             q.SetOnRspUserLogin(login);
@@ -30,6 +31,11 @@ namespace HaiFeng
             Console.ReadLine();
         }
 
+        private static void t_notice(ref CThostFtdcTradingNoticeInfoField pTradingNoticeInfo)
+        {
+            Console.WriteLine(pTradingNoticeInfo.SendTime + pTradingNoticeInfo.FieldContent);
+        }
+
         private static void t_login(ref CThostFtdcRspUserLoginField pRspUserLogin, ref CThostFtdcRspInfoField pRspInfo, int nRequestID, bool bIsLast)
         {
             Console.WriteLine("t:" + pRspInfo.ErrorMsg);
@@ -38,7 +44,7 @@ namespace HaiFeng
         private static void t_connected()
         {
             Console.WriteLine("t:connected");
-            t.ReqUserLogin(BrokerID: "9999", UserID: "008105", Password: "1");
+            t.ReqUserLogin(BrokerID: "9999", UserID: "008107", Password: "1");
         }
 
         private static void login(ref CThostFtdcRspUserLoginField pRspUserLogin, ref CThostFtdcRspInfoField pRspInfo, int nRequestID, bool bIsLast)

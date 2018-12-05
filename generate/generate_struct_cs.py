@@ -40,13 +40,14 @@ import os
 
 
 class Generate:
-    def __init__(self, dir):
+    def __init__(self, dir, out_path):
         self.ctp_dir = dir
+        self.out_path = out_path
 
     def run(self):
         """主函数"""
         fcpp = open(os.path.join(os.path.abspath(self.ctp_dir), 'ThostFtdcUserApiStruct.h'), 'r')
-        fpy = open(os.path.join('..\cs_ctp', 'ctp_struct.cs'), 'w', encoding='utf-8')
+        fpy = open(os.path.join(self.out_path, 'ctp_struct.cs'), 'w', encoding='utf-8')
 
         fpy.write('\n')
         fpy.write('using System.Runtime.InteropServices;\n')
@@ -85,6 +86,8 @@ public struct {0}
             # 结构体变量
             elif '\t' in line and '///' not in line:
                 content = line.split('\t')
+                if line.find('short') >= 0:
+                    content = content
                 typedef = content[1]
                 type_ = typedefDict[typedef]
                 variable = content[2].replace(';\n', "")
@@ -97,6 +100,8 @@ public struct {0}
                     py_line += '\n\tpublic int {0};'.format(variable)
                 elif type_ == 'c_double':
                     py_line += '\n\tpublic double {0};'.format(variable)
+                elif type_.find('short') >= 0:
+                    py_line += '\n\tpublic short {0};'.format(variable)
                 elif type_.find('c_char*') >= 0:
                     py_line += """
 	[MarshalAs(UnmanagedType.ByValTStr, SizeConst={1})]
@@ -131,4 +136,6 @@ public struct {0}
 
 
 if __name__ == '__main__':
-    Generate('../ctp_20160606').run()
+    import generate_cs as g
+    for out_path in g.out_paths:
+        Generate(g.ctp_path, out_path).run()

@@ -113,11 +113,18 @@ namespace HaiFeng
 			_t.OnRtnOrder += _t_OnRtnOrder;
 			_t.OnRtnTrade += _t_OnRtnTrade;
 			_t.OnRtnCancel += _t_OnRtnCancel;
-			_t.ReqConnect("tcp://180.168.146.187:10000");
-			//_t.ReqConnect("tcp://218.202.237.33:10002");
-		}
+            _t.OnRtnNotice += _t_OnRtnNotice;
+            _t.ReqConnect("tcp://180.168.146.187:10000");
+            //_t.ReqConnect("tcp://218.202.237.33:10002");
+            //_t.ReqConnect("tcp://172.20.28.57:41205");
+        }
 
-		private void _t_OnRtnCancel(object sender, OrderArgs e)
+        private void _t_OnRtnNotice(object sender, StringEventArgs e)
+        {
+            Console.WriteLine(e.Value);
+        }
+
+        private void _t_OnRtnCancel(object sender, OrderArgs e)
 		{
 			Log($"cancel:{e.Value.StatusMsg}\t{e.Value.InstrumentID}\t{e.Value.Direction}\t{e.Value.Offset}\t{e.Value.LimitPrice}\t{e.Value.Volume}\t{e.Value.StatusMsg}");
 		}

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding:utf-8
 """
-  Author:  HaiFeng --<galaxy>
+  Author:  HaiFeng
   Purpose:
   Created: 2016/7/5
 """
@@ -21,13 +21,14 @@ import os
 # typedef char TThostFtdcInvestorRangeType;
 
 class Generate():
-    def __init__(self, dir):
+    def __init__(self, dir, out_path):
         self.ctp_dir = dir
         # C++和python类型的映射字典
-        self.type_dict = {'int': 'c_int32', 'char': 'c_char', 'double': 'c_double', 'short': 'c_int32', 'string': 'c_char_p'}
+        self.type_dict = {'int': 'c_int32', 'char': 'c_char', 'double': 'c_double', 'short': 'c_short', 'string': 'c_char_p'}
 
         self.define = []
-        self.fenum = open(os.path.join('..\cs_ctp', 'ctp_enum.cs'), 'w', encoding='utf-8')  # 增加utf-8解决乱码问题
+        self.fenum = open(os.path.join(out_path, 'ctp_enum.cs'), 'w', encoding='utf-8')  # 增加utf-8解决乱码问题
+        self.f_data_type = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ctp_data_type.py'), 'w', encoding='utf-8')  # 增加utf-8解决乱码问题
         self.enum_comment = {}
         self.tmp_comment = ''
 
@@ -39,6 +40,18 @@ public enum THOST_TE_RESUME_TYPE
 	THOST_TERT_QUICK
 }
 		""")
+        self.f_data_type.write("""#!/usr/bin/env python
+# coding:utf-8
+\"\"\"
+  Author:  HaiFeng
+  Purpose:
+  Created: 2016/7/5
+\"\"\"
+
+typedefDict = {}
+defineDict = {}
+
+""")
 
     def process_line(self, idx, line):
         """处理每行"""
@@ -60,7 +73,7 @@ public enum THOST_TE_RESUME_TYPE
             constant = content[1]
             if len(content) > 2:
                 value = content[-1][:-1]  # value带行尾的\n
-                py_line = 'defineDict["%s"] = %s' % (constant, value)
+                py_line = 'defineDict["%s"] = %s\n' % (constant, value)
             else:
                 py_line = ''
 
@@ -74,21 +87,21 @@ public enum THOST_TE_RESUME_TYPE
         elif 'typedef' in line:  # 类型申明
             # typedef char TThostFtdcInvestorRangeType; ==> typedefDict["TThostFtdcInvestorRangeType"] = "c_char"
             py_line = self.process_typedef(line)
-# public enum TThostFtdcInvestorRangeType : byte
-# {
-# 	/// <summary>
-# 	///所有
-# 	/// </summary>
-# 	THOST_FTDC_IR_All = (byte)'1',
-# 	/// <summary>
-# 	///投资者组
-# 	/// </summary>
-# 	THOST_FTDC_IR_Group = (byte)'2',
-# 	/// <summary>
-# 	///单一投资者
-# 	/// </summary>
-# 	THOST_FTDC_IR_Single = (byte)'3'
-# }
+            # public enum TThostFtdcInvestorRangeType : byte
+            # {
+            # 	/// <summary>
+            # 	///所有
+            # 	/// </summary>
+            # 	THOST_FTDC_IR_All = (byte)'1',
+            # 	/// <summary>
+            # 	///投资者组
+            # 	/// </summary>
+            # 	THOST_FTDC_IR_Group = (byte)'2',
+            # 	/// <summary>
+            # 	///单一投资者
+            # 	/// </summary>
+            # 	THOST_FTDC_IR_Single = (byte)'3'
+            # }
 
             if line.find(' char ') > 0 and line.find('[') < 0:
                 key = line.split(' ')[2][6:-2]  # TThostFtdcInvestorRangeType=>FtdcInvestorRangeType(去掉首个T)
@@ -133,21 +146,24 @@ public enum THOST_TE_RESUME_TYPE
 
     def run(self):
         """主函数"""
-    # try:
+        # try:
         self.fenum.write('\n')
 
         self.fcpp = open(os.path.join(os.path.abspath(self.ctp_dir), 'ThostFtdcUserApiDataType.h'), 'r')
         for idx, line in enumerate(self.fcpp):
-            self.process_line(idx, line)
+            l = self.process_line(idx, line)
+            self.f_data_type.write(l)
 
         self.fcpp.close()
-
+        self.f_data_type.close()
         self.fenum.close()
 
-        print('data_type.py生成过程完成')
+        print('ctp_data_type.py生成过程完成')
     # except:
     # print('data_type.py生成过程出错')
 
 
 if __name__ == '__main__':
-    Generate('../ctp_20160606').run()
+    import generate_cs as g
+    for out_path in g.out_paths:
+        Generate(g.ctp_path, out_path).run()

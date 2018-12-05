@@ -73,7 +73,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Proxy\Proxy.csproj">
+    <ProjectReference Include="..\proxy\Proxy.csproj">
       <Project>{ec96cf69-cba4-4620-b7c4-204001025151}</Project>
       <Name>Proxy</Name>
     </ProjectReference>

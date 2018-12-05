@@ -11,7 +11,7 @@ import os
 
 class Generate:
 
-    def __init__(self, dir, apiName):
+    def __init__(self, dir, apiName, out_path):
         self.ctp_dir = dir
 
         self.cbNames = []
@@ -34,7 +34,7 @@ class Generate:
             self.LibFile = 'thostmduserapi'
 
         self.fcpp = open(os.path.join(self.ctp_dir, self.HFile + '.h'), 'r')
-        self.f_py = open(os.path.join('..\cs_ctp', 'ctp_{0}.cs'.format(apiName)), 'w', encoding='utf-8')
+        self.f_py = open(os.path.join(out_path, 'ctp_{0}.cs'.format(apiName)), 'w', encoding='utf-8')
 
     def processCallBack(self, line):
         line = line.replace('\tvirtual void ', '')  # 删除行首的无效内容
@@ -69,7 +69,7 @@ class Generate:
     def WritePyCtp_xx(self):
         # structs and fields
         fstruct = open('..\py_ctp\ctp_struct.py', 'r', encoding='utf-8').readlines()
-        fenum_cs = open('..\cs_ctp\ctp_enum.cs', 'r', encoding='utf-8').readlines()
+        fenum_cs = open(out_path + '\ctp_enum.cs', 'r', encoding='utf-8').readlines()
         struct_dict = {}  # 需要用到python的 ctp_struct.py文件
         struct_init_dict = {}
         deles = ''
@@ -393,13 +393,17 @@ namespace HaiFeng
 
         self.WritePyCtp_xx()
 
+ctp_path = '../ctp_20180109'
+# 生成两份文件用于测试
+out_paths = ['../cs_ctp/proxy', '../cs_ctp/ctp_test']
 
 if __name__ == '__main__':
     # 构建quote  cb, func
-    g = Generate('../ctp_20180109', 'trade')
-    g.run()
-    g = Generate('../ctp_20180109', 'quote')
-    g.run()
+    for out_path in out_paths:
+        g = Generate(ctp_path, 'trade', out_path)
+        g.run()
+        g = Generate(ctp_path, 'quote', out_path)
+        g.run()
 
     # 运行generate_struct.py 和 generate_enum.py即可
 
