@@ -34,7 +34,7 @@ class Test:
 
     def q_OnRspUserLogin(self, rsp: ctp.CThostFtdcRspUserLoginField, info: ctp.CThostFtdcRspInfoField, req: int, last: bool):
         print(info)
-        self.q.SubscribeMarketData('rb1812')
+        self.q.SubscribeMarketData('rb1905')
 
     def q_OnTick(self, tick: ctp.CThostFtdcMarketDataField):
         f = tick

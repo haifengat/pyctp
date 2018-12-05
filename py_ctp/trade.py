@@ -15,7 +15,7 @@ import platform
 from .enums import OrderType, InstrumentStatus
 from .structs import DirectType, InfoField, InstrumentField, OffsetType, OrderField, OrderStatus, PositionField, TradeField, TradingAccount
 from .ctp_trade import Trade
-from .ctp_struct import CThostFtdcInputOrderActionField, CThostFtdcInputOrderField, CThostFtdcInstrumentField, CThostFtdcInstrumentStatusField, CThostFtdcInvestorPositionField, CThostFtdcOrderField, CThostFtdcRspInfoField, CThostFtdcRspUserLoginField, CThostFtdcSettlementInfoConfirmField, CThostFtdcTradingAccountField
+from .ctp_struct import CThostFtdcInputOrderActionField, CThostFtdcInputOrderField, CThostFtdcInstrumentField, CThostFtdcInstrumentStatusField, CThostFtdcInvestorPositionField, CThostFtdcOrderField, CThostFtdcRspInfoField, CThostFtdcRspUserLoginField, CThostFtdcSettlementInfoConfirmField, CThostFtdcTradingAccountField, CThostFtdcTradingNoticeInfoField, CThostFtdcQuoteField, CThostFtdcInputQuoteField, CThostFtdcInputForQuoteField
 from .ctp_enum import ActionFlagType, ContingentConditionType, DirectionType, OffsetFlagType, ForceCloseReasonType, HedgeFlagType, OrderPriceTypeType, PosiDirectionType, TimeConditionType, VolumeConditionType, OrderStatusType, InstrumentStatusType
 
 
@@ -370,6 +370,27 @@ class CtpTrade():
             info.ErrorMsg = pRspInfo.ErrorMsg
             threading.Thread(target=self.OnErrCancel, args=(self, self.orders[id], info)).start()
 
+    def _OnRtnNotice(self, pTradingNoticeInfo: CThostFtdcTradingNoticeInfoField):
+        '''交易提醒'''
+        msg = pTradingNoticeInfo.getFieldContent()
+        if len(msg) > 0:
+            threading.Thread(target=self.OnRtnNotice, args=(self, pTradingNoticeInfo.getSendTime(), msg)).start()
+
+    def _OnRtnQuote(self, pQuote: CThostFtdcQuoteField):
+        threading.Thread(target=self.OnRtnQuote, args=(self, pQuote)).start()
+
+    def _OnErrRtnQuote(self, pInputQuote: CThostFtdcInputQuoteField, pRspInfo: CThostFtdcRspInfoField):
+        info = InfoField()
+        info.ErrorID = pRspInfo.getErrorID()
+        info.ErrorMsg = pRspInfo.getErrorMsg()
+        threading.Thread(target=self.OnErrRtnQuote, args=(self, pInputQuote, info)).start()
+
+    def _OnErrForQuoteInsert(self, pInputForQuote: CThostFtdcInputForQuoteField, pRspInfo: CThostFtdcRspInfoField):
+        info = InfoField()
+        info.ErrorID = pRspInfo.getErrorID()
+        info.ErrorMsg = pRspInfo.getErrorMsg()
+        threading.Thread(target=self.OnErrRtnForQuoteInsert, args=(self, pInputForQuote, info)).start()
+
     def ReqConnect(self, front: str):
         """
         连接交易前置
@@ -394,6 +415,10 @@ class CtpTrade():
         self.t.OnRspQryInstrument = self._OnRspQryInstrument
         self.t.OnRspQryTradingAccount = self._OnRspQryAccount
         self.t.OnRspQryInvestorPosition = self._OnRspQryPosition
+        self.t.OnRtnTradingNotice = self._OnRtnNotice
+        self.t.OnRtnQuote = self._OnRtnQuote
+        self.t.OnErrRtnQuoteInsert = self._OnErrRtnQuote
+        self.t.OnErrRtnForQuoteInsert = self._OnErrForQuoteInsert
 
         self.front_address = front
         self.t.RegCB()
@@ -594,3 +619,42 @@ class CtpTrade():
             :param status:InstrumentStatus:
         """
         print('{}:{}'.format(inst, str(status).strip().split('.')[1]))
+
+    def OnRtnNotice(self, obj, time: str, msg: str):
+        """交易提醒
+
+        :param obj:
+        :param time:
+        :param msg:
+        :return:
+        """
+        print(f'=== OnRtnNotice===\n {time}:{msg}')
+
+    def OnRtnQuote(self, obj, quote: CThostFtdcQuoteField):
+        """报价通知
+
+        :param obj:
+        :param quote:
+        :return:
+        """
+        print('=== OnRtnQuote ===\n{0}'.format(quote.__dict__))
+
+    def OnErrRtnQuote(self, obj, quote: CThostFtdcInputQuoteField, info: InfoField):
+        """
+
+        :param obj:
+        :param quote:
+        :return:
+        """
+        print('=== OnErrRtnQuote ===\n{0}'.format(quote.__dict__))
+        print(info)
+
+    def OnErrRtnForQuoteInsert(self, obj, quote: CThostFtdcInputQuoteField, info: InfoField):
+        """询价录入错误回报
+
+        :param obj:
+        :param quote:
+        :return:
+        """
+        print('=== OnErrRtnForQuoteInsert ===\n{0}'.format(quote.__dict__))
+        print(info)

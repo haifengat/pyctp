@@ -126,6 +126,5 @@ class Generate:
 
 
 if __name__ == '__main__':
-    os.chdir('./generate')
     dir = '../ctp_20180109'
     Generate(dir).run()

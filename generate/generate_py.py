@@ -337,7 +337,6 @@ class {0}:
 
 if __name__ == '__main__':
     # 构建quote  cb, func
-    os.chdir('./generate')
     dir = '../ctp_20180109'
     # 构建quote  cb, func
     g = Generate(dir, 'trade')

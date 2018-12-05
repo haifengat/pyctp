@@ -4,7 +4,7 @@ __title__ = ''
 __author__ = 'HaiFeng'
 __mtime__ = ''
 
-from .trade import CtpTrade
+from py_ctp.trade import CtpTrade
 import time
 
 
@@ -14,6 +14,13 @@ class TestTrade(object):
         self.t.OnConnected = self.connected
         self.t.OnUserLogin = self.logined
         self.t.OnDisConnected = self.disconnected
+        self.t.OnRtnNotice = lambda obj, time, msg: print(f'OnNotice: {time}:{msg}')
+        self.t.OnErrRtnQuote = lambda obj, quote, info: None
+        self.t.OnErrRtnQuoteInsert = lambda obj, o: None
+        self.t.OnOrder = lambda obj, o: None
+        self.t.OnErrOrder = lambda obj, f, info: None
+        self.t.OnTrade = lambda obj, o: None
+        self.t.OnInstrumentStatus = lambda obj, inst, stat: None
 
     def run(self):
         self.t.ReqConnect('tcp://180.168.146.187:10000')
@@ -24,14 +31,10 @@ class TestTrade(object):
 
     def connected(self, obj):
         print('connected')
-        self.t.ReqUserLogin('008105', '1', '9999')
-        # if not self.t.logged:
-        #     self.t.ReqUserLogin('111', 'jykf1234', '6000')
+        self.t.ReqUserLogin('008107', '1', '9999')
 
     def logined(self, obj, info):
         print(info)
-        print(self.t.account.__dict__)
-        # self.t.ReqOrderInsert('rb1810', DirectType.Buy, OffsetType.Open, 4100.0, 1)
 
     def disconnected(self, obj, reason):
         print('disconnected:' + str(reason))
@@ -44,7 +47,7 @@ if __name__ == "__main__":
     tt.run()
 
     time.sleep(6)
-    for inst in tt.t.instruments.values():
-        print(inst)
+    # for inst in tt.t.instruments.values():
+    #     print(inst)
     input()
     tt.release()
