@@ -64,10 +64,13 @@ class CtpQuote(object):
 
     def ReqUserLogout(self):
         """
-        退出接口
+        退出接口(正常退出,不会触发OnFrontDisconnected)
             :param self: 
         """
         self.q.Release()
+        # 确保隔夜或重新登录时的第1个tick不被发送到客户端
+        self.inst_tick.clear()
+        self.logined = False
         threading.Thread(target=self.OnDisConnected, args=(self, 0)).start()
 
     def _OnFrontConnected(self):
@@ -78,6 +81,7 @@ class CtpQuote(object):
         """"""
         # 确保隔夜或重新登录时的第1个tick不被发送到客户端
         self.inst_tick.clear()
+        self.logined = False
         threading.Thread(target=self.OnDisConnected, args=(self, reason)).start()
 
     def _OnRspUserLogin(self, pRspUserLogin: CThostFtdcRspUserLoginField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
