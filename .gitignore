@@ -84,6 +84,7 @@ ENV/
 
 # Rope project settings
 .ropeproject
+.pytest*/
 
 log*/
 generate/ctp_data_type.py
@@ -91,3 +92,6 @@ py_ctp*/
 ctp_c*/
 cs_ctp*/
 dll*/
+.idea*/
+/generate/data_type.py
+/requirements.txt

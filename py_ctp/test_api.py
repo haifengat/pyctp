@@ -20,7 +20,7 @@ class Test:
 
     def __init__(self):
         self.Session = ''
-        dllpath = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'lib')
+        dllpath = os.path.join(os.path.abspath(os.path.dirname(__file__)), f"lib{'64' if sys.maxsize > 2**32 else '32'}")
         self.q = Quote(os.path.join(dllpath, 'ctp_quote.' + ('dll' if 'Windows' in platform.system() else 'so')))
         self.t = Trade(os.path.join(dllpath, 'ctp_trade.' + ('dll' if 'Windows' in platform.system() else 'so')))
         self.req = 0
@@ -33,7 +33,7 @@ class Test:
         self.q.ReqUserLogin(BrokerID=self.broker, UserID=self.investor, Password=self.pwd)
 
     def q_OnRspUserLogin(self, rsp: ctp.CThostFtdcRspUserLoginField, info: ctp.CThostFtdcRspInfoField, req: int, last: bool):
-        print(info)
+        print(info.__str__)
         self.q.SubscribeMarketData('rb1905')
 
     def q_OnTick(self, tick: ctp.CThostFtdcMarketDataField):
@@ -53,19 +53,19 @@ class Test:
             InstrumentID=f.getInstrumentID(),
             OrderRef='{0:>12}'.format(self.req),
             UserID=self.investor,
-            OrderPriceType=ctp.OrderPriceTypeType.LimitPrice,
-            Direction=ctp.DirectionType.Buy,
-            CombOffsetFlag=ctp.OffsetFlagType.Open.__char__(),
-            CombHedgeFlag=ctp.HedgeFlagType.Speculation.__char__(),
+            OrderPriceType=ctp.TThostFtdcOrderPriceTypeType.THOST_FTDC_OPT_LimitPrice,
+            Direction=ctp.TThostFtdcDirectionType.THOST_FTDC_D_Buy,
+            CombOffsetFlag=ctp.TThostFtdcOffsetFlagType.THOST_FTDC_OF_Open.__char__(),
+            CombHedgeFlag=ctp.TThostFtdcHedgeFlagType.THOST_FTDC_HF_Speculation.__char__(),
             LimitPrice=f.getLastPrice() - 50,
             VolumeTotalOriginal=1,
-            TimeCondition=ctp.TimeConditionType.GFD,
+            TimeCondition=ctp.TThostFtdcTimeConditionType.THOST_FTDC_TC_GFD,
             # GTDDate=''
-            VolumeCondition=ctp.VolumeConditionType.AV,
+            VolumeCondition=ctp.TThostFtdcVolumeConditionType.THOST_FTDC_VC_AV,
             MinVolume=1,
-            ContingentCondition=ctp.ContingentConditionType.Immediately,
+            ContingentCondition=ctp.TThostFtdcContingentConditionType.THOST_FTDC_CC_Immediately,
             StopPrice=0,
-            ForceCloseReason=ctp.ForceCloseReasonType.NotForceClose,
+            ForceCloseReason=ctp.TThostFtdcForceCloseReasonType.THOST_FTDC_FCC_NotForceClose,
             IsAutoSuspend=0,
             IsSwapOrder=0,
             UserForceClose=0)
@@ -128,9 +128,9 @@ class Test:
         print(pInstrumentStatus.getInstrumentStatus())
 
     def OnRspOrderInsert(self, pInputOrder: ctp.CThostFtdcInputOrderField, pRspInfo: ctp.CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
+        print('OnRspOrderInsert')
         print(pRspInfo)
         print(pInputOrder)
-        print(pRspInfo.getErrorMsg())
 
     def OnRtnOrder(self, pOrder: ctp.CThostFtdcOrderField):
         print(pOrder)
