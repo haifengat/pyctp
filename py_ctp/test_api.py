@@ -20,9 +20,8 @@ class Test:
 
     def __init__(self):
         self.Session = ''
-        dllpath = os.path.join(os.path.abspath(os.path.dirname(__file__)), f"lib{'64' if sys.maxsize > 2**32 else '32'}")
-        self.q = Quote(os.path.join(dllpath, 'ctp_quote.' + ('dll' if 'Windows' in platform.system() else 'so')))
-        self.t = Trade(os.path.join(dllpath, 'ctp_trade.' + ('dll' if 'Windows' in platform.system() else 'so')))
+        self.q = Quote()
+        self.t = Trade()
         self.req = 0
         self.ordered = False
         self.needAuth = False
@@ -55,8 +54,8 @@ class Test:
             UserID=self.investor,
             OrderPriceType=ctp.TThostFtdcOrderPriceTypeType.THOST_FTDC_OPT_LimitPrice,
             Direction=ctp.TThostFtdcDirectionType.THOST_FTDC_D_Buy,
-            CombOffsetFlag=ctp.TThostFtdcOffsetFlagType.THOST_FTDC_OF_Open.__char__(),
-            CombHedgeFlag=ctp.TThostFtdcHedgeFlagType.THOST_FTDC_HF_Speculation.__char__(),
+            CombOffsetFlag=chr(ctp.TThostFtdcOffsetFlagType.THOST_FTDC_OF_Open.value),
+            CombHedgeFlag=chr(ctp.TThostFtdcHedgeFlagType.THOST_FTDC_HF_Speculation.value),
             LimitPrice=f.getLastPrice() - 50,
             VolumeTotalOriginal=1,
             TimeCondition=ctp.TThostFtdcTimeConditionType.THOST_FTDC_TC_GFD,

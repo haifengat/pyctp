@@ -135,6 +135,8 @@ int nReq;
 
 
 import os
+import sys
+import platform
 import ctypes
 import copy
 from .ctp_struct import *
@@ -142,8 +144,10 @@ from .ctp_struct import *
 
 class {spi_class_name.title()}:
 
-    def __init__(self, absolute_dllfile_path: str):
+    def __init__(self):
 
+        dllpath = os.path.join(os.path.abspath(os.path.dirname(__file__)), f"lib{{'64' if sys.maxsize > 2**32 else '32'}}")
+        absolute_dllfile_path = os.path.join(dllpath, 'ctp_{spi_class_name}.' + ('dll' if 'Windows' in platform.system() else 'so'))
         if not os.path.exists(absolute_dllfile_path):
             print('缺少DLL接口文件')
             return

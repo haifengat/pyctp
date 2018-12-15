@@ -64,14 +64,7 @@ class THOST_TE_RESUME_TYPE(Enum):
                 c_lines.reverse()
                 c_lines = '\n    '.join(c_lines)
                 f_py_enum.write(f"""class {g_type.group(2)}(Enum):\n    {c_lines}\n""")
-                f_py_enum.write('''
-    def __int__(self):
-        """return int value"""
-        return self.value
-        
-    def __char__(self):
-        """return char value"""
-        return chr(self.value)\n\n\n''')
+                f_py_enum.write('\n\n')
             else:
                 g_n = re.search(r'\[(\d+)\]', param)
                 if g_n is not None:  # char TShfeFtdcTraderIDType[21];

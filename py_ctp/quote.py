@@ -19,15 +19,14 @@ class CtpQuote(object):
     """"""
 
     def __init__(self):
-        self.q = Quote(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'lib', 'ctp_quote.' + ('dll' if 'Windows' in platform.system() else 'so')))
+        self.q = Quote()
         self.inst_tick = {}
         self.logined = False
 
     def ReqConnect(self, pAddress: str):
-        """
-        连接行情前置
-            :param self: 
-            :param pAddress:str: 
+        """连接行情前置
+
+        :param pAddress:
         """
         self.q.CreateApi()
         spi = self.q.CreateSpi()
@@ -45,28 +44,24 @@ class CtpQuote(object):
         self.q.Init()
 
     def ReqUserLogin(self, user: str, pwd: str, broker: str):
-        """
-        登录
-            :param self:
-            :param user:str:
-            :param pwd:str:
-            :param broker:str:
+        """登录
+
+        :param user:
+        :param pwd:
+        :param broker:
         """
         self.q.ReqUserLogin(BrokerID=broker, UserID=user, Password=pwd)
 
     def ReqSubscribeMarketData(self, pInstrument: str):
-        """
-        订阅合约行情
-            :param self:
-            :param pInstrument:str:
+        """订阅合约行情
+
+        :param pInstrument:
         """
         self.q.SubscribeMarketData(pInstrument)
 
     def ReqUserLogout(self):
-        """
-        退出接口(正常退出,不会触发OnFrontDisconnected)
-            :param self: 
-        """
+        """退出接口(正常退出,不会触发OnFrontDisconnected)"""
+
         self.q.Release()
         # 确保隔夜或重新登录时的第1个tick不被发送到客户端
         self.inst_tick.clear()
