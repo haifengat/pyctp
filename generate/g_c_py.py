@@ -39,7 +39,7 @@ def run(generate_c: bool, generate_py: bool):
     if generate_c:
         f_c_h = open(os.path.join(cur_dir, '..', 'ctp_c', f'{spi_class_name}.h'), 'w', encoding='utf-8')
         f_c_cpp = open(os.path.join(cur_dir, '..', 'ctp_c', f'{spi_class_name}.cpp'), 'w', encoding='utf-8')
-        f_c_def = open(os.path.join(cur_dir, '..', 'ctp_c', 'function.def'), 'w', encoding='utf-8')
+        # f_c_def = open(os.path.join(cur_dir, '..', 'ctp_c', 'function.def'), 'w', encoding='utf-8')
     if generate_py:
         f_py = open(os.path.join(cur_dir, '..', 'py_ctp', f'ctp_{spi_class_name}.py'), 'w', encoding='utf-8')
 
@@ -204,24 +204,24 @@ class {spi_class_name.title()}:
                         params_type.append(p[0].strip())
                     on_param_name = ', '.join(params_name)
                     on_param_name = on_param_name.replace('pRspInfo', 'repare(pRspInfo)')
-                    if '*' in params[0][1]:
+                    if '*' in params[0][0]:
                         params_0 = params[0]
                 lines_on.append(f"\ttypedef int (WINAPI *{on_name})({on_param});")  # typedef int (WINAPI *FrontConnected)();
                 lines_on.append(f'\tvoid *_{on_name};')  # void *_FrontConnected;
-                if len(params_0) == 0:  # 首个参数是否为struct
+                if len(params_0) == 0:  # 首个参数不为struct
                     # if (_RtnTradeParam) ((RtnTradeParam)_RtnTradeParam)(pTradeParam);
                     lines_on.append(f'\tvirtual void On{on_name}({on_param}){{if (_{on_name}) (({on_name})_{on_name})({on_param_name});}}\n')
-                else:
+                else: # 返回的Struct为NULL的处理
                     lines_on.append(f'''\tvirtual void On{on_name}({on_param})
     {{
         if (_{on_name})
         {{
-            if ({params_0[1][1:]})
+            if ({params_0[1]})
                 (({on_name})_{on_name})({on_param_name});
             else
             {{
-                {params_0[0]} f = {{}};
-                (({on_name})_{on_name})({on_param_name});
+                {params_0[0].replace('*','').strip()} f = {{}};
+                (({on_name})_{on_name})({on_param_name.replace(params_0[1], '&f')});
             }}
         }}
     }}\n''')
@@ -236,7 +236,7 @@ class {spi_class_name.title()}:
                         py_params_type += f", POINTER({t.replace('*','').strip()})"
                         py_params_name.append(f"copy.deepcopy(POINTER({t.replace('*','').strip()}).from_param({n}).contents)")
                     else:
-                        py_params_type += f', POINTER({type_dict[t]})'
+                        py_params_type += f', {type_dict[t]}'
                         py_params_name.append(n)
                     py_params_def.append(f"{n}: {t.replace('*','').strip()}")
 
@@ -270,7 +270,7 @@ class {spi_class_name.title()}:
                         params_name = []
                         params_type = []
                         for p in re.findall(r'(\w+\s+[*]*)\s*([\w\[\]]+)', req_params):
-                            params_name.append(p[1])  # 'pQryStat'
+                            params_name.append(re.search(r'\w+', p[1]).group(0))  # 'pQryStat' 去掉订阅合约时参数后面的[]
                             params_type.append(p[0].strip())  # CShfeFtdcQryStatField *
                         req_params_name = ', '.join(params_name)
 
@@ -356,8 +356,8 @@ class {spi_class_name.title()}:
         f_c_cpp.write('\n'.join(cpp_set))
         f_c_cpp.write(f'''\n\nDLL_EXPORT_C_DECL void* WINAPI CreateApi(){{return {create_api}("./log/");}}\nDLL_EXPORT_C_DECL void* WINAPI CreateSpi(){{return new {spi_class_name.title()}();}}\n''')
         f_c_cpp.write('\n'.join(cpp_req))
-        f_c_def.write('LIBRARY ctp_trade\nEXPORTS\nCreateApi\nCreateSpi\n')
-        f_c_def.write('\n'.join(def_req))
+        # f_c_def.write('LIBRARY ctp_trade\nEXPORTS\nCreateApi\nCreateSpi\n')
+        # f_c_def.write('\n'.join(def_req))
         # f_c_def.write('\n')
         # f_c_def.write('\n'.join(def_on))
 
@@ -383,18 +383,20 @@ class {spi_class_name.title()}:
 
 
 if __name__ == '__main__':
-    src_dir = '../ctp_20180109_x64'
+    src_dir = '../ctp_20180109_x86'
     spi_class_name = 'trade'
     file_src = 'ThostFtdcTraderApi'
     lib_name = 'thosttraderapi'
     api_class_name = 'CThostFtdcTraderApi'
     info_struct_name = 'CThostFtdcRspInfoField'
     create_api = 'CThostFtdcTraderApi::CreateFtdcTraderApi'
-    run(False, True)
+    run(True, False)
+    # run(False, True)
     spi_class_name = 'quote'
     file_src = 'ThostFtdcMdApi'
     lib_name = 'thostmduserapi'
     api_class_name = 'CThostFtdcMdApi'
     info_struct_name = 'CThostFtdcRspInfoField'
     create_api = 'CThostFtdcMdApi::CreateFtdcMdApi'
-    run(False, True)
+    run(True, False)
+    # run(False, True)

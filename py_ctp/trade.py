@@ -529,7 +529,7 @@ class CtpTrade():
 
         :param obj:
         """
-        print('=== OnConnected ==='.format(''))
+        print('=== [TRADE] OnConnected ==='.format(''))
 
     def OnDisConnected(self, obj, reason: int):
         """接口断开
@@ -537,7 +537,7 @@ class CtpTrade():
         :param obj:
         :param reason:
         """
-        print('=== OnDisConnected === \n{0}'.format(reason))
+        print('=== [TRADE] OnDisConnected === \nreason: {0}'.format(reason))
 
     def OnUserLogin(self, obj, info: InfoField):
         """登录响应
@@ -545,7 +545,7 @@ class CtpTrade():
         :param obj:
         :param info:
         """
-        print('=== OnUserLogin === \n{0}'.format(info))
+        print('=== [TRADE] OnUserLogin === \n{0}'.format(info))
 
     def OnOrder(self, obj, f: OrderField):
         """委托响应
@@ -553,7 +553,7 @@ class CtpTrade():
         :param obj:
         :param f:
         """
-        print('=== OnOrder === \n{0}'.format(f.__dict__))
+        print('=== [TRADE] OnOrder === \n{0}'.format(f.__dict__))
 
     def OnTrade(self, obj, f: TradeField):
         """成交响应
@@ -561,7 +561,7 @@ class CtpTrade():
         :param obj:
         :param f:
         """
-        print('=== OnTrade === \n{0}'.format(f.__dict__))
+        print('=== [TRADE] OnTrade === \n{0}'.format(f.__dict__))
 
     def OnCancel(self, obj, f: OrderField):
         """
@@ -570,7 +570,7 @@ class CtpTrade():
             :param obj:
             :param f:OrderField:
         """
-        print('=== OnCancel === \n{0}'.format(f.__dict__))
+        print('=== [TRADE] OnCancel === \n{0}'.format(f.__dict__))
 
     def OnErrCancel(self, obj, f: OrderField, info: InfoField):
         """
@@ -580,7 +580,7 @@ class CtpTrade():
             :param f:OrderField:
             :param info:InfoField:
         """
-        print('=== OnErrCancel ===\n{0}'.format(f.__dict__))
+        print('=== [TRADE] OnErrCancel ===\n{0}'.format(f.__dict__))
         print(info)
 
     def OnErrOrder(self, obj, f: OrderField, info: InfoField):
@@ -591,7 +591,7 @@ class CtpTrade():
             :param f:OrderField:
             :param info:InfoField:
         """
-        print('=== OnErrOrder ===\n{0}'.format(f.__dict__))
+        print('=== [TRADE] OnErrOrder ===\n{0}'.format(f.__dict__))
         print(info)
 
     def OnInstrumentStatus(self, obj, inst: str, status: InstrumentStatus):
@@ -602,7 +602,7 @@ class CtpTrade():
             :param inst:str:
             :param status:InstrumentStatus:
         """
-        print('{}:{}'.format(inst, str(status).strip().split('.')[1]))
+        print('{}:{}'.format(inst, str(status).strip().split('.')[-1]))
 
     def OnRtnNotice(self, obj, time: str, msg: str):
         """交易提醒
@@ -621,7 +621,7 @@ class CtpTrade():
         :param quote:
         :return:
         """
-        print('=== OnRtnQuote ===\n{0}'.format(quote.__dict__))
+        print('=== [TRADE] OnRtnQuote ===\n{0}'.format(quote.__dict__))
 
     def OnErrRtnQuote(self, obj, quote: CThostFtdcInputQuoteField, info: InfoField):
         """
@@ -630,7 +630,7 @@ class CtpTrade():
         :param quote:
         :return:
         """
-        print('=== OnErrRtnQuote ===\n{0}'.format(quote.__dict__))
+        print('=== [TRADE] OnErrRtnQuote ===\n{0}'.format(quote.__dict__))
         print(info)
 
     def OnErrRtnForQuoteInsert(self, obj, quote: CThostFtdcInputQuoteField, info: InfoField):
@@ -640,5 +640,5 @@ class CtpTrade():
         :param quote:
         :return:
         """
-        print('=== OnErrRtnForQuoteInsert ===\n{0}'.format(quote.__dict__))
+        print('=== [TRADE] OnErrRtnForQuoteInsert ===\n{0}'.format(quote.__dict__))
         print(info)

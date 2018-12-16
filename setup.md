@@ -1,8 +1,15 @@
+# py_ctp
+
+上期技术期货交易api之python封装，实现接口调用。支持windows(x86/x64) linux(x64).
+
+#### 示例
+
+```python
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-__title__ = ''
+__title__ = 'py_ctp'
 __author__ = 'HaiFeng'
-__mtime__ = ''
+__mtime__ = '20181216'
 
 from py_ctp.trade import CtpTrade
 from py_ctp.quote import CtpQuote
@@ -62,3 +69,5 @@ if __name__ == "__main__":
     tt.release()
     qq.release()
     input()
+
+```

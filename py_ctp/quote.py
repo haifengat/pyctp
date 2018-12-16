@@ -130,19 +130,19 @@ class CtpQuote(object):
 
     def OnDisConnected(self, obj, error: int):
         """"""
-        print('disconnected: ' + str(error))
+        print(f'=== [QUOTE] OnDisConnected===\nerror: {str(error)}')
 
     def OnConnected(self, obj):
         """"""
-        print('connected')
+        print('=== [QUOTE] OnConnected ===')
 
     def OnUserLogin(self, obj, info: InfoField):
         """"""
-        print(info)
+        print(f'=== [QUOTE] OnUserLogin ===\n{info}')
 
     def OnTick(self, obj, f: Tick):
         """"""
-        print(f.__dict__)
+        print(f'=== [QUOTE] OnTick ===\n{f.__dict__}')
 
 
 def connected(obj):
