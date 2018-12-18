@@ -38,6 +38,7 @@ class TestQuote(object):
         """"""
         self.q = CtpQuote()
         self.q.OnConnected = lambda x: self.q.ReqUserLogin('008107', '1', '9999')
+        self.q.OnUserLogin = lambda o, i: self.q.ReqSubscribeMarketData('rb1910')
 
     def run(self):
         self.q.ReqConnect('tcp://180.168.146.187:10010')
@@ -52,6 +53,7 @@ if __name__ == "__main__":
     # t.ReqConnect('tcp://180.168.146.187:10000')
     tt.run()
 
+    time.sleep(3)
     qq = TestQuote()
     qq.run()
 

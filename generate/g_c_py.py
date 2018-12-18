@@ -33,7 +33,7 @@ create_api = ''
 '''生成api的命令'''
 
 
-def run(generate_c: bool, generate_py: bool):
+def run(generate_c: bool, generate_py: bool, generate_cs: bool = True):
     f_src = open(os.path.join(cur_dir, src_dir, f'{file_src}.h'), 'r', encoding='gbk')
 
     if generate_c:
@@ -42,6 +42,8 @@ def run(generate_c: bool, generate_py: bool):
         # f_c_def = open(os.path.join(cur_dir, '..', 'ctp_c', 'function.def'), 'w', encoding='utf-8')
     if generate_py:
         f_py = open(os.path.join(cur_dir, '..', 'py_ctp', f'ctp_{spi_class_name}.py'), 'w', encoding='utf-8')
+    if generate_cs:
+        f_cs = open(os.path.join(cur_dir, '..', 'cs_ctp', 'proxy', f'ctp_{spi_class_name}.cs'), 'w', encoding='utf-8')
 
     lines = f_src.read()
     lines = re.sub(r'\n\s*([iC])', '\g<1>', lines)  # 多行参数变为一行
@@ -59,6 +61,11 @@ def run(generate_c: bool, generate_py: bool):
     py_on_def__ = []  # 生成def __Onxxx
     py_on_def = []  # 生成def Onxxx
     py_on_reg = []
+
+    cs_req_type_def = []  # req声明
+    cs_req_def_body = []  # req函数定义
+    cs_on_set = []  # 生成def Onxxx
+    cs_on_dele = []
 
     import sys
     import inspect
@@ -173,6 +180,89 @@ class {spi_class_name.title()}:
         self.api = None
         self.spi = None
         self.nRequestID = 0''')
+
+            if generate_cs:
+                f_cs.write(f'''using System;
+using System.IO;
+using System.Runtime.InteropServices;
+
+namespace HaiFeng
+{{
+	public class ctp_{spi_class_name}
+	{{
+		#region Dll Load /UnLoad
+		/// <summary>
+		/// 原型是 :HMODULE LoadLibrary(LPCTSTR lpFileName);
+		/// </summary>
+		/// <param name="lpFileName"> DLL 文件名 </param>
+		/// <returns> 函数库模块的句柄 </returns>
+		[DllImport("kernel32.dll")]
+		private static extern IntPtr LoadLibrary(string lpFileName);
+
+		/// <summary>
+		/// 原型是 : FARPROC GetProcAddress(HMODULE hModule, LPCWSTR lpProcName);
+		/// </summary>
+		/// <param name="hModule"> 包含需调用函数的函数库模块的句柄 </param>
+		/// <param name="lpProcName"> 调用函数的名称 </param>
+		/// <returns> 函数指针 </returns>
+		[DllImport("kernel32.dll")]
+		private static extern IntPtr GetProcAddress(IntPtr hModule, string lpProcName);
+
+		/// <summary>
+		/// 原型是 : BOOL FreeLibrary(HMODULE hModule);
+		/// </summary>
+		/// <param name="hModule"> 需释放的函数库模块的句柄 </param>
+		/// <returns> 是否已释放指定的 Dll </returns>
+		[DllImport("kernel32", EntryPoint = "FreeLibrary", SetLastError = true)]
+		private static extern bool FreeLibrary(IntPtr hModule);
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="pHModule"></param>
+		/// <param name="lpProcName"></param>
+		/// <param name="t"></param>
+		/// <returns></returns>
+		/// <exception cref="Exception"></exception>
+		private static Delegate Invoke(IntPtr pHModule, string lpProcName, Type t)
+		{{
+			// 若函数库模块的句柄为空，则抛出异常
+			if (pHModule == IntPtr.Zero)
+			{{
+				throw (new Exception(" 函数库模块的句柄为空 , 请确保已进行 LoadDll 操作 !"));
+			}}
+			// 取得函数指针
+			IntPtr farProc = GetProcAddress(pHModule, lpProcName);
+			// 若函数指针，则抛出异常
+			if (farProc == IntPtr.Zero)
+			{{
+				throw (new Exception(" 没有找到 :" + lpProcName + " 这个函数的入口点 "));
+			}}
+			return Marshal.GetDelegateForFunctionPointer(farProc, t);
+		}}
+		#endregion
+
+		IntPtr _handle = IntPtr.Zero, _api = IntPtr.Zero, _spi = IntPtr.Zero;
+		private int nRequestID = 0;
+		delegate IntPtr Create();
+		
+		public ctp_{spi_class_name}(string pAbsoluteFilePath)
+		{{
+			string curPath = Environment.CurrentDirectory;
+			Environment.CurrentDirectory = new FileInfo(pAbsoluteFilePath).DirectoryName;
+			_handle = LoadLibrary(pAbsoluteFilePath);
+			if (_handle == IntPtr.Zero)
+			{{
+				throw (new Exception(String.Format("没有找到:", pAbsoluteFilePath)));
+			}}
+			Environment.CurrentDirectory = curPath;
+			Directory.CreateDirectory("log");
+
+			_api = (Invoke(_handle, "CreateApi", typeof(Create)) as Create)();
+			_spi = (Invoke(_handle, "CreateSpi", typeof(Create)) as Create)();
+			this.RegisterSpi(_spi);
+		}}
+''')
         else:
             g_on = re.search(r'virtual void\s*On(\w+)[(](.*)[)]', line)  # virtual void RegisterFront(char *pszFrontAddress) = 0;
             if g_on is not None:
@@ -211,7 +301,7 @@ class {spi_class_name.title()}:
                 if len(params_0) == 0:  # 首个参数不为struct
                     # if (_RtnTradeParam) ((RtnTradeParam)_RtnTradeParam)(pTradeParam);
                     lines_on.append(f'\tvirtual void On{on_name}({on_param}){{if (_{on_name}) (({on_name})_{on_name})({on_param_name});}}\n')
-                else: # 返回的Struct为NULL的处理
+                else:  # 返回的Struct为NULL的处理
                     lines_on.append(f'''\tvirtual void On{on_name}({on_param})
     {{
         if (_{on_name})
@@ -253,6 +343,17 @@ class {spi_class_name.title()}:
                 py_on_def.append(f'''
     def On{on_name}(self, {', '.join(py_params_def)}):
         print('===On{on_name}===: {', '.join(py_params_def)}')''')
+
+                # C#
+                cs_params = []
+                for i, t in enumerate(params_type):
+                    n = params_name[i]
+                    if '*' in t:
+                        cs_params.append(f"ref {t.replace('*','').strip()} {n}")
+                    else:
+                        cs_params.append(f"{type_dict[t].replace('c_', '').replace('32','')} {n}")
+                cs_on_dele.append(f"public delegate void DeleOn{on_name}({','.join(cs_params)});")
+                cs_on_set.append(f'public void SetOn{on_name}(DeleOn{on_name} func) {{(Invoke(_handle, "SetOn{on_name}", typeof(DeleSet)) as DeleSet)(_spi, func);}}')
             else:  # req
                 g_req = re.search(r'virtual\s+(\w+)\s+(\w+)[(](.*)[)].*0;', line)
                 if g_req is not None and '//' not in line:  # 过滤一个之前有但现在不支持的函数
@@ -264,13 +365,19 @@ class {spi_class_name.title()}:
                     py_params = ''
                     py_params_name = ''
                     py_params_stru = []  # 有struct则转换为各字段为参数
+
+                    cs_argtypes = '' # 定义delegate使用
+                    cs_params = [] # 定义函数时使用public IntPtr Reqxxx(cs_params)
+                    cs_params_name = '' # 调用底层时使用 return (Invoke(_handle, "ReqUserLogin", typeof(DeleReqUserLogin)) as DeleReqUserLogin)(_api, struc, this.nRequestID++);
+                    cs_params_stru = []  # 有struct则转换为各字段为参数
+
                     if req_params != '':
                         req_params = ', ' + req_params  # CShfeFtdcQryStatField *pQryStat, int nRequestID
 
                         params_name = []
                         params_type = []
                         for p in re.findall(r'(\w+\s+[*]*)\s*([\w\[\]]+)', req_params):
-                            params_name.append(re.search(r'\w+', p[1]).group(0))  # 'pQryStat' 去掉订阅合约时参数后面的[]
+                            params_name.append(p[1])  # 'pQryStat' **不**能去掉订阅合约时参数后面的[]
                             params_type.append(p[0].strip())  # CShfeFtdcQryStatField *
                         req_params_name = ', '.join(params_name)
 
@@ -278,64 +385,108 @@ class {spi_class_name.title()}:
                         for i, t in enumerate(params_type):
                             n = params_name[i]
                             py_params_name += ', '
+                            cs_params_name += ', '
                             # RegisterSpi函数特别处理
                             if n == 'pSpi':
-                                py_params += ', ' + n
+                                py_params += f', {n}'
                                 py_params_name += n
+
+                                cs_argtypes += f', IntPtr {n}'
+                                cs_params.append(f'IntPtr {n}')
+                                cs_params_name += n
                                 continue
 
                             if 'char *' in t:  # char *=>str
                                 if '[]' in n:  # char * 数组
-                                    py_params += f", {n[0:n.find('[')]}: str"
+                                    _n = n.split('[')[0]
+                                    py_params += f", {_n}: str"
                                     py_params_stru.append("ca1 = (ctypes.c_char_p * 1)()")
-                                    py_params_stru.append("ca1[0] = bytes(ppInstrumentID, encoding='ascii')")
+                                    py_params_stru.append(f"ca1[0] = bytes({_n}, encoding='ascii')")
                                     py_params_name += 'ca1'
+
+                                    cs_argtypes += f', IntPtr {_n}'
+                                    cs_params.append(f'IntPtr {_n}')
+                                    cs_params_name += _n
                                 else:
                                     py_params += f", {n}: str"
                                     # byref(pQryStat), nRequestID
                                     py_params_name += f"bytes({n}, encoding='ascii')" if 'char *' in t else (n if t in type_dict else f'byref({n})')
+
+                                    cs_argtypes += f', string {n}'
+                                    cs_params.append(f'string {n}')
+                                    cs_params_name += n
                             elif '*' in t:  # struct按字段赋值 CShfeFtdcSubMarketDataField*
                                 # 取struct所有字段
                                 stru_name = t.replace('*', '').strip()
                                 stru = getattr(ctp_struct, stru_name)()
                                 lst = getattr(stru, '_fields_')
                                 py_params_stru.append(f"{n} = {stru_name}()")
+
+                                cs_params_stru.append(f'{stru_name} {n} = new {stru_name}')
+                                cs_params_stru.append('{')
+                                cs_argtypes += f', {stru_name} {n}'
                                 for l in lst:
                                     # 多个Struc参数时,字段可能重复
                                     if f' {l[0]}:' in py_params:
                                         continue
+                                    cs_params_stru.append(f'\t{l[0]} = {l[0]},')
                                     type_name = l[1].__name__
                                     if 'c_char_Array_' in type_name:
                                         py_params += f", {l[0]}: str = ''"
                                         py_params_stru.append(f"{n}.{l[0]} = bytes({l[0]}, encoding='ascii')")
+                                        cs_params.append(f'string {l[0]} = ""')
                                     elif 'char' in type_name:  # 枚举
                                         # 利用读取源码取得枚举类型
                                         _t_name = re.search(r'return\s+(\w*)', inspect.getsourcelines(getattr(stru, f'get{l[0]}'))[0][-1]).group(1)
                                         py_params += f", {l[0]}: {_t_name} = list({_t_name})[0]"
                                         py_params_stru.append(f"{n}.{l[0]} = {l[0]}.value")
+                                        cs_params.append(f'{_t_name} {l[0]} = {_t_name}.{getattr(stru, "get"+l[0])().name}')
                                     elif 'long' in type_name:
                                         py_params += f", {l[0]}: int = 1"  # c_long => int
                                         py_params_stru.append(f"{n}.{l[0]} = {l[0]}")
+                                        cs_params.append(f'int {l[0]} = 1')
                                     elif 'bool' in type_name:
                                         py_params += f", {l[0]}: bool = False"
                                         py_params_stru.append(f"{n}.{l[0]} = {l[0]}")
+                                        cs_params.append(f'bool {l[0]} = False')
                                     elif 'double' in type_name:
                                         py_params += f", {l[0]}: float = .0"
                                         py_params_stru.append(f"{n}.{l[0]} = {l[0]}")
+                                        cs_params.append(f'double {l[0]} = 0.0')
                                     else:
                                         raise Exception(f'no type: {type_name}')
                                         # py_params += f"{l[0]}: {[k for k, v in type_dict.items() if v == type_name][0]}" # c_bool => bool
                                 py_params_name += f'byref({n})'
+                                cs_params_name += n
+                                cs_params_stru.append('};')
                             elif 'nRequestID' in n:
                                 py_params_stru.append('self.nRequestID += 1')
                                 py_params_name += 'self.nRequestID'
+                                cs_params_name += 'this.nRequestID++'
+                                cs_argtypes += ', int nRequestID'
                             else:
                                 py_params += f", {n}: {t.strip()} = 1"
                                 # byref(pQryStat), nRequestID
                                 py_params_name += n
+                                if 'int' in t:
+                                    cs_params.append(f'{t.strip()} {n} = 1')
+                                else:
+                                    cs_params.append(f'{t.strip()} {n}')
+                                cs_params_name += n
+                                cs_argtypes += f', {t.strip()} {n}'
                         # 转换参数类型为c_xxxx
                         argtypes = ', ' + ', '.join([type_dict[t] if t in type_dict else 'c_void_p' for t in params_type])
-                    # self.h.Release.argtypes = [c_void_p]     self.h.Release.restype = c_void_p
+
+                    cs_req_type_def.append(f'\t\tpublic delegate IntPtr Dele{req_name}(IntPtr api{cs_argtypes});')
+                    cs_params_stru = ('\n\t\t\t' + '\n\t\t\t'.join(cs_params_stru)) if len(py_params_stru) > 0 else ''
+                    cs_req_def_body.append(f'''
+        public IntPtr {req_name}({','.join(cs_params)})
+        {{{cs_params_stru}
+            return (Invoke(_handle, "{req_name}", typeof(Dele{req_name})) as Dele{req_name})(_api{cs_params_name});
+        }}
+                    ''')
+
+                    # self.h.ReqQryTradingAccount.argtypes = [c_void_p, c_void_p, c_int32]     self.h.ReqQryTradingAccount.restype = c_void_p
                     py_req_type_def.append(f"\n{' '*8}self.h.{req_name}.argtypes = [c_void_p{argtypes}]\n{' '*8}self.h.{req_name}.restype = c_void_p")
                     # py_req_def_body.append(f"{' '*4}def {req_name}(self{py_params}):\n{' '*8}self.h.{req_name}(self.api{py_params_name})")
                     py_params_stru = (f"\n{' '*8}" + f"\n{' '*8}".join(py_params_stru)) if len(py_params_stru) > 0 else ''
@@ -381,6 +532,15 @@ class {spi_class_name.title()}:
         f_py.write('\n')
         f_py.write('\n'.join(py_on_def))
 
+    if generate_cs:
+        f_cs.write('\n'.join(cs_req_type_def))
+        f_cs.write('\n'.join(cs_req_def_body))
+        f_cs.write('\n\t\tdelegate void DeleSet(IntPtr spi, Delegate func);')
+        f_cs.write('\n\t\t')
+        f_cs.write('\n\t\t'.join(cs_on_dele))
+        f_cs.write('\n\t\t'.join(cs_on_set))
+
+        f_cs.write('\n\t}\n}')
 
 if __name__ == '__main__':
     src_dir = '../ctp_20180109_x86'

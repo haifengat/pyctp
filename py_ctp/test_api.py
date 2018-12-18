@@ -133,7 +133,7 @@ class Test:
 
     def OnRtnOrder(self, pOrder: ctp.CThostFtdcOrderField):
         print(pOrder)
-        if pOrder.getSessionID() == self.Session and pOrder.getOrderStatus() == ctp.OrderStatusType.NoTradeQueueing:
+        if pOrder.getSessionID() == self.Session and pOrder.getOrderStatus() == ctp.TThostFtdcOrderStatusType.THOST_FTDC_OST_NoTradeNotQueueing:
             print("撤单")
             self.t.ReqOrderAction(
                 self.broker, self.investor,

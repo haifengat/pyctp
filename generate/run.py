@@ -31,7 +31,7 @@ g_c_py.lib_name = 'thosttraderapi'
 g_c_py.api_class_name = 'CThostFtdcTraderApi'
 g_c_py.info_struct_name = 'CThostFtdcRspInfoField'
 g_c_py.create_api = 'CThostFtdcTraderApi::CreateFtdcTraderApi'
-g_c_py.run(True, False) # 生成c+  py
+g_c_py.run(True, True) # 生成c+  py
 # g_c_py.run(False, True)
 g_c_py.spi_class_name = 'quote'
 g_c_py.file_src = 'ThostFtdcMdApi'
@@ -39,5 +39,5 @@ g_c_py.lib_name = 'thostmduserapi'
 g_c_py.api_class_name = 'CThostFtdcMdApi'
 g_c_py.info_struct_name = 'CThostFtdcRspInfoField'
 g_c_py.create_api = 'CThostFtdcMdApi::CreateFtdcMdApi'
-g_c_py.run(True, False)
+g_c_py.run(True, True)
 # g_c_py.run(False, True)
