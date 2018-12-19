@@ -59,5 +59,15 @@ namespace HaiFeng.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   查找 System.Byte[] 类型的本地化资源。
+        /// </summary>
+        internal static byte[] lib {
+            get {
+                object obj = ResourceManager.GetObject("lib", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

@@ -13,8 +13,8 @@ namespace HaiFeng
         static ctp_trade t = null;
         static void Main(string[] args)
         {
-            q = new ctp_quote(new FileInfo("../../../dll/ctp_quote.dll").FullName);
-            t = new ctp_trade(new FileInfo("../../../dll/ctp_trade.dll").FullName);
+            q = new ctp_quote();
+            t = new ctp_trade();
 
             t.SetOnFrontConnected(t_connected);
             t.SetOnRspUserLogin(t_login);

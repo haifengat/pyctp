@@ -33,10 +33,9 @@ namespace HaiFeng
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="pAbsoluteFilePath">ctp_trade.dll文件绝对路径</param>
-		public CTPTrade(string pAbsoluteFilePath)
+		public CTPTrade()
         {
-            _t = new ctp_trade(pAbsoluteFilePath);
+            _t = new ctp_trade();
             this.SetCallBack();
         }
 

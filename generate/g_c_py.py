@@ -185,6 +185,7 @@ class {spi_class_name.title()}:
                 f_cs.write(f'''using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.IO.Compression;
 
 namespace HaiFeng
 {{
@@ -246,14 +247,23 @@ namespace HaiFeng
 		private int nRequestID = 0;
 		delegate IntPtr Create();
 		
-		public ctp_{spi_class_name}(string pAbsoluteFilePath)
+		public ctp_{spi_class_name}()
 		{{
 			string curPath = Environment.CurrentDirectory;
-			Environment.CurrentDirectory = new FileInfo(pAbsoluteFilePath).DirectoryName;
-			_handle = LoadLibrary(pAbsoluteFilePath);
+            var dll_path = new FileInfo(this.GetType().Assembly.Location).DirectoryName;
+            Environment.CurrentDirectory = dll_path;
+            dll_path = Path.Combine(dll_path, "lib" + (Environment.Is64BitProcess ? "64" : "32"));
+            if (!Directory.Exists(dll_path))
+            {{
+                File.WriteAllBytes("lib.zip", Properties.Resources.lib);
+                ZipFile.ExtractToDirectory("lib.zip", ".");
+                File.Delete("lib.zip");
+            }}
+			Environment.CurrentDirectory = dll_path;
+			_handle = LoadLibrary(Path.Combine(dll_path, "ctp_{spi_class_name}.dll"));
 			if (_handle == IntPtr.Zero)
 			{{
-				throw (new Exception(String.Format("没有找到:", pAbsoluteFilePath)));
+				throw (new Exception(String.Format("没有找到:", dll_path)));
 			}}
 			Environment.CurrentDirectory = curPath;
 			Directory.CreateDirectory("log");
@@ -352,6 +362,8 @@ namespace HaiFeng
                         cs_params.append(f"ref {t.replace('*','').strip()} {n}")
                     else:
                         cs_params.append(f"{type_dict[t].replace('c_', '').replace('32','')} {n}")
+                # 处理32位调用
+                cs_on_dele.append(f'[UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]')
                 cs_on_dele.append(f"public delegate void DeleOn{on_name}({','.join(cs_params)});")
                 cs_on_set.append(f'public void SetOn{on_name}(DeleOn{on_name} func) {{(Invoke(_handle, "SetOn{on_name}", typeof(DeleSet)) as DeleSet)(_spi, func);}}')
             else:  # req
@@ -424,7 +436,7 @@ namespace HaiFeng
 
                                 cs_params_stru.append(f'{stru_name} {n} = new {stru_name}')
                                 cs_params_stru.append('{')
-                                cs_argtypes += f', {stru_name} {n}'
+                                cs_argtypes += f', ref {stru_name} {n}'
                                 for l in lst:
                                     # 多个Struc参数时,字段可能重复
                                     if f' {l[0]}:' in py_params:
@@ -457,7 +469,7 @@ namespace HaiFeng
                                         raise Exception(f'no type: {type_name}')
                                         # py_params += f"{l[0]}: {[k for k, v in type_dict.items() if v == type_name][0]}" # c_bool => bool
                                 py_params_name += f'byref({n})'
-                                cs_params_name += n
+                                cs_params_name += f'ref {n}'
                                 cs_params_stru.append('};')
                             elif 'nRequestID' in n:
                                 py_params_stru.append('self.nRequestID += 1')
@@ -476,7 +488,8 @@ namespace HaiFeng
                                 cs_argtypes += f', {t.strip()} {n}'
                         # 转换参数类型为c_xxxx
                         argtypes = ', ' + ', '.join([type_dict[t] if t in type_dict else 'c_void_p' for t in params_type])
-
+                    # 处理32位
+                    cs_req_type_def.append('\t\t[UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]')
                     cs_req_type_def.append(f'\t\tpublic delegate IntPtr Dele{req_name}(IntPtr api{cs_argtypes});')
                     cs_params_stru = ('\n\t\t\t' + '\n\t\t\t'.join(cs_params_stru)) if len(py_params_stru) > 0 else ''
                     cs_req_def_body.append(f'''
@@ -535,9 +548,11 @@ namespace HaiFeng
     if generate_cs:
         f_cs.write('\n'.join(cs_req_type_def))
         f_cs.write('\n'.join(cs_req_def_body))
+        f_cs.write('\n\t\t[UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]')
         f_cs.write('\n\t\tdelegate void DeleSet(IntPtr spi, Delegate func);')
         f_cs.write('\n\t\t')
         f_cs.write('\n\t\t'.join(cs_on_dele))
+        f_cs.write('\n\t\t')
         f_cs.write('\n\t\t'.join(cs_on_set))
 
         f_cs.write('\n\t}\n}')

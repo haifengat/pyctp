@@ -18,10 +18,9 @@ namespace HaiFeng
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="pAbsoluteFilePath">ctp_quote.dll文件绝对路径</param>
-		public CTPQuote(string pAbsoluteFilePath)
+		public CTPQuote()
 		{
-			_q = new ctp_quote(pAbsoluteFilePath);
+			_q = new ctp_quote();
 			SetCallBack();
 		}
 

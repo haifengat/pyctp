@@ -19,7 +19,7 @@ namespace HaiFeng
 			_pwd = pwd;
 			_inst = instrument;
 
-			_q = new CTPQuote(new FileInfo("../../../dll/ctp_quote.dll").FullName);
+			_q = new CTPQuote();
 
 			_q.OnFrontConnected += _q_OnFrontConnected;
 			_q.OnRspUserLogin += _q_OnRspUserLogin;
@@ -92,7 +92,7 @@ namespace HaiFeng
 			_pwd = pwd;
 			_inst = instrument;
 			_price = price;
-			_t = new CTPTrade(new FileInfo("../../../dll/ctp_trade.dll").FullName);
+			_t = new CTPTrade();
 		}
 
 		public void Release()
