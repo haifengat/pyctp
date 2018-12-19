@@ -9,7 +9,7 @@ __mtime__ = '2017/1/17'
 import os
 
 # 切换到 generate 目录下
-
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 src_dir = '../ctp_20180109_x86'
 data_type_file_name = 'ThostFtdcUserApiDataType'
 

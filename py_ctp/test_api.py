@@ -13,8 +13,7 @@ __mtime__ = '2016/9/13'
 import sys
 import os
 import platform
-sys.path.append(os.path.join(sys.path[0], '..'))  # 调用父目录下的模块
-
+os.chdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 
 class Test:
 

@@ -24,13 +24,11 @@
             * g++ -shared -fPIC ../ctp_c/trade.cpp -o ./ctp_trade.so ./thosttraderapi.so
             * g++ -shared -fPIC ../ctp_c/quote.cpp -o ./ctp_quote.so ./thostmduserapi.so
 * 测试
-    * 执行 `copy ctp_20180109\\*.dll dll\`
     * Python
+        * 安装 `pip install py_ctp`
         * 运行 `python py_ctp\test_api.py`
     * C#
         * `copy cs_ctp\*.cs cs_ctp\ctp_test\`
         * 打开cs_ctp\ctp_test 项目进行调试
-        * `copy cs_ctp\*.cs cs_ctp\proxy\`
-        * 打开cs_ctp\proxy 项目编译.net封装
         * 打开cs_ctp\proxytest 项目测试.net封装
 
