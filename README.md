@@ -4,17 +4,16 @@
 ## 环境需求
 * VS2017
 * python 3.6+
-* 64位
 
 ## 使用说明
 * 运行 `pyton generate\\run.py` 生成所有文件
 * C++编译
     * Windows
-        * 环境要求 `vs2017` `64位`
+        * 环境要求 `vs2017`
         * 设置项目为x64,否则会提示找不到windows.h
         * 打开ctp_c\\ctp.sln
         * 编译ctp_quote 和 ctp_trade项目
-        * 编译后生成的dll放在dll目录下
+        * 编译后生成的dll放在<red>py_ctp\lib32|lib64</red>目录下
     * Linux
         * 设置系统语言为：zh_CN.UTF-8
         * 复制文件到linux ctp_c\\*.h *.cpp 到ctp_c目录下

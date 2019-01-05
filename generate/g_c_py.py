@@ -388,10 +388,10 @@ namespace HaiFeng
 
                         params_name = []
                         params_type = []
-                        for p in re.findall(r'(\w+\s+[*]*)\s*([\w\[\]]+)', req_params):
+                        for p in re.findall(r'(\w+\s+[*]*)\s*([\w\[\]]+)', req_params): # 参数名包含[]
                             params_name.append(p[1])  # 'pQryStat' **不**能去掉订阅合约时参数后面的[]
                             params_type.append(p[0].strip())  # CShfeFtdcQryStatField *
-                        req_params_name = ', '.join(params_name)
+                        req_params_name = ', '.join(params_name).replace('[', '').replace(']', '')
 
                         # pQryStat: CShfeFtdcQryStatField
                         for i, t in enumerate(params_type):
