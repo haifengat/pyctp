@@ -565,7 +565,7 @@ if __name__ == '__main__':
     api_class_name = 'CThostFtdcTraderApi'
     info_struct_name = 'CThostFtdcRspInfoField'
     create_api = 'CThostFtdcTraderApi::CreateFtdcTraderApi'
-    run(True, False)
+    run(True, True)
     # run(False, True)
     spi_class_name = 'quote'
     file_src = 'ThostFtdcMdApi'
@@ -573,5 +573,5 @@ if __name__ == '__main__':
     api_class_name = 'CThostFtdcMdApi'
     info_struct_name = 'CThostFtdcRspInfoField'
     create_api = 'CThostFtdcMdApi::CreateFtdcMdApi'
-    run(True, False)
+    run(True, True)
     # run(False, True)
