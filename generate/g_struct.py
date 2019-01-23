@@ -51,7 +51,8 @@ from .ctp_enum import *
             type_name = typedefDict[f_type] if f_type in typedefDict else 'c_char'
             fields_str.append(f'{" "*8}("{f_name}", {type_name}),')  # ('SequenceSeries', c_short),
             if type_name == 'c_char':  # 枚举
-                get_value = f"{f_type}(ord(self.{f_name})) if self.{f_name} in list({f_type}) else list({f_type})[0]"
+                # TThostFtdcInstrumentStatusType(ord(self.InstrumentStatus)) ord(self.InstrumentStatus) in  [e.value for e in list(TThostFtdcInstrumentStatusType)]
+                get_value = f"{f_type}(ord(self.{f_name})) if ord(self.{f_name}) in [e.value for e in list({f_type})] else list({f_type})[0]"
                 cs_def.append(f"\t/// <summary>\n\t/// {f_remark}\n\t/// </summary>\n\tpublic {f_type} {f_name};")
             else:
                 get_value = f"str(self.{f_name}, 'GBK')" if 'char*' in type_name else f"self.{f_name}"
