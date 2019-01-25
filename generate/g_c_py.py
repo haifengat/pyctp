@@ -454,7 +454,7 @@ namespace HaiFeng
                                         py_params_stru.append(f"{n}.{l[0]} = {l[0]}.value")
                                         cs_params.append(f'{_t_name} {l[0]} = {_t_name}.{getattr(stru, "get"+l[0])().name}')
                                     elif 'long' in type_name:
-                                        py_params += f", {l[0]}: int = 1"  # c_long => int
+                                        py_params += f", {l[0]}: int = 0"  # c_long => int 默认值由1改为0,原因TThostFtdcBoolType为int型,默认为1会导致按true处理,在reqorderinsert中userforceclose被置为true则表示为"强平单"
                                         py_params_stru.append(f"{n}.{l[0]} = {l[0]}")
                                         cs_params.append(f'int {l[0]} = 1')
                                     elif 'bool' in type_name:
