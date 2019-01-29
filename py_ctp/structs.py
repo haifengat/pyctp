@@ -6,7 +6,7 @@ __author__ = 'HaiFeng'
 __mtime__ = '2016/9/21'
 """
 
-from .enums import DirectType, OffsetType, OrderStatus
+from .enums import DirectType, OffsetType, OrderStatus, HedgeType, TradeTypeType
 
 
 class InfoField:
@@ -301,6 +301,32 @@ class PositionField:
             'Commission': self.Commission,
             'Margin': self.Margin
         }
+
+
+class PositionDetail:
+    """持仓明细"""
+    def __init__(self):
+        """"""
+        self.Instrument = ''
+        """合约"""
+        self.HedgeFlag = HedgeType.Speculation
+        """投保"""
+        self.Direction = DirectType.Buy
+        """持仓方向"""
+        self.TradeID = ''
+        """交易ID"""
+        self.Volume = 0
+        """持仓量"""
+        self.OpenPrice = .0
+        """平仓价格"""
+        self.OpenDate = ''
+        """开仓日期"""
+        self.TradeType = TradeTypeType.Common
+        """交易类型"""
+        self.PositionProfit = .0
+        """盯市持仓盈亏"""
+        self.CloseProfit = .0
+        """盯市平仓盈亏"""
 
 
 class Tick:

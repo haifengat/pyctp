@@ -12,11 +12,11 @@ import time
 import os
 import platform
 
-from .enums import OrderType, InstrumentStatus
-from .structs import DirectType, InfoField, InstrumentField, OffsetType, OrderField, OrderStatus, PositionField, TradeField, TradingAccount
+from .enums import OrderType, InstrumentStatus, DirectType, OffsetType, HedgeType, TradeTypeType
+from .structs import InfoField, InstrumentField, OrderField, OrderStatus, PositionField, TradeField, TradingAccount, PositionDetail
 from .ctp_trade import Trade
-from .ctp_struct import CThostFtdcInputOrderActionField, CThostFtdcInputOrderField, CThostFtdcInstrumentField, CThostFtdcInstrumentStatusField, CThostFtdcInvestorPositionField, CThostFtdcOrderField, CThostFtdcRspInfoField, CThostFtdcRspUserLoginField, CThostFtdcSettlementInfoConfirmField, CThostFtdcTradingAccountField, CThostFtdcTradingNoticeInfoField, CThostFtdcQuoteField, CThostFtdcInputQuoteField, CThostFtdcInputForQuoteField
-from .ctp_enum import TThostFtdcActionFlagType, TThostFtdcContingentConditionType, TThostFtdcDirectionType, TThostFtdcOffsetFlagType, TThostFtdcForceCloseReasonType, TThostFtdcHedgeFlagType, TThostFtdcOrderPriceTypeType, TThostFtdcPosiDirectionType, TThostFtdcTimeConditionType, TThostFtdcVolumeConditionType, TThostFtdcOrderStatusType, TThostFtdcInstrumentStatusType
+from .ctp_struct import CThostFtdcInputOrderActionField, CThostFtdcInputOrderField, CThostFtdcInstrumentField, CThostFtdcInstrumentStatusField, CThostFtdcInvestorPositionField, CThostFtdcOrderField, CThostFtdcRspInfoField, CThostFtdcRspUserLoginField, CThostFtdcSettlementInfoConfirmField, CThostFtdcTradingAccountField, CThostFtdcTradingNoticeInfoField, CThostFtdcQuoteField, CThostFtdcInputQuoteField, CThostFtdcInputForQuoteField, CThostFtdcInvestorPositionDetailField
+from .ctp_enum import TThostFtdcActionFlagType, TThostFtdcContingentConditionType, TThostFtdcDirectionType, TThostFtdcOffsetFlagType, TThostFtdcForceCloseReasonType, TThostFtdcHedgeFlagType, TThostFtdcOrderPriceTypeType, TThostFtdcPosiDirectionType, TThostFtdcTimeConditionType, TThostFtdcVolumeConditionType, TThostFtdcOrderStatusType, TThostFtdcInstrumentStatusType, TThostFtdcTradeTypeType
 
 
 class CtpTrade():
@@ -199,6 +199,22 @@ class CtpTrade():
                 vm = self.instruments[pf.InstrumentID].VolumeMultiple
                 pf.Price = 0 if pf.Position <= 0 else cost / vm / pf.Position
             self._posi.clear()
+
+    def _OnRspQryPositionDetail(self, pInvestorPositionDetail: CThostFtdcInvestorPositionDetailField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
+        """持仓明细"""
+        if pInvestorPositionDetail.getInstrumentID() == '':
+            return
+        detail = PositionDetail()
+        detail.Instrument = pInvestorPositionDetail.getInstrumentID()
+        detail.CloseProfit = pInvestorPositionDetail.getCloseProfitByTrade()
+        detail.Direction = DirectType.Buy if pInvestorPositionDetail.getDirection() == TThostFtdcDirectionType.THOST_FTDC_D_Buy else DirectType.Sell
+        detail.HedgeFlag = HedgeType(list(TThostFtdcHedgeFlagType).index(pInvestorPositionDetail.getHedgeFlag()))
+        detail.OpenDate = pInvestorPositionDetail.getOpenDate()
+        detail.PositionProfit = pInvestorPositionDetail.getPositionProfitByTrade()
+        detail.OpenPrice = pInvestorPositionDetail.getOpenPrice()
+        detail.TradeType = TradeTypeType(list(TThostFtdcTradeTypeType).index(pInvestorPositionDetail.getTradeType()))
+        detail.Volume = pInvestorPositionDetail.getVolume()
+        self.position_details[pInvestorPositionDetail.getTradeID()] = detail
 
     def _OnRspQryAccount(self, pTradingAccount: CThostFtdcTradingAccountField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
         """"""
@@ -409,6 +425,7 @@ class CtpTrade():
         self.t.OnRspQryInstrument = self._OnRspQryInstrument
         self.t.OnRspQryTradingAccount = self._OnRspQryAccount
         self.t.OnRspQryInvestorPosition = self._OnRspQryPosition
+        self.t.OnRspQryInvestorPositionDetail = self._OnRspQryPositionDetail
         self.t.OnRtnTradingNotice = self._OnRtnNotice
         self.t.OnRtnQuote = self._OnRtnQuote
         self.t.OnErrRtnQuoteInsert = self._OnErrRtnQuote
