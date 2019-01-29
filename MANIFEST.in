@@ -2,7 +2,6 @@ include *.in
 include *.ini
 include setup.md
 include *.txt
-include *.py
 include LICENSE
 
 global-exclude __pycache__ *.py[cod] *.con
@@ -11,3 +10,5 @@ recursive-include py_ctp/lib32 *.*
 recursive-include py_ctp/lib64 *.*
 
 recursive-exclude py_ctp/log
+exclude *.py
+exclude *.cfg

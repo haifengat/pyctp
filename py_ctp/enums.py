@@ -9,12 +9,42 @@ __mtime__ = '2017/10/30'
 from enum import Enum
 
 
+class TradeTypeType(Enum):
+    """成交类型类型"""
+    SplitCombinatio = 110
+    """组合持仓拆分为单一持仓,初始化不应包含该类型的持仓"""
+    Common = 48
+    """普通成交"""
+    OptionsExecution = 49
+    """期权执行"""
+    OTC = 50
+    """OTC成交"""
+    EFPDerived = 51
+    """期转现衍生成交"""
+    CombinationDerived = 52
+    """组合衍生成交"""
+
+
+class HedgeType(Enum):
+    """投保"""
+    Speculation = 0
+    '''投机'''
+    Arbitrage = 1
+    '''套利'''
+    Hedge = 2
+    '''套保'''
+    MarketMaker = 3
+    '''做市商'''
+
+    def __int__(self):
+        """Enum"""
+        return self.value
+
+
 class DirectType(Enum):
     """买卖"""
-    '''买'''
     Buy = 0
     '''买'''
-    '''卖'''
     Sell = 1
     '''卖'''
 
@@ -24,14 +54,10 @@ class DirectType(Enum):
 
 class OffsetType(Enum):
     """开平(今)"""
-    '''开仓'''
     Open = 0
     '''开仓'''
-    '''平仓'''
     Close = 1
     '''平仓'''
-    '''平今
-    上期所独有'''
     CloseToday = 2
     '''平今
     上期所独有'''
@@ -42,16 +68,12 @@ class OffsetType(Enum):
 
 class OrderType(Enum):
     """委托类型"""
-    '''限价单'''
     Limit = 0
     '''限价单'''
-    '''市价单'''
     Market = 1
     '''市价单'''
-    '''部成立撤'''
     FAK = 2
     '''部成立撤'''
-    '''全成立撤'''
     FOK = 3
     '''全成立撤'''
 
@@ -61,19 +83,14 @@ class OrderType(Enum):
 
 class OrderStatus(Enum):
     """委托状态"""
-    '''正常'''
     Normal = 0
     '''正常'''
-    '''部分成交'''
     Partial = 1
     '''部分成交'''
-    '''全部成交'''
     Filled = 2
     '''全部成交'''
-    '''撤单'''
     Canceled = 3
     '''撤单'''
-    '''错单'''
     Error = 4
     '''错单'''
 
@@ -83,16 +100,12 @@ class OrderStatus(Enum):
 
 class InstrumentStatus(Enum):
     """交易状态"""
-    '''交易'''
     Continous = 0
     '''交易'''
-    '''竞价'''
     Auction = 1
     '''竞价'''
-    '''非交易'''
     NoTrading = 2
     '''非交易'''
-    '''收盘'''
     Closed = 3
     '''收盘'''
 
