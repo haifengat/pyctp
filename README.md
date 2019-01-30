@@ -20,8 +20,8 @@
         * 复制 ctp_20180109\\*.so到dll目录下
         * 复制 py_ctp\\*.py到py_ctp目录下
         * 进入dll目录，执行以下指令
-            * g++ -shared -fPIC ../ctp_c/trade.cpp -o ./ctp_trade.so ./thosttraderapi.so
-            * g++ -shared -fPIC ../ctp_c/quote.cpp -o ./ctp_quote.so ./thostmduserapi.so
+            * g++ -shared -fPIC ./trade.cpp -o ./ctp_trade.so ./thosttraderapi.so
+            * g++ -shared -fPIC ./quote.cpp -o ./ctp_quote.so ./thostmduserapi.so
 * 测试
     * Python
         * 安装 `pip install py_ctp`

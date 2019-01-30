@@ -30,15 +30,6 @@ for bit in [32,64]:
 long_description = read_file('setup.md')
 long_description_content_type = "text/markdown",  # 指定包文档格式为markdown
 
-# import re
-# with open('./ctp_c/trade.cpp', 'rw', encoding='utf-8') as f:
-#     txt = f.read()
-#     w.write(re.sub(r'^.* ReqUserLogin\(.*$', txt, '''DLL_EXPORT_C_DECL void* WINAPI ReqUserLogin(CThostFtdcTraderApi *api, CThostFtdcReqUserLoginField *pReqUserLoginField, int nRequestID)
-# {
-#     strcpy(pReqUserLoginField->UserProductInfo, "@haifeng");
-#     api->ReqUserLogin(pReqUserLoginField, nRequestID);
-#     return 0;
-# }'''))
 
 ''' 替换trade.cpp中requserlogin的内容,保证登录的客户端标识
 DLL_EXPORT_C_DECL void* WINAPI ReqUserLogin2(CThostFtdcTraderApi *api, CThostFtdcReqUserLoginField *pReqUserLogin, int nRequestID)
@@ -59,7 +50,7 @@ DLL_EXPORT_C_DECL void* WINAPI ReqUserLogin(CThostFtdcTraderApi *api, CThostFtdc
 setup(
     name='py_ctp',  # 包名
     python_requires='>=3.4.0',  # python环境
-    version='2.1.0',  # 包的版本
+    version='2.1.2',  # 包的版本
     description="Python CTP futures api",  # 包简介，显示在PyPI上
     long_description=long_description,  # 读取的Readme文档内容
     long_description_content_type=long_description_content_type,  # 指定包文档格式为markdown
