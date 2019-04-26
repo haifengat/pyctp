@@ -90,16 +90,10 @@ namespace HaiFeng
 		}
         #region SE版本增加
         [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]
-        public delegate IntPtr DeleGetSystemInfo();
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]
         public delegate IntPtr DeleGetVersion();
         public string GetVersion()
         {
             return Marshal.PtrToStringAnsi((Invoke(_handle, "GetVersion", typeof(DeleGetVersion)) as DeleGetVersion)());
-        }
-        public IntPtr GetSystemInfo()
-        {
-            return (Invoke(_handle, "GetSystemInfo", typeof(DeleGetSystemInfo)) as DeleGetSystemInfo)();
         }
         #endregion
 

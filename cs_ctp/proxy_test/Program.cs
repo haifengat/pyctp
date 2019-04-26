@@ -12,28 +12,28 @@ namespace HaiFeng
         {
             // investor, pwd, instrument, price for buy
             TestTrade tt = null;
-            string addr = "tcp://180.168.146.187:13030", broker = "9999", investor = "141532", pwd = "topview168", inst = "rb1909", app = "8633078969", code = "0000000000000000", proc = "";
+            string addr = "tcp://180.168.146.187:13030", broker = "9999", investor = "", pwd = "", inst = "rb1909", app = "", code = "", proc = "";
             string qaddr = "tcp://180.168.146.187:13040";
             double price_for_buy = 3900;
 
             tt = new TestTrade(inst, price_for_buy)
             {
-                TradeAddr = addr,
+                FrontAddr = addr,
                 Broker = broker,
                 Investor = investor,
-                Pwd = pwd,
+                Password = pwd,
                 AppID = app,
                 AuthCode = code,
-                ProcInfo = proc,
+                ProductInfo = proc,
             };
 
             tt.Run();
             Console.WriteLine("Press any key to continue . . . ");
             Console.ReadKey(true);
 
-            TestQuote tq = new TestQuote(investor, pwd, inst)
+            TestQuote tq = new TestQuote(inst)
             {
-                QuoteAddr = qaddr,
+                FrontAddr = qaddr,
                 Broker = broker,
             };
             tq.Run();

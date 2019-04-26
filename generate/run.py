@@ -49,16 +49,10 @@ g_c_py.run(True, True)
 # ctp_trade.cs
 #
 #         [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]
-#         public delegate IntPtr DeleGetSystemInfo();
-#         [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]
 #         public delegate IntPtr DeleGetVersion();
 #         public string GetVersion()
 #         {
 #             return Marshal.PtrToStringAnsi((Invoke(_handle, "GetVersion", typeof(DeleGetVersion)) as DeleGetVersion)());
-#         }
-#         public IntPtr GetSystemInfo()
-#         {
-#             return (Invoke(_handle, "GetSystemInfo", typeof(DeleGetSystemInfo)) as DeleGetSystemInfo)();
 #         }
 #
 # trade.h
@@ -69,15 +63,23 @@ g_c_py.run(True, True)
 #
 # trade.cpp
 #
-# ///获取AES加密和RSA加密的终端信息
-# ///@pSystemInfo 出参 空间需要调用者自己分配 至少270个字节
-# ///@nLen 出参 获取到的采集信息的长度
-# ///采集信息内可能含有‘\0’ 建议调用者使用内存复制
-# DLL_EXPORT_C_DECL int WINAPI GetSystemInfo()
+# DLL_EXPORT_C_DECL void* WINAPI GetVersion() { return (void *)CThostFtdcTraderApi::GetApiVersion(); }
+#
+# DLL_EXPORT_C_DECL void* WINAPI RegisterUserSystemInfo(CThostFtdcTraderApi* api, CThostFtdcUserSystemInfoField* pUserSystemInfo)
 # {
 # 	char pinfo[344];
 # 	int nLen;
-# 	return CTP_GetSystemInfo(pinfo, nLen);
+# 	CTP_GetSystemInfo(pinfo, nLen);
+# 	memcpy(pUserSystemInfo->ClientSystemInfo, pinfo, nLen);
+# 	api->RegisterUserSystemInfo(pUserSystemInfo);
+# 	return 0;
 # }
-#
-# DLL_EXPORT_C_DECL void* WINAPI GetVersion() { return (void *)CThostFtdcTraderApi::GetApiVersion(); }
+# DLL_EXPORT_C_DECL void* WINAPI SubmitUserSystemInfo(CThostFtdcTraderApi* api, CThostFtdcUserSystemInfoField* pUserSystemInfo)
+# {
+# 	char pinfo[344];
+# 	int nLen;
+# 	CTP_GetSystemInfo(pinfo, nLen);
+# 	memcpy(pUserSystemInfo->ClientSystemInfo, pinfo, nLen);
+# 	api->SubmitUserSystemInfo(pUserSystemInfo);
+# 	return 0;
+# }

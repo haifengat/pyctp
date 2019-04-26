@@ -11,10 +11,30 @@ namespace HaiFeng
 	{
 		private ConcurrentDictionary<string, MarketData> _ticks = new ConcurrentDictionary<string, MarketData>();
 
-		/// <summary>
-		/// Tick数据
-		/// </summary>
-		public ConcurrentDictionary<string, MarketData> DicTick { get { return _ticks; } }
+        /// <summary>
+        /// 前置地址端口
+        /// </summary>
+        public abstract string FrontAddr { get; set; }
+
+        /// <summary>
+        /// 帐号
+        /// </summary>
+        public abstract string Investor { get; set; }
+
+        /// <summary>
+        /// 密码
+        /// </summary>
+        public abstract string Password { get; set; }
+
+        /// <summary>
+        /// 经纪商代码
+        /// </summary>
+        public abstract string Broker { get; set; }
+
+        /// <summary>
+        /// Tick数据
+        /// </summary>
+        public ConcurrentDictionary<string, MarketData> DicTick { get { return _ticks; } }
 
 		#region 响应
 		/// <summary>
@@ -146,13 +166,13 @@ namespace HaiFeng
 		/// 连接
 		/// </summary>
 		/// <returns></returns>
-		public abstract int ReqConnect(string pFront);
+		public abstract int ReqConnect();
 
 		/// <summary>
 		/// 登录[重连时自动订阅DicTick.Keys中的合约]
 		/// </summary>
 		/// <returns></returns>
-		public abstract int ReqUserLogin(string pInvestor, string pPassword, string pBroker);
+		public abstract int ReqUserLogin();
 
 		/// <summary>
 		/// 是否登录成功

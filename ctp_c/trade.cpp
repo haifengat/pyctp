@@ -269,8 +269,6 @@ DLL_EXPORT_C_DECL void* WINAPI RegisterSpi(CThostFtdcTraderApi *api, CThostFtdcT
 DLL_EXPORT_C_DECL void* WINAPI SubscribePrivateTopic(CThostFtdcTraderApi *api, THOST_TE_RESUME_TYPE nResumeType){api->SubscribePrivateTopic(nResumeType); return 0;}
 DLL_EXPORT_C_DECL void* WINAPI SubscribePublicTopic(CThostFtdcTraderApi *api, THOST_TE_RESUME_TYPE nResumeType){api->SubscribePublicTopic(nResumeType); return 0;}
 DLL_EXPORT_C_DECL void* WINAPI ReqAuthenticate(CThostFtdcTraderApi *api, CThostFtdcReqAuthenticateField *pReqAuthenticateField, int nRequestID){api->ReqAuthenticate(pReqAuthenticateField, nRequestID); return 0;}
-DLL_EXPORT_C_DECL void* WINAPI RegisterUserSystemInfo(CThostFtdcTraderApi *api, CThostFtdcUserSystemInfoField *pUserSystemInfo){api->RegisterUserSystemInfo(pUserSystemInfo); return 0;}
-DLL_EXPORT_C_DECL void* WINAPI SubmitUserSystemInfo(CThostFtdcTraderApi *api, CThostFtdcUserSystemInfoField *pUserSystemInfo){api->SubmitUserSystemInfo(pUserSystemInfo); return 0;}
 DLL_EXPORT_C_DECL void* WINAPI ReqUserLogin(CThostFtdcTraderApi *api, CThostFtdcReqUserLoginField *pReqUserLoginField, int nRequestID){api->ReqUserLogin(pReqUserLoginField, nRequestID); return 0;}
 DLL_EXPORT_C_DECL void* WINAPI ReqUserLogout(CThostFtdcTraderApi *api, CThostFtdcUserLogoutField *pUserLogout, int nRequestID){api->ReqUserLogout(pUserLogout, nRequestID); return 0;}
 DLL_EXPORT_C_DECL void* WINAPI ReqUserPasswordUpdate(CThostFtdcTraderApi *api, CThostFtdcUserPasswordUpdateField *pUserPasswordUpdate, int nRequestID){api->ReqUserPasswordUpdate(pUserPasswordUpdate, nRequestID); return 0;}
@@ -358,11 +356,29 @@ DLL_EXPORT_C_DECL void* WINAPI ReqQueryBankAccountMoneyByFuture(CThostFtdcTrader
 ///@pSystemInfo 出参 空间需要调用者自己分配 至少270个字节
 ///@nLen 出参 获取到的采集信息的长度
 ///采集信息内可能含有‘\0’ 建议调用者使用内存复制
-DLL_EXPORT_C_DECL int WINAPI GetSystemInfo() 
+//DLL_EXPORT_C_DECL int WINAPI GetSystemInfo() 
+//{
+//	char pinfo[344];
+//	int nLen;
+//	return CTP_GetSystemInfo(pinfo, nLen);
+//}
+
+DLL_EXPORT_C_DECL void* WINAPI GetVersion() { return (void *)CThostFtdcTraderApi::GetApiVersion(); }
+DLL_EXPORT_C_DECL void* WINAPI RegisterUserSystemInfo(CThostFtdcTraderApi* api, CThostFtdcUserSystemInfoField* pUserSystemInfo) 
 {
 	char pinfo[344];
 	int nLen;
-	return CTP_GetSystemInfo(pinfo, nLen);
+	CTP_GetSystemInfo(pinfo, nLen);
+	memcpy(pUserSystemInfo->ClientSystemInfo, pinfo, nLen);
+	api->RegisterUserSystemInfo(pUserSystemInfo); 
+	return 0; 
 }
-
-DLL_EXPORT_C_DECL void* WINAPI GetVersion() { return (void *)CThostFtdcTraderApi::GetApiVersion(); }
+DLL_EXPORT_C_DECL void* WINAPI SubmitUserSystemInfo(CThostFtdcTraderApi* api, CThostFtdcUserSystemInfoField* pUserSystemInfo)
+{
+	char pinfo[344];
+	int nLen;
+	CTP_GetSystemInfo(pinfo, nLen);
+	memcpy(pUserSystemInfo->ClientSystemInfo, pinfo, nLen);
+	api->SubmitUserSystemInfo(pUserSystemInfo);
+	return 0; 
+}
