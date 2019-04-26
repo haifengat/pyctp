@@ -13,12 +13,11 @@ using static HaiFeng.ctp_trade;
 
 namespace HaiFeng
 {
-    public class CTPTrade : Trade
+    public abstract class CTPTrade : Trade
     {
         ctp_trade _t = null;
         private int _session = 0;
         private int _front = 0;
-        public string Broker = string.Empty, Investor = string.Empty;
         private Thread _tIsLogin = null;
         private DateTime _rtnOrderTime = DateTime.MinValue, _excTime = DateTime.MinValue;
         private readonly List<CThostFtdcInvestorPositionField> _listPosi = new List<CThostFtdcInvestorPositionField>();
@@ -38,14 +37,47 @@ namespace HaiFeng
             this.SetCallBack();
         }
 
+        /// <summary>
+        /// 前置地址端口
+        /// </summary>
+        public override string FrontAddr { get; set; }
+
+        /// <summary>
+        /// 帐号
+        /// </summary>
+        public override string Investor { get; set; }
+
+        /// <summary>
+        /// 密码
+        /// </summary>
+        public override string Password { get; set; }
+
+        /// <summary>
+        /// 经纪商代码
+        /// </summary>
+        public override string Broker { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string ProductInfo { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string AppID { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string AuthCode { get; set; }
+
         Delegate AddDele(Delegate d) { _listDele.Add(d); return d; }
 
         /// <summary>
         /// 接口版本
         /// </summary>
         public string Version => _t.GetVersion();
-
-
 
         //响应注册
         void SetCallBack()
@@ -69,11 +101,15 @@ namespace HaiFeng
             _t.SetOnRspError((DeleOnRspError)AddDele(new DeleOnRspError(CTPOnRspError)));
             _t.SetOnRspAuthenticate((DeleOnRspAuthenticate)AddDele(new DeleOnRspAuthenticate(CTPOnRspAuth)));
         }
-
-
+        
         private void CTPOnRspAuth(ref CThostFtdcRspAuthenticateField pRspAuthenticateField, ref CThostFtdcRspInfoField pRspInfo, int nRequestID, bool bIsLast)
         {
-            _OnRspAuth?.Invoke(this, new ErrorEventArgs { ErrorID = pRspInfo.ErrorID, ErrorMsg = pRspInfo.ErrorMsg });
+            if (pRspInfo.ErrorID == 0)
+                _t.ReqUserLogin(BrokerID: this.Broker, UserID: this.Investor, Password: this.Password, UserProductInfo: this.ProductInfo);
+            else
+            {
+                _OnRspUserLogin?.Invoke(this, new ErrorEventArgs { ErrorID = pRspInfo.ErrorID, ErrorMsg = $"认证错误:{pRspInfo.ErrorMsg}" });
+            }
         }
 
         private void CTPOnFrontConnected()
@@ -681,22 +717,22 @@ namespace HaiFeng
             return ExchangeStatusType.Closed;
         }
 
-        public override int ReqAuth(string pProductInfo, string pAuthCode, string pAppId)
-        {
-            return (int)_t.ReqAuthenticate(this.Broker, this.Investor, pProductInfo, pAuthCode, pAppId);
-        }
 
-        public override int ReqConnect(string pFront)
+        /// <summary>
+        /// 采用restart模式
+        /// </summary>
+        /// <returns></returns>
+        public override int ReqConnect()
         {
-            _t.RegisterFront(pFront);
+            _t.RegisterFront(this.FrontAddr);
             _t.SubscribePrivateTopic(THOST_TE_RESUME_TYPE.THOST_TERT_RESTART);
             _t.SubscribePublicTopic(THOST_TE_RESUME_TYPE.THOST_TERT_RESTART);
             return (int)_t.Init();
         }
 
-        public override int ReqUserLogin(string pInvestor, string pPassword, string pBroker)
+        public override int ReqUserLogin()
         {
-            return (int)_t.ReqUserLogin(BrokerID: pBroker, UserID: pInvestor, Password: pPassword, UserProductInfo: "@HaiFeng");
+            return (int)_t.ReqAuthenticate(this.Broker, this.Investor, this.ProductInfo, this.AuthCode, this.AppID);
         }
 
         public override void ReqUserLogout()

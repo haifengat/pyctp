@@ -18,22 +18,22 @@ namespace HaiFeng
 
             tt = new TestTrade(inst, price_for_buy)
             {
-                TradeAddr = addr,
+                FrontAddr = addr,
                 Broker = broker,
                 Investor = investor,
-                Pwd = pwd,
+                Password = pwd,
                 AppID = app,
                 AuthCode = code,
-                ProcInfo = proc,
+                ProductInfo = proc,
             };
 
             tt.Run();
             Console.WriteLine("Press any key to continue . . . ");
             Console.ReadKey(true);
 
-            TestQuote tq = new TestQuote(investor, pwd, inst)
+            TestQuote tq = new TestQuote(inst)
             {
-                QuoteAddr = qaddr,
+                FrontAddr = qaddr,
                 Broker = broker,
             };
             tq.Run();

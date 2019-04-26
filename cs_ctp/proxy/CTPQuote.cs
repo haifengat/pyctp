@@ -10,7 +10,7 @@ using static HaiFeng.ctp_quote;
 
 namespace HaiFeng
 {
-	public class CTPQuote : Quote
+	public abstract class CTPQuote : Quote
 	{
 		ctp_quote _q = null;
 		private readonly List<Delegate> _listDele = new List<Delegate>();
@@ -24,7 +24,27 @@ namespace HaiFeng
 			SetCallBack();
 		}
 
-		Delegate AddDele(Delegate d) { _listDele.Add(d); return d; }
+        /// <summary>
+        /// 前置地址端口
+        /// </summary>
+        public override string FrontAddr { get; set; }
+
+        /// <summary>
+        /// 帐号
+        /// </summary>
+        public override string Investor { get; set; }
+
+        /// <summary>
+        /// 密码
+        /// </summary>
+        public override string Password { get; set; }
+
+        /// <summary>
+        /// 经纪商代码
+        /// </summary>
+        public override string Broker { get; set; }
+
+        Delegate AddDele(Delegate d) { _listDele.Add(d); return d; }
 
 		void SetCallBack()
 		{
@@ -157,9 +177,9 @@ namespace HaiFeng
 
 		public override bool IsLogin { get; protected set; }
 
-		public override int ReqConnect(string pFront)
+		public override int ReqConnect()
 		{
-			_q.RegisterFront(pFront);
+			_q.RegisterFront(this.FrontAddr);
 			//_q.Init();
 			return (int)_q.Init();
 			//return (int)_q.Join(); //会造成阻塞
@@ -189,9 +209,9 @@ namespace HaiFeng
 			return (int)_q.UnSubscribeMarketData(insts, pInstrument.Length);
 		}
 
-		public override int ReqUserLogin(string pInvestor, string pPassword, string pBroker)
+		public override int ReqUserLogin()
 		{
-			return (int)_q.ReqUserLogin(BrokerID: pBroker, UserID: pInvestor, Password: pPassword);
+			return (int)_q.ReqUserLogin(BrokerID: this.Broker, UserID: this.Investor, Password: this.Password);
 		}
 
 		public override void ReqUserLogout()
