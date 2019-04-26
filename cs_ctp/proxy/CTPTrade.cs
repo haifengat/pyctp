@@ -18,8 +18,7 @@ namespace HaiFeng
         ctp_trade _t = null;
         private int _session = 0;
         private int _front = 0;
-        private string _broker = string.Empty;
-        private string _investor = string.Empty;
+        public string Broker = string.Empty, Investor = string.Empty;
         private Thread _tIsLogin = null;
         private DateTime _rtnOrderTime = DateTime.MinValue, _excTime = DateTime.MinValue;
         private readonly List<CThostFtdcInvestorPositionField> _listPosi = new List<CThostFtdcInvestorPositionField>();
@@ -41,6 +40,13 @@ namespace HaiFeng
 
         Delegate AddDele(Delegate d) { _listDele.Add(d); return d; }
 
+        /// <summary>
+        /// 接口版本
+        /// </summary>
+        public string Version => _t.GetVersion();
+
+
+
         //响应注册
         void SetCallBack()
         {
@@ -61,6 +67,13 @@ namespace HaiFeng
             _t.SetOnRtnTradingNotice((DeleOnRtnTradingNotice)AddDele(new DeleOnRtnTradingNotice(CTPOnRtnTradingNotice)));
             _t.SetOnRspUserPasswordUpdate((DeleOnRspUserPasswordUpdate)AddDele(new DeleOnRspUserPasswordUpdate(CTPOnRspUserPasswordUpdate)));
             _t.SetOnRspError((DeleOnRspError)AddDele(new DeleOnRspError(CTPOnRspError)));
+            _t.SetOnRspAuthenticate((DeleOnRspAuthenticate)AddDele(new DeleOnRspAuthenticate(CTPOnRspAuth)));
+        }
+
+
+        private void CTPOnRspAuth(ref CThostFtdcRspAuthenticateField pRspAuthenticateField, ref CThostFtdcRspInfoField pRspInfo, int nRequestID, bool bIsLast)
+        {
+            _OnRspAuth?.Invoke(this, new ErrorEventArgs { ErrorID = pRspInfo.ErrorID, ErrorMsg = pRspInfo.ErrorMsg });
         }
 
         private void CTPOnFrontConnected()
@@ -90,14 +103,12 @@ namespace HaiFeng
                 _session = pRspUserLogin.SessionID;
                 _front = pRspUserLogin.FrontID;
                 //_orderref = pRspUserLogin.MaxOrderRef;
-                _broker = pRspUserLogin.BrokerID;
-                _investor = pRspUserLogin.UserID;
 
-                _t.ReqSettlementInfoConfirm(_broker, _investor);
+                _t.ReqSettlementInfoConfirm(this.Broker, this.Investor);
             }
             else
             {
-                _OnRspUserLogin?.Invoke(this, new IntEventArgs { Value = pRspInfo.ErrorID });
+                _OnRspUserLogin?.Invoke(this, new ErrorEventArgs { ErrorID = pRspInfo.ErrorID, ErrorMsg = pRspInfo.ErrorMsg });
             }
         }
 
@@ -280,7 +291,7 @@ namespace HaiFeng
                 _t.ReqQryTradingAccount();
             Thread.Sleep(1100);
             IsLogin = true;
-            _OnRspUserLogin?.Invoke(this, new IntEventArgs { Value = 0 });
+            _OnRspUserLogin?.Invoke(this, new ErrorEventArgs { ErrorID = 0, ErrorMsg = "正确" });
 
             while (IsLogin)
             {
@@ -670,9 +681,9 @@ namespace HaiFeng
             return ExchangeStatusType.Closed;
         }
 
-        public override int ReqAuth(string pProductInfo, string pAuthCode)
+        public override int ReqAuth(string pProductInfo, string pAuthCode, string pAppId)
         {
-            return (int)_t.ReqAuthenticate(_broker, _investor, pProductInfo, pAuthCode);
+            return (int)_t.ReqAuthenticate(this.Broker, this.Investor, pProductInfo, pAuthCode, pAppId);
         }
 
         public override int ReqConnect(string pFront)
@@ -712,7 +723,7 @@ namespace HaiFeng
                 return -1;
             }
 
-            return (int)_t.ReqOrderAction(_broker, _investor, InstrumentID: of.InstrumentID,
+            return (int)_t.ReqOrderAction(this.Broker, this.Investor, InstrumentID: of.InstrumentID,
                 OrderRef: pOrderId.Split('|')[2],
                 FrontID: int.Parse(pOrderId.Split('|')[1]),
                 SessionID: int.Parse(pOrderId.Split('|')[0]),
@@ -744,7 +755,7 @@ namespace HaiFeng
                 VolumeCondition = TThostFtdcVolumeConditionType.THOST_FTDC_VC_CV; //全部数量
             }
 
-            return (int)_t.ReqOrderInsert(_broker, _investor, InstrumentID: pInstrument,
+            return (int)_t.ReqOrderInsert(this.Broker, this.Investor, InstrumentID: pInstrument,
                 OrderRef: string.Format("{0:000000}{1:000000}", _ref++, pCustom % 1000000),
                 CombHedgeFlag: new string((char)(pHedge == HedgeType.Speculation ? TThostFtdcHedgeFlagType.THOST_FTDC_HF_Speculation : pHedge == HedgeType.Arbitrage ? TThostFtdcHedgeFlagType.THOST_FTDC_HF_Arbitrage : TThostFtdcHedgeFlagType.THOST_FTDC_HF_Hedge), 1),
                 CombOffsetFlag: new String((char)(pOffset == OffsetType.Open ? TThostFtdcOffsetFlagType.THOST_FTDC_OF_Open : pOffset == OffsetType.Close ? TThostFtdcOffsetFlagType.THOST_FTDC_OF_Close : TThostFtdcOffsetFlagType.THOST_FTDC_OF_CloseToday), 1),
@@ -763,7 +774,7 @@ namespace HaiFeng
 
         public override int ReqUserPasswordUpdate(string pOldPassword, string pNewPassword)
         {
-            return (int)_t.ReqUserPasswordUpdate(_broker, _investor, pOldPassword, pNewPassword);
+            return (int)_t.ReqUserPasswordUpdate(this.Broker, this.Investor, pOldPassword, pNewPassword);
         }
     }
 }

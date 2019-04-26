@@ -6,35 +6,43 @@ using System.Threading.Tasks;
 
 namespace HaiFeng
 {
-	class Program
-	{
-		static void Main(string[] args)
-		{
-			// investor, pwd, instrument, price for buy
-			TestTrade tt = null;
-			string investor = "008107", pwd = "1", inst = "rb1905";
-			double price_for_buy = 3400;
-			if (args.Length == 4)
-			{
-				investor = args[0];
-				pwd = args[1];
-				inst = args[2];
-				price_for_buy = double.Parse(args[3]);
-			}
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // investor, pwd, instrument, price for buy
+            TestTrade tt = null;
+            string addr = "tcp://180.168.146.187:13030", broker = "9999", investor = "141532", pwd = "topview168", inst = "rb1909", app = "8633078969", code = "0000000000000000", proc = "";
+            string qaddr = "tcp://180.168.146.187:13040";
+            double price_for_buy = 3900;
 
-			tt = new TestTrade(investor, pwd, inst, price_for_buy);
-			tt.Run();
-			Console.WriteLine("Press any key to continue . . . ");
-			Console.ReadKey(true);
+            tt = new TestTrade(inst, price_for_buy)
+            {
+                TradeAddr = addr,
+                Broker = broker,
+                Investor = investor,
+                Pwd = pwd,
+                AppID = app,
+                AuthCode = code,
+                ProcInfo = proc,
+            };
 
-			TestQuote tq = new TestQuote(investor, pwd, inst);
-			tq.Run();
-			Console.WriteLine("Press any key to continue . . . ");
-			Console.ReadKey(true);
+            tt.Run();
+            Console.WriteLine("Press any key to continue . . . ");
+            Console.ReadKey(true);
 
-			tt.Release();
-			tq.Release();
-			Console.ReadKey(true);
+            TestQuote tq = new TestQuote(investor, pwd, inst)
+            {
+                QuoteAddr = qaddr,
+                Broker = broker,
+            };
+            tq.Run();
+            Console.WriteLine("Press any key to continue . . . ");
+            Console.ReadKey(true);
+
+            tt.Release();
+            tq.Release();
+            Console.ReadKey(true);
         }
-	}
+    }
 }

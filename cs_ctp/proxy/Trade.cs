@@ -78,7 +78,14 @@ namespace HaiFeng
 		/// <returns></returns>
 		public abstract void ReqUserLogout();
 
-		public abstract int ReqAuth(string pProductInfo, string pAuthCode);
+        /// <summary>
+        /// 认证
+        /// </summary>
+        /// <param name="pProductInfo"></param>
+        /// <param name="pAuthCode"></param>
+        /// <param name="pAppID"></param>
+        /// <returns></returns>
+		public abstract int ReqAuth(string pProductInfo, string pAuthCode, string pAppID);
 
 
 		/// <summary>
@@ -123,13 +130,29 @@ namespace HaiFeng
 		public abstract ExchangeStatusType GetInstrumentStatus(string pExc);
 
 
-		#region 注册响应
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		public delegate void FrontConnected(object sender, EventArgs e);
+        public delegate void RspAuth(object sender, ErrorEventArgs e);
+        internal RspAuth _OnRspAuth;
+
+        public event RspAuth OnRspAuth
+        {
+            add
+            {
+                _OnRspAuth += value;
+            }
+            remove
+            {
+                _OnRspAuth -= value;
+            }
+        }
+
+
+        #region 注册响应
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public delegate void FrontConnected(object sender, EventArgs e);
 
 		internal FrontConnected _OnFrontConnected;
 
@@ -153,7 +176,7 @@ namespace HaiFeng
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		public delegate void RspUserLogin(object sender, IntEventArgs e);
+		public delegate void RspUserLogin(object sender, ErrorEventArgs e);
 
 		internal RspUserLogin _OnRspUserLogin;
 

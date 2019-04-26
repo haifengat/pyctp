@@ -19,16 +19,30 @@ namespace HaiFeng
             t.SetOnFrontConnected(t_connected);
             t.SetOnRspUserLogin(t_login);
             t.SetOnRtnTradingNotice(t_notice);
+            t.SetOnRspAuthenticate(t_auth);
 
             q.SetOnFrontConnected(connected);
             q.SetOnRspUserLogin(login);
 
-            t.RegisterFront("tcp://180.168.146.187:10000");
-            q.RegisterFront("tcp://180.168.146.187:10010");
+            t.RegisterFront("tcp://180.168.146.187:13030");
+            q.RegisterFront("tcp://180.168.146.187:13040");
+
+            //t.ReqUserAuthMethod
+            int r = (int)t.GetSystemInfo();
+            Console.WriteLine(r);
+            string v = t.GetVersion();
+            Console.WriteLine(v);
+            t.SubscribePrivateTopic(THOST_TE_RESUME_TYPE.THOST_TERT_QUICK);
+            t.SubscribePublicTopic(THOST_TE_RESUME_TYPE.THOST_TERT_QUICK);
 
             t.Init();
             q.Init();
             Console.ReadLine();
+        }
+
+        private static void t_auth(ref CThostFtdcRspAuthenticateField pRspAuthenticateField, ref CThostFtdcRspInfoField pRspInfo, int nRequestID, bool bIsLast)
+        {
+            Console.WriteLine(pRspInfo.ErrorMsg);
         }
 
         private static void t_notice(ref CThostFtdcTradingNoticeInfoField pTradingNoticeInfo)
@@ -39,12 +53,13 @@ namespace HaiFeng
         private static void t_login(ref CThostFtdcRspUserLoginField pRspUserLogin, ref CThostFtdcRspInfoField pRspInfo, int nRequestID, bool bIsLast)
         {
             Console.WriteLine("t:" + pRspInfo.ErrorMsg);
+            t.ReqAuthenticate("9999", "141532", "client", "0000000000000000", "8633078969");
         }
 
         private static void t_connected()
         {
             Console.WriteLine("t:connected");
-            t.ReqUserLogin(BrokerID: "9999", UserID: "008107", Password: "1");
+            t.ReqUserLogin(BrokerID: "9999", UserID: "141532", Password: "topview168");
         }
 
         private static void login(ref CThostFtdcRspUserLoginField pRspUserLogin, ref CThostFtdcRspInfoField pRspInfo, int nRequestID, bool bIsLast)
