@@ -88,6 +88,7 @@ namespace HaiFeng
 			_spi = (Invoke(_handle, "CreateSpi", typeof(Create)) as Create)();
 			this.RegisterSpi(_spi);
 		}
+
         #region SE版本增加
         [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]
         public delegate IntPtr DeleGetVersion();
@@ -96,8 +97,7 @@ namespace HaiFeng
             return Marshal.PtrToStringAnsi((Invoke(_handle, "GetVersion", typeof(DeleGetVersion)) as DeleGetVersion)());
         }
         #endregion
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]
 		public delegate IntPtr DeleRelease(IntPtr api);
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]
 		public delegate IntPtr DeleInit(IntPtr api);

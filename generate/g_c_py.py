@@ -94,18 +94,25 @@ def run(generate_c: bool, generate_py: bool, generate_cs: bool = True):
 #endif
 
 #ifdef _WINDOWS
-#ifdef WIN32
-#define WINAPI      __cdecl
-#else
-#define WINAPI      __stdcall
-#endif
 #define WIN32_LEAN_AND_MEAN             //  从 Windows 头文件中排除极少使用的信息
 #include "stddef.h"
+#ifdef WIN32
+#define WINAPI      __cdecl
 #include "{src_dir}/{file_src}.h"
 #pragma comment(lib, "{src_dir}/{lib_name}.lib")
+#include "{src_dir}/DataCollect.h"
+#pragma comment(lib, "{src_dir}/WinDataCollect.lib")
+#else
+#define WINAPI      __stdcall
+#include "{src_dir}/{file_src}.h"
+#pragma comment(lib, "{src_dir}/{lib_name}.lib")
+#include "{src_dir}/DataCollect.h"
+#pragma comment(lib, "{src_dir}/WinDataCollect.lib")
+#endif
 #else
 #define WINAPI
 #include "{src_dir}/{file_src}.h"
+#include "{src_dir}/DataCollect.h"
 #endif
 
 #include <string.h>
@@ -273,6 +280,16 @@ namespace HaiFeng
 			this.RegisterSpi(_spi);
 		}}
 ''')
+                if spi_class_name.lower().endswith('trade'):
+                    f_cs.write('''
+        #region SE版本增加
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]
+        public delegate IntPtr DeleGetVersion();
+        public string GetVersion()
+        {
+            return Marshal.PtrToStringAnsi((Invoke(_handle, "GetVersion", typeof(DeleGetVersion)) as DeleGetVersion)());
+        }
+        #endregion\n''')
         else:
             g_on = re.search(r'virtual void\s*On(\w+)[(](.*)[)]', line)  # virtual void RegisterFront(char *pszFrontAddress) = 0;
             if g_on is not None:
@@ -507,7 +524,8 @@ namespace HaiFeng
     def {req_name}(self{py_params}):{py_params_stru}
         self.h.{req_name}(self.api{py_params_name})''')
 
-                    cpp_req.append(f'DLL_EXPORT_C_DECL void* WINAPI {req_name}({api_class_name} *api{req_params}){{api->{req_name}({req_params_name}); return 0;}}')
+                    if not req_name.endswith('UserSystemInfo'):
+                        cpp_req.append(f'DLL_EXPORT_C_DECL void* WINAPI {req_name}({api_class_name} *api{req_params}){{api->{req_name}({req_params_name}); return 0;}}')
                     def_req.append(req_name)
 
     if generate_c:
@@ -520,6 +538,28 @@ namespace HaiFeng
         f_c_cpp.write('\n'.join(cpp_set))
         f_c_cpp.write(f'''\n\nDLL_EXPORT_C_DECL void* WINAPI CreateApi(){{return {create_api}("./log/");}}\nDLL_EXPORT_C_DECL void* WINAPI CreateSpi(){{return new {spi_class_name.title()}();}}\n''')
         f_c_cpp.write('\n'.join(cpp_req))
+        if spi_class_name.lower().endswith('trade'):
+            f_c_cpp.write('''\n// SE版本
+DLL_EXPORT_C_DECL void* WINAPI GetVersion() { return (void *)CThostFtdcTraderApi::GetApiVersion(); }
+
+DLL_EXPORT_C_DECL void* WINAPI RegisterUserSystemInfo(CThostFtdcTraderApi* api, CThostFtdcUserSystemInfoField* pUserSystemInfo)
+{
+	char pinfo[344];
+	int nLen;
+	CTP_GetSystemInfo(pinfo, nLen);
+	memcpy(pUserSystemInfo->ClientSystemInfo, pinfo, nLen);
+	api->RegisterUserSystemInfo(pUserSystemInfo);
+	return 0;
+}
+DLL_EXPORT_C_DECL void* WINAPI SubmitUserSystemInfo(CThostFtdcTraderApi* api, CThostFtdcUserSystemInfoField* pUserSystemInfo)
+{
+	char pinfo[344];
+	int nLen;
+	CTP_GetSystemInfo(pinfo, nLen);
+	memcpy(pUserSystemInfo->ClientSystemInfo, pinfo, nLen);
+	api->SubmitUserSystemInfo(pUserSystemInfo);
+	return 0;
+}''')
         # f_c_def.write('LIBRARY ctp_trade\nEXPORTS\nCreateApi\nCreateSpi\n')
         # f_c_def.write('\n'.join(def_req))
         # f_c_def.write('\n')

@@ -350,28 +350,17 @@ DLL_EXPORT_C_DECL void* WINAPI ReqQueryCFMMCTradingAccountToken(CThostFtdcTrader
 DLL_EXPORT_C_DECL void* WINAPI ReqFromBankToFutureByFuture(CThostFtdcTraderApi *api, CThostFtdcReqTransferField *pReqTransfer, int nRequestID){api->ReqFromBankToFutureByFuture(pReqTransfer, nRequestID); return 0;}
 DLL_EXPORT_C_DECL void* WINAPI ReqFromFutureToBankByFuture(CThostFtdcTraderApi *api, CThostFtdcReqTransferField *pReqTransfer, int nRequestID){api->ReqFromFutureToBankByFuture(pReqTransfer, nRequestID); return 0;}
 DLL_EXPORT_C_DECL void* WINAPI ReqQueryBankAccountMoneyByFuture(CThostFtdcTraderApi *api, CThostFtdcReqQueryAccountField *pReqQueryAccount, int nRequestID){api->ReqQueryBankAccountMoneyByFuture(pReqQueryAccount, nRequestID); return 0;}
-
-
-///获取AES加密和RSA加密的终端信息 
-///@pSystemInfo 出参 空间需要调用者自己分配 至少270个字节
-///@nLen 出参 获取到的采集信息的长度
-///采集信息内可能含有‘\0’ 建议调用者使用内存复制
-//DLL_EXPORT_C_DECL int WINAPI GetSystemInfo() 
-//{
-//	char pinfo[344];
-//	int nLen;
-//	return CTP_GetSystemInfo(pinfo, nLen);
-//}
-
+// SE鐗堟湰
 DLL_EXPORT_C_DECL void* WINAPI GetVersion() { return (void *)CThostFtdcTraderApi::GetApiVersion(); }
-DLL_EXPORT_C_DECL void* WINAPI RegisterUserSystemInfo(CThostFtdcTraderApi* api, CThostFtdcUserSystemInfoField* pUserSystemInfo) 
+
+DLL_EXPORT_C_DECL void* WINAPI RegisterUserSystemInfo(CThostFtdcTraderApi* api, CThostFtdcUserSystemInfoField* pUserSystemInfo)
 {
 	char pinfo[344];
 	int nLen;
 	CTP_GetSystemInfo(pinfo, nLen);
 	memcpy(pUserSystemInfo->ClientSystemInfo, pinfo, nLen);
-	api->RegisterUserSystemInfo(pUserSystemInfo); 
-	return 0; 
+	api->RegisterUserSystemInfo(pUserSystemInfo);
+	return 0;
 }
 DLL_EXPORT_C_DECL void* WINAPI SubmitUserSystemInfo(CThostFtdcTraderApi* api, CThostFtdcUserSystemInfoField* pUserSystemInfo)
 {
@@ -380,5 +369,5 @@ DLL_EXPORT_C_DECL void* WINAPI SubmitUserSystemInfo(CThostFtdcTraderApi* api, CT
 	CTP_GetSystemInfo(pinfo, nLen);
 	memcpy(pUserSystemInfo->ClientSystemInfo, pinfo, nLen);
 	api->SubmitUserSystemInfo(pUserSystemInfo);
-	return 0; 
+	return 0;
 }

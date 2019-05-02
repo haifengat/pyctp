@@ -13,7 +13,7 @@ import time
 class TestTrade(object):
     def __init__(self):
         self.t = CtpTrade()
-        self.t.OnConnected = lambda x: self.t.ReqUserLogin('008107', '1', '9999')
+        self.t.OnConnected = lambda x: self.t.ReqUserLogin('', '', '9999', '', '', '')
         self.t.OnUserLogin = lambda o, x: print(x)
         self.t.OnDisConnected = lambda o, x: print(x)
         self.t.OnRtnNotice = lambda obj, time, msg: print(f'OnNotice: {time}:{msg}')
@@ -25,7 +25,7 @@ class TestTrade(object):
         self.t.OnInstrumentStatus = lambda obj, inst, stat: None
 
     def run(self):
-        self.t.ReqConnect('tcp://180.168.146.187:10000')
+        self.t.ReqConnect('tcp://180.168.146.187:13030')
         # self.t.ReqConnect('tcp://192.168.52.4:41205')
 
     def release(self):

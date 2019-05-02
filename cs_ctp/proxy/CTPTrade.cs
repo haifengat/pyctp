@@ -126,9 +126,9 @@ namespace HaiFeng
                         _t.SubmitUserSystemInfo(this.Broker, this.Investor, 1, "", this.IP, this.Port, DateTime.Now.ToString("HH:mm:ss"), this.AppID);
                         break;
                     default:
-                        _t.ReqUserLogin(BrokerID: this.Broker, UserID: this.Investor, Password: this.Password, UserProductInfo: this.ProductInfo);
                         break;
                 }
+                _t.ReqUserLogin(BrokerID: this.Broker, UserID: this.Investor, Password: this.Password, UserProductInfo: this.ProductInfo);
             }
             else
             {

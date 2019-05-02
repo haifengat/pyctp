@@ -18,10 +18,10 @@
 #include "stddef.h"
 #ifdef WIN32
 #define WINAPI      __cdecl
-#include "../ctp_20190220_se_x86/ThostFtdcTraderApi.h"
-#pragma comment(lib, "../ctp_20190220_se_x86/thosttraderapi_se.lib")
-#include "../ctp_20190220_se_x86/DataCollect.h"
-#pragma comment(lib, "../ctp_20190220_se_x86/WinDataCollect.lib")
+#include "../ctp_20190220_se_x64/ThostFtdcTraderApi.h"
+#pragma comment(lib, "../ctp_20190220_se_x64/thosttraderapi_se.lib")
+#include "../ctp_20190220_se_x64/DataCollect.h"
+#pragma comment(lib, "../ctp_20190220_se_x64/WinDataCollect.lib")
 #else
 #define WINAPI      __stdcall
 #include "../ctp_20190220_se_x64/ThostFtdcTraderApi.h"
@@ -32,6 +32,7 @@
 #else
 #define WINAPI
 #include "../ctp_20190220_se_x64/ThostFtdcTraderApi.h"
+#include "../ctp_20190220_se_x64/DataCollect.h"
 #endif
 
 #include <string.h>
