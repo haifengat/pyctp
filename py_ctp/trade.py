@@ -15,8 +15,8 @@ import platform
 from .enums import OrderType, InstrumentStatus, DirectType, OffsetType, HedgeType, TradeTypeType
 from .structs import InfoField, InstrumentField, OrderField, OrderStatus, PositionField, TradeField, TradingAccount, PositionDetail
 from .ctp_trade import Trade
-from .ctp_struct import CThostFtdcInputOrderActionField, CThostFtdcInputOrderField, CThostFtdcInstrumentField, CThostFtdcInstrumentStatusField, CThostFtdcInvestorPositionField, CThostFtdcOrderField, CThostFtdcRspInfoField, CThostFtdcRspUserLoginField, CThostFtdcSettlementInfoConfirmField, CThostFtdcTradingAccountField, CThostFtdcTradingNoticeInfoField, CThostFtdcQuoteField, CThostFtdcInputQuoteField, CThostFtdcInputForQuoteField, CThostFtdcInvestorPositionDetailField
-from .ctp_enum import TThostFtdcActionFlagType, TThostFtdcContingentConditionType, TThostFtdcDirectionType, TThostFtdcOffsetFlagType, TThostFtdcForceCloseReasonType, TThostFtdcHedgeFlagType, TThostFtdcOrderPriceTypeType, TThostFtdcPosiDirectionType, TThostFtdcTimeConditionType, TThostFtdcVolumeConditionType, TThostFtdcOrderStatusType, TThostFtdcInstrumentStatusType, TThostFtdcTradeTypeType
+from .ctp_struct import CThostFtdcInputOrderActionField, CThostFtdcInputOrderField, CThostFtdcInstrumentField, CThostFtdcInstrumentStatusField, CThostFtdcInvestorPositionField, CThostFtdcOrderField, CThostFtdcRspInfoField, CThostFtdcRspUserLoginField, CThostFtdcSettlementInfoConfirmField, CThostFtdcTradingAccountField, CThostFtdcTradingNoticeInfoField, CThostFtdcQuoteField, CThostFtdcInputQuoteField, CThostFtdcInputForQuoteField, CThostFtdcInvestorPositionDetailField, CThostFtdcRspAuthenticateField
+from .ctp_enum import TThostFtdcActionFlagType, TThostFtdcContingentConditionType, TThostFtdcDirectionType, TThostFtdcOffsetFlagType, TThostFtdcForceCloseReasonType, TThostFtdcHedgeFlagType, TThostFtdcOrderPriceTypeType, TThostFtdcPosiDirectionType, TThostFtdcTimeConditionType, TThostFtdcVolumeConditionType, TThostFtdcOrderStatusType, TThostFtdcInstrumentStatusType, TThostFtdcTradeTypeType, TThostFtdcAppTypeType
 
 
 class CtpTrade():
@@ -27,6 +27,10 @@ class CtpTrade():
         self.investor = ''
         self.password = ''
         self.broker = ''
+        self.pub_ip = ''
+        '''公网IP'''
+        self.port = ''
+        '''公网端口'''
         self.logined = False
         self.tradingday = ''
 
@@ -65,6 +69,19 @@ class CtpTrade():
 
     # def _OnRspUserLogout(self, pUserLogout: CThostFtdcUserLogoutField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
     #     pass
+
+    def _OnRspAuthenticate(self, pRspAuthenticateField: CThostFtdcRspAuthenticateField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
+        if pRspInfo.getErrorID() == 0:
+            if pRspAuthenticateField.getAppType() == TThostFtdcAppTypeType.THOST_FTDC_APP_TYPE_InvestorRelay:
+                self.t.RegisterUserSystemInfo(self.broker, self.investor, 0, '', self.pub_ip, self.port, time.strftime('%H:%M:%S', time.localtime()))
+            elif pRspAuthenticateField.getAppType() == TThostFtdcAppTypeType.THOST_FTDC_APP_TYPE_OperatorRelay:
+                self.t.SubmitUserSystemInfo(self.broker, self.investor, 0, '', self.pub_ip, self.port, time.strftime('%H:%M:%S', time.localtime()))
+            self.t.ReqUserLogin(BrokerID=self.broker, UserID=self.investor, Password=self.password, UserProductInfo=pRspAuthenticateField.getUserProductInfo())
+        else:
+            info = InfoField()
+            info.ErrorID = pRspInfo.getErrorID()
+            info.ErrorMsg = f'认证错误:{pRspInfo.getErrorMsg()}'
+            threading.Thread(target=self.OnUserLogin, args=(self, info)).start()
 
     def _OnRspUserLogin(self, pRspUserLogin: CThostFtdcRspUserLoginField(), pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
         """"""
@@ -413,6 +430,7 @@ class CtpTrade():
 
         self.t.OnFrontConnected = self._OnFrontConnected
         self.t.OnRspUserLogin = self._OnRspUserLogin
+        self.t.OnRspAuthenticate = self._OnRspAuthenticate
         self.t.OnFrontDisconnected = self._OnFrontDisconnected
         # self.t.OnRspUserLogout = self._OnRspUserLogout
         self.t.OnRspSettlementInfoConfirm = self._OnRspSettlementInfoConfirm
@@ -439,7 +457,7 @@ class CtpTrade():
         self.t.Init()
         # self.t.Join()
 
-    def ReqUserLogin(self, user: str, pwd: str, broker: str):
+    def ReqUserLogin(self, user: str, pwd: str, broker: str, proc_info: str, appid: str, auth_code: str):
         """登录
 
         :param user:
@@ -449,7 +467,7 @@ class CtpTrade():
         self.broker = broker
         self.investor = user
         self.password = pwd
-        self.t.ReqUserLogin(BrokerID=broker, UserID=user, Password=pwd)
+        self.t.ReqAuthenticate(broker, user, proc_info, auth_code, appid)
 
     def ReqOrderInsert(self, pInstrument: str, pDirection: DirectType, pOffset: OffsetType, pPrice: float = 0.0, pVolume: int = 1, pType: OrderType = OrderType.Limit, pCustom: int = 0):
         """委托
