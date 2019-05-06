@@ -159,7 +159,7 @@ class Test:
         # _thread.start_new_thread(self.Qry, ())
         self.t.RegCB()
 
-        self.frontAddr = 'tcp://180.168.146.187:10000,tcp://180.168.146.187:10010'
+        self.frontAddr = 'tcp://180.168.146.187:13030,tcp://180.168.146.187:13040'
         self.broker = '9999'
         self.investor = '008107'
         self.pwd = '1'
@@ -167,6 +167,7 @@ class Test:
         self.t.SubscribePrivateTopic(nResumeType=2)  # quick
         self.t.SubscribePrivateTopic(nResumeType=2)
         self.t.Init()
+        print("aaa")
         # self.t.Join()
 
 
