@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-__title__ = ''
+__title__ = 'test py ctp of se'
 __author__ = 'HaiFeng'
-__mtime__ = ''
+__mtime__ = '20190506'
 
 from py_ctp.trade import CtpTrade
 from py_ctp.quote import CtpQuote
@@ -22,7 +22,7 @@ class TestTrade(object):
 
         self.t = CtpTrade()
         self.t.OnConnected = self.on_connect
-        self.t.OnUserLogin = lambda o, x: print(x)
+        self.t.OnUserLogin = lambda o, x: print('Trade logon:', x)
         self.t.OnDisConnected = lambda o, x: print(x)
         self.t.OnRtnNotice = lambda obj, time, msg: print(f'OnNotice: {time}:{msg}')
         self.t.OnErrRtnQuote = lambda obj, quote, info: None
@@ -65,10 +65,10 @@ class TestQuote(object):
 
 
 if __name__ == "__main__":
-    front_trade = 'tcp://180.168.146.187:13030'
-    front_quote = 'tcp://180.168.146.187:13040'
-    broker = '9999'
-    investor = '8'
+    front_trade = ''
+    front_quote = ''
+    broker = ''
+    investor = ''
     pwd = ''
     appid = ''
     auth_code = ''

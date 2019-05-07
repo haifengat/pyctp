@@ -1,4 +1,4 @@
-#include "Trade.h"
+#include "trade.h"
 #include <string.h>
 int nReq;
 

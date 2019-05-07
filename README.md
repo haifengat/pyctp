@@ -20,12 +20,12 @@
         * 复制 ctp_20180109\\*.so到dll目录下
         * 复制 py_ctp\\*.py到py_ctp目录下
         * 进入dll目录，执行以下指令
-            * g++ -shared -fPIC ./trade.cpp -o ./ctp_trade.so ./thosttraderapi.so
-            * g++ -shared -fPIC ./quote.cpp -o ./ctp_quote.so ./thostmduserapi.so
+            * g++ -shared -fPIC ./trade.cpp -o ./ctp_trade.so ./thosttraderapi_se.so ./LinuxDataCollect.so
+            * g++ -shared -fPIC ./quote.cpp -o ./ctp_quote.so ./thostmduserapi_se.so
 * 测试
     * Python
         * 安装 `pip install py_ctp`
-        * 运行 `python py_ctp\test_api.py`
+        * 测试代码 https://pypi.org/project/py-ctp/
     * C#
         * `copy cs_ctp\*.cs cs_ctp\ctp_test\`
         * 打开cs_ctp\ctp_test 项目进行调试

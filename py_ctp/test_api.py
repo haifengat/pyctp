@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 from time import sleep
 import _thread
-from py_ctp.ctp_trade import Trade
-from py_ctp.ctp_quote import Quote
-import py_ctp.ctp_struct as ctp
+from .ctp_trade import Trade
+from .ctp_quote import Quote
+from .ctp_struct import *
+
 """
 __title__ = ''
 __author__ = 'HaiFeng'
@@ -13,28 +14,30 @@ __mtime__ = '2016/9/13'
 import sys
 import os
 import platform
+
 os.chdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+
 
 class Test:
 
     def __init__(self):
+        self.front_addr = self.investor = self.pwd = self.broker = self.product_info = self.app_id = self.auth_code = ''
         self.Session = ''
         self.q = Quote()
         self.t = Trade()
         self.req = 0
         self.ordered = False
-        self.needAuth = False
         self.RelogEnable = True
 
     def q_OnFrontConnected(self):
         print('connected')
         self.q.ReqUserLogin(BrokerID=self.broker, UserID=self.investor, Password=self.pwd)
 
-    def q_OnRspUserLogin(self, rsp: ctp.CThostFtdcRspUserLoginField, info: ctp.CThostFtdcRspInfoField, req: int, last: bool):
+    def q_OnRspUserLogin(self, rsp: CThostFtdcRspUserLoginField, info: CThostFtdcRspInfoField, req: int, last: bool):
         print(info.__str__)
         self.q.SubscribeMarketData('rb1905')
 
-    def q_OnTick(self, tick: ctp.CThostFtdcMarketDataField):
+    def q_OnTick(self, tick: CThostFtdcMarketDataField):
         f = tick
         # print(tick)
 
@@ -42,7 +45,7 @@ class Test:
             _thread.start_new_thread(self.Order, (f,))
             self.ordered = True
 
-    def Order(self, f: ctp.CThostFtdcMarketDataField):
+    def Order(self, f: CThostFtdcMarketDataField):
         print("报单")
         self.req += 1
         self.t.ReqOrderInsert(
@@ -51,19 +54,19 @@ class Test:
             InstrumentID=f.getInstrumentID(),
             OrderRef='{0:>12}'.format(self.req),
             UserID=self.investor,
-            OrderPriceType=ctp.TThostFtdcOrderPriceTypeType.THOST_FTDC_OPT_LimitPrice,
-            Direction=ctp.TThostFtdcDirectionType.THOST_FTDC_D_Buy,
-            CombOffsetFlag=chr(ctp.TThostFtdcOffsetFlagType.THOST_FTDC_OF_Open.value),
-            CombHedgeFlag=chr(ctp.TThostFtdcHedgeFlagType.THOST_FTDC_HF_Speculation.value),
+            OrderPriceType=TThostFtdcOrderPriceTypeType.THOST_FTDC_OPT_LimitPrice,
+            Direction=TThostFtdcDirectionType.THOST_FTDC_D_Buy,
+            CombOffsetFlag=chr(TThostFtdcOffsetFlagType.THOST_FTDC_OF_Open.value),
+            CombHedgeFlag=chr(TThostFtdcHedgeFlagType.THOST_FTDC_HF_Speculation.value),
             LimitPrice=f.getLastPrice() - 50,
             VolumeTotalOriginal=1,
-            TimeCondition=ctp.TThostFtdcTimeConditionType.THOST_FTDC_TC_GFD,
+            TimeCondition=TThostFtdcTimeConditionType.THOST_FTDC_TC_GFD,
             # GTDDate=''
-            VolumeCondition=ctp.TThostFtdcVolumeConditionType.THOST_FTDC_VC_AV,
+            VolumeCondition=TThostFtdcVolumeConditionType.THOST_FTDC_VC_AV,
             MinVolume=1,
-            ContingentCondition=ctp.TThostFtdcContingentConditionType.THOST_FTDC_CC_Immediately,
+            ContingentCondition=TThostFtdcContingentConditionType.THOST_FTDC_CC_Immediately,
             StopPrice=0,
-            ForceCloseReason=ctp.TThostFtdcForceCloseReasonType.THOST_FTDC_FCC_NotForceClose,
+            ForceCloseReason=TThostFtdcForceCloseReasonType.THOST_FTDC_FCC_NotForceClose,
             IsAutoSuspend=0,
             IsSwapOrder=0,
             UserForceClose=0)
@@ -72,19 +75,16 @@ class Test:
         if not self.RelogEnable:
             return
         print('connected')
-        if self.needAuth:
-            self.t.ReqAuthenticate(self.broker, self.investor, '@haifeng', '8MTL59FK1QGLKQW2')
-        else:
-            self.t.ReqUserLogin(BrokerID=self.broker, UserID=self.investor, Password=self.pwd, UserProductInfo='@haifeng')
+        self.t.ReqAuthenticate(self.broker, self.investor, self.product_info, self.app_id, self.auth_code)
 
     def OnFrontDisconnected(self, reason: int):
         print(reason)
 
-    def OnRspAuthenticate(self, pRspAuthenticateField: ctp.CThostFtdcRspAuthenticateField, pRspInfo: ctp.CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
+    def OnRspAuthenticate(self, pRspAuthenticateField: CThostFtdcRspAuthenticateField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
         print('auth：{0}:{1}'.format(pRspInfo.getErrorID(), pRspInfo.getErrorMsg()))
         self.t.ReqUserLogin(BrokerID=self.broker, UserID=self.investor, Password=self.pwd, UserProductInfo='@haifeng')
 
-    def OnRspUserLogin(self, rsp: ctp.CThostFtdcRspUserLoginField, info: ctp.CThostFtdcRspInfoField, req: int, last: bool):
+    def OnRspUserLogin(self, rsp: CThostFtdcRspUserLoginField, info: CThostFtdcRspInfoField, req: int, last: bool):
         print(info.getErrorMsg())
 
         if info.getErrorID() == 0:
@@ -93,7 +93,7 @@ class Test:
         else:
             self.RelogEnable = False
 
-    def OnRspSettlementInfoConfirm(self, pSettlementInfoConfirm: ctp.CThostFtdcSettlementInfoConfirmField, pRspInfo: ctp.CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
+    def OnRspSettlementInfoConfirm(self, pSettlementInfoConfirm: CThostFtdcSettlementInfoConfirmField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
         # print(pSettlementInfoConfirm)
         _thread.start_new_thread(self.StartQuote, ())
 
@@ -108,7 +108,7 @@ class Test:
 
         self.q.RegCB()
 
-        self.q.RegisterFront(self.frontAddr.split(',')[1])
+        self.q.RegisterFront(self.front_addr.split(',')[1])
         self.q.Init()
         # self.q.Join()
 
@@ -122,17 +122,17 @@ class Test:
             self.t.ReqQryInvestorPosition(self.broker, self.investor)
             return
 
-    def OnRtnInstrumentStatus(self, pInstrumentStatus: ctp.CThostFtdcInstrumentStatusField):
+    def OnRtnInstrumentStatus(self, pInstrumentStatus: CThostFtdcInstrumentStatusField):
         print(pInstrumentStatus.getInstrumentStatus())
 
-    def OnRspOrderInsert(self, pInputOrder: ctp.CThostFtdcInputOrderField, pRspInfo: ctp.CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
+    def OnRspOrderInsert(self, pInputOrder: CThostFtdcInputOrderField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
         print('OnRspOrderInsert')
         print(pRspInfo)
         print(pInputOrder)
 
-    def OnRtnOrder(self, pOrder: ctp.CThostFtdcOrderField):
+    def OnRtnOrder(self, pOrder: CThostFtdcOrderField):
         print(pOrder)
-        if pOrder.getSessionID() == self.Session and pOrder.getOrderStatus() == ctp.TThostFtdcOrderStatusType.THOST_FTDC_OST_NoTradeNotQueueing:
+        if pOrder.getSessionID() == self.Session and pOrder.getOrderStatus() == TThostFtdcOrderStatusType.THOST_FTDC_OST_NoTradeNotQueueing:
             print("撤单")
             self.t.ReqOrderAction(
                 self.broker, self.investor,
@@ -140,7 +140,7 @@ class Test:
                 OrderRef=pOrder.getOrderRef(),
                 FrontID=pOrder.getFrontID(),
                 SessionID=pOrder.getSessionID(),
-                ActionFlag=ctp.ActionFlagType.Delete)
+                ActionFlag=ActionFlagType.Delete)
 
     def Run(self):
         # CreateApi时会用到log目录,需要在程序目录下创建**而非dll下**
@@ -159,15 +159,19 @@ class Test:
         # _thread.start_new_thread(self.Qry, ())
         self.t.RegCB()
 
-        self.frontAddr = 'tcp://180.168.146.187:13030,tcp://180.168.146.187:13040'
+        # 配置帐号信息
+        self.front_addr = 'tcp://180.168.146.187:13030,tcp://180.168.146.187:13040'
         self.broker = '9999'
-        self.investor = '008107'
-        self.pwd = '1'
-        self.t.RegisterFront(self.frontAddr.split(',')[0])
+        self.investor = ''
+        self.pwd = ''
+        self.product_info = ''
+        self.app_id = ''
+        self.auth_code = ''
+
+        self.t.RegisterFront(self.front_addr.split(',')[0])
         self.t.SubscribePrivateTopic(nResumeType=2)  # quick
         self.t.SubscribePrivateTopic(nResumeType=2)
         self.t.Init()
-        print("aaa")
         # self.t.Join()
 
 
