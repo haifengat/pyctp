@@ -28,8 +28,6 @@ namespace HaiFeng
             q.RegisterFront("tcp://180.168.146.187:13040");
 
             //t.ReqUserAuthMethod
-            int r = (int)t.GetSystemInfo();
-            Console.WriteLine(r);
             string v = t.GetVersion();
             Console.WriteLine(v);
             t.SubscribePrivateTopic(THOST_TE_RESUME_TYPE.THOST_TERT_QUICK);
@@ -53,13 +51,13 @@ namespace HaiFeng
         private static void t_login(ref CThostFtdcRspUserLoginField pRspUserLogin, ref CThostFtdcRspInfoField pRspInfo, int nRequestID, bool bIsLast)
         {
             Console.WriteLine("t:" + pRspInfo.ErrorMsg);
-            t.ReqAuthenticate("9999", "141532", "client", "0000000000000000", "8633078969");
+            t.ReqAuthenticate("9999", "", "client", "", "");
         }
 
         private static void t_connected()
         {
             Console.WriteLine("t:connected");
-            t.ReqUserLogin(BrokerID: "9999", UserID: "141532", Password: "topview168");
+            t.ReqUserLogin(BrokerID: "9999", UserID: "", Password: "");
         }
 
         private static void login(ref CThostFtdcRspUserLoginField pRspUserLogin, ref CThostFtdcRspInfoField pRspInfo, int nRequestID, bool bIsLast)

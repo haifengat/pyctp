@@ -89,7 +89,15 @@ namespace HaiFeng
 			this.RegisterSpi(_spi);
 		}
 
+        #region SE版本增加
         [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]
+        public delegate IntPtr DeleGetVersion();
+        public string GetVersion()
+        {
+            return Marshal.PtrToStringAnsi((Invoke(_handle, "GetVersion", typeof(DeleGetVersion)) as DeleGetVersion)());
+        }
+        #endregion
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]
 		public delegate IntPtr DeleRelease(IntPtr api);
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]
 		public delegate IntPtr DeleInit(IntPtr api);
@@ -275,21 +283,6 @@ namespace HaiFeng
 		public delegate IntPtr DeleReqFromFutureToBankByFuture(IntPtr api, ref CThostFtdcReqTransferField pReqTransfer, int nRequestID);
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]
 		public delegate IntPtr DeleReqQueryBankAccountMoneyByFuture(IntPtr api, ref CThostFtdcReqQueryAccountField pReqQueryAccount, int nRequestID);
-
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]
-        public delegate IntPtr DeleGetSystemInfo();
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]
-        public delegate IntPtr DeleGetVersion();
-        public string GetVersion()
-        {
-            return Marshal.PtrToStringAnsi((Invoke(_handle, "GetVersion", typeof(DeleGetVersion)) as DeleGetVersion)());
-        }
-        public IntPtr GetSystemInfo()
-        {
-            return (Invoke(_handle, "GetSystemInfo", typeof(DeleGetSystemInfo)) as DeleGetSystemInfo)();
-        }
-
         public IntPtr Release()
         {
             return (Invoke(_handle, "Release", typeof(DeleRelease)) as DeleRelease)(_api);
