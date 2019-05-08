@@ -30,6 +30,7 @@ for bit in [32,64]:
 long_description = read_file('setup.md')
 long_description_content_type = "text/markdown",  # 指定包文档格式为markdown
 
+# 生成requirements.txt pipreqs --encoding=utf8 py_ctp
 
 setup(
     name='py_ctp',  # 包名
