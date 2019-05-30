@@ -111,12 +111,12 @@ namespace HaiFeng
             _t.SetOnRspError((DeleOnRspError)AddDele(new DeleOnRspError(CTPOnRspError)));
             _t.SetOnRspAuthenticate((DeleOnRspAuthenticate)AddDele(new DeleOnRspAuthenticate(CTPOnRspAuth)));
         }
-        
+
         private void CTPOnRspAuth(ref CThostFtdcRspAuthenticateField pRspAuthenticateField, ref CThostFtdcRspInfoField pRspInfo, int nRequestID, bool bIsLast)
         {
             if (pRspInfo.ErrorID == 0)
             {
-                switch(pRspAuthenticateField.AppType)
+                switch (pRspAuthenticateField.AppType)
                 {
                     // 多对多
                     case TThostFtdcAppTypeType.THOST_FTDC_APP_TYPE_InvestorRelay:
@@ -309,8 +309,11 @@ namespace HaiFeng
                     pf.Position = g.Sum(n => n.Position);// pf.TdPosition + pf.YdPosition;
                     pf.TdPosition = g.Sum(n => n.TodayPosition);
                     pf.YdPosition = pf.Position - pf.TdPosition;// g.Sum(n => n.YdPosition);
-
-                    pf.Price = pf.Position <= 0 ? 0 : (g.Sum(n => n.PositionCost) / DicInstrumentField[pf.InstrumentID].VolumeMultiple / pf.Position);
+                    // 交易合约可能不存在(如交易所合约的SP合约)
+                    if (DicInstrumentField.ContainsKey(pf.InstrumentID))
+                        pf.Price = pf.Position <= 0 ? 0 : (g.Sum(n => n.PositionCost) / DicInstrumentField[pf.InstrumentID].VolumeMultiple / pf.Position);
+                    else
+                        pf.Price = pf.Position <= 0 ? 0 : (g.Sum(n => n.PositionCost) / DicInstrumentField[pf.InstrumentID.Split('&')[1]].VolumeMultiple / pf.Position);
                     pf.CloseProfit = g.Sum(n => n.CloseProfit);
                     pf.PositionProfit = g.Sum(n => n.PositionProfit);
                     pf.Commission = g.Sum(n => n.Commission);

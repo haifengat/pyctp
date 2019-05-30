@@ -24,7 +24,7 @@ namespace HaiFeng
                 Password = pwd,
                 AppID = app,
                 AuthCode = code,
-                ProductInfo = proc,
+                ProductInfo = app,
             };
 
             tt.Run();
