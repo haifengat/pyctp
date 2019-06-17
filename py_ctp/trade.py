@@ -214,7 +214,7 @@ class CtpTrade():
                     cost += g.OpenCost
                 # pf.Position <= 0 ? 0 : (g.Sum(n => n.PositionCost) / DicInstrumentField[pf.InstrumentID].VolumeMultiple / pf.Position);
                 vm = self.instruments[pf.InstrumentID].VolumeMultiple
-                pf.Price = 0 if pf.Position <= 0 else cost / vm / pf.Position
+                pf.Price = 0 if pf.Position <= 0 else (cost / (vm if vm > 0 else 1) / pf.Position)
             self._posi.clear()
 
     def _OnRspQryPositionDetail(self, pInvestorPositionDetail: CThostFtdcInvestorPositionDetailField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
