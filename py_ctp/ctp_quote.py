@@ -29,9 +29,7 @@ class Quote:
             os.mkdir(logdir)
 
         dlldir = os.path.split(absolute_dllfile_path)[0]
-        # change work directory
-        cur_path = os.getcwd()
-        os.chdir(dlldir)
+        os.environ['path'] += f';{dlldir}'
 
         self.h = CDLL(absolute_dllfile_path)
 
@@ -82,7 +80,6 @@ class Quote:
 
         self.h.ReqUserLogout.argtypes = [c_void_p, c_void_p, c_int32]
         self.h.ReqUserLogout.restype = c_void_p
-        os.chdir(cur_path)
 
 
     def CreateApi(self):
