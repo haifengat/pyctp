@@ -822,6 +822,7 @@ namespace HaiFeng
                 OrderRef: string.Format("{0:000000}{1:000000}", _ref++, pCustom % 1000000),
                 CombHedgeFlag: new string((char)(pHedge == HedgeType.Speculation ? TThostFtdcHedgeFlagType.THOST_FTDC_HF_Speculation : pHedge == HedgeType.Arbitrage ? TThostFtdcHedgeFlagType.THOST_FTDC_HF_Arbitrage : TThostFtdcHedgeFlagType.THOST_FTDC_HF_Hedge), 1),
                 CombOffsetFlag: new String((char)(pOffset == OffsetType.Open ? TThostFtdcOffsetFlagType.THOST_FTDC_OF_Open : pOffset == OffsetType.Close ? TThostFtdcOffsetFlagType.THOST_FTDC_OF_Close : TThostFtdcOffsetFlagType.THOST_FTDC_OF_CloseToday), 1),
+                ExchangeID: this.DicInstrumentField[pInstrument].ExchangeID.ToString(),
                 Direction: pDirection == DirectionType.Buy ? TThostFtdcDirectionType.THOST_FTDC_D_Buy : TThostFtdcDirectionType.THOST_FTDC_D_Sell,
                 VolumeTotalOriginal: pVolume,
                 ForceCloseReason: TThostFtdcForceCloseReasonType.THOST_FTDC_FCC_NotForceClose,

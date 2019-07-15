@@ -12,8 +12,8 @@ namespace HaiFeng
         {
             // investor, pwd, instrument, price for buy
             TestTrade tt = null;
-            string addr = "tcp://180.168.146.187:13030", broker = "9999", investor = "", pwd = "", inst = "rb1909", app = "", code = "", proc = "";
-            string qaddr = "tcp://180.168.146.187:13040";
+            string addr = "tcp://180.168.146.187:10101", broker = "9999", investor = "008105", pwd = "1", inst = "rb1909", app = "simnow_client_test", code = "0000000000000000", proc = "";
+            string qaddr = "tcp://180.168.146.187:10111";
             double price_for_buy = 3900;
 
             tt = new TestTrade(inst, price_for_buy)
@@ -28,6 +28,9 @@ namespace HaiFeng
             };
 
             tt.Run();
+            Console.WriteLine("Press any key to continue . . . ");
+            Console.ReadKey(true);
+            tt.ReqOrderInsert("rb1910", DirectionType.Buy, OffsetType.Open, 4000, 2, 100000);
             Console.WriteLine("Press any key to continue . . . ");
             Console.ReadKey(true);
 

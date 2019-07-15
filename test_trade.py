@@ -27,9 +27,9 @@ class TestTrade(object):
         self.t.OnRtnNotice = lambda obj, time, msg: print(f'OnNotice: {time}:{msg}')
         self.t.OnErrRtnQuote = lambda obj, quote, info: None
         self.t.OnErrRtnQuoteInsert = lambda obj, o: None
-        self.t.OnOrder = lambda obj, o: None
-        self.t.OnErrOrder = lambda obj, f, info: None
-        self.t.OnTrade = lambda obj, o: None
+        self.t.OnOrder = lambda obj, o: print(o)
+        self.t.OnErrOrder = lambda obj, f, info: print(info)
+        self.t.OnTrade = lambda obj, o: print(o)
         self.t.OnInstrumentStatus = lambda obj, inst, stat: None
 
     def on_connect(self, obj):
@@ -65,13 +65,13 @@ class TestQuote(object):
 
 
 if __name__ == "__main__":
-    front_trade = ''
-    front_quote = ''
-    broker = ''
-    investor = ''
-    pwd = ''
-    appid = ''
-    auth_code = ''
+    front_trade = 'tcp://180.168.146.187:10101'
+    front_quote = 'tcp://180.168.146.187:10111'
+    broker = '9999'
+    investor = '008105'
+    pwd = '1'
+    appid = 'simnow_client_test'
+    auth_code = '0000000000000000'
     proc = ''
     if investor == '':
         investor = input('invesotr:')
@@ -82,11 +82,11 @@ if __name__ == "__main__":
     tt = TestTrade(front_trade, broker, investor, pwd, appid, auth_code, proc)
     tt.run()
     time.sleep(5)
-    # tt.t.ReqOrderInsert('j1905', DirectType.Buy, OffsetType.Open, 2060, 3)
-
-    time.sleep(3)
-    qq = TestQuote(front_quote, broker, investor, pwd)
-    qq.run()
+    # tt.t.ReqOrderInsert('rb1910', DirectType.Buy, OffsetType.Open, 4000, 3)
+    #
+    # # time.sleep(3)
+    # # qq = TestQuote(front_quote, broker, investor, pwd)
+    # # qq.run()
 
     # time.sleep(6)
     # for inst in tt.t.instruments.values():

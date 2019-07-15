@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace HaiFeng
 {
-    public class TestQuote:CTPQuote
+    public class TestQuote : CTPQuote
     {
         string _inst;
 
@@ -76,7 +76,7 @@ namespace HaiFeng
         }
     }
 
-    class TestTrade:CTPTrade
+    class TestTrade : CTPTrade
     {
         string _inst;
         double _price;
@@ -103,6 +103,7 @@ namespace HaiFeng
             this.OnFrontConnected += _t_OnFrontConnected;
             this.OnRspUserLogout += _t_OnRspUserLogout;
             this.OnRspUserLogin += _t_OnRspUserLogin;
+            this.OnRtnExchangeStatus += _t_OnRtnExchangeStatus;
 
             this.OnRtnOrder += _t_OnRtnOrder;
             this.OnRtnTrade += _t_OnRtnTrade;
@@ -115,6 +116,12 @@ namespace HaiFeng
             //this.ReqConnect("tcp://218.202.237.33:10002");
             //this.ReqConnect("tcp://172.20.28.57:41205");
         }
+
+        private void _t_OnRtnExchangeStatus(object sender, StatusEventArgs e)
+        {
+            Log($"{e.Exchange}:{e.Status}");
+        }
+
         private void _t_OnFrontConnected(object sender, EventArgs e)
         {
             this.ReqUserLogin();
@@ -125,10 +132,15 @@ namespace HaiFeng
         {
             if (e.ErrorID == 0)
             {
+                
                 Log("登录成功");
                 foreach (var v in this.DicPositionField.Values)
                 {
                     Log($"posi:{v.InstrumentID}\t{v.Direction}\t{v.Price}\t{v.Position}");
+                }
+                foreach(var v in this.DicExcStatus)
+                {
+                    Log($"{v.Key}:{v.Value}");
                 }
                 //            new Thread(() =>
                 //{
@@ -174,11 +186,6 @@ namespace HaiFeng
                 this.ReqOrderAction(e.Value.OrderID);
         }
 
-
-        private void OnRtnInstrumentStatus(ref CThostFtdcInstrumentStatusField pInstrumentStatus)
-        {
-            Log($"{pInstrumentStatus.InstrumentID}:{pInstrumentStatus.InstrumentStatus}");
-        }
 
         private void _t_OnRspUserLogout(object sender, IntEventArgs e)
         {

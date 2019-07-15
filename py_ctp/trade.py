@@ -515,6 +515,7 @@ class CtpTrade():
             InstrumentID=pInstrument,
             OrderRef="%06d%06d" % (self._req, pCustom % 1000000),
             UserID=self.investor,
+            ExchangeID=self.instruments[pInstrument].ExchangeID,
             # 此处ctp_enum与at_struct名称冲突
             Direction=TThostFtdcDirectionType.THOST_FTDC_D_Buy if pDirection == DirectType.Buy else TThostFtdcDirectionType.THOST_FTDC_D_Sell,
             CombOffsetFlag=chr(TThostFtdcOffsetFlagType.THOST_FTDC_OF_Open.value if pOffset == OffsetType.Open else TThostFtdcOffsetFlagType.THOST_FTDC_OF_CloseToday.value if pOffset == OffsetType.CloseToday else TThostFtdcOffsetFlagType.THOST_FTDC_OF_Close.value),
