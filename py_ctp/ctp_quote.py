@@ -24,12 +24,17 @@ class Quote:
             return
 
         # make log dir for api log
+        pre_dir = os.getcwd()
         logdir = os.path.join(os.getcwd(), 'log')
         if not os.path.exists(logdir):
             os.mkdir(logdir)
 
         dlldir = os.path.split(absolute_dllfile_path)[0]
-        os.environ['path'] += f';{dlldir}'
+        if 'path' in os.environ:
+            os.environ['path'] += f';{dlldir}'
+        elif 'PATH' in os.environ:
+            os.environ['PATH'] += f';{dlldir}'
+        os.chdir(dlldir)
 
         self.h = CDLL(absolute_dllfile_path)
 
@@ -80,6 +85,7 @@ class Quote:
 
         self.h.ReqUserLogout.argtypes = [c_void_p, c_void_p, c_int32]
         self.h.ReqUserLogout.restype = c_void_p
+        os.chdir(pre_dir)
 
 
     def CreateApi(self):

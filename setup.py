@@ -30,12 +30,12 @@ for bit in [32,64]:
 long_description = read_file('setup.md')
 long_description_content_type = "text/markdown",  # 指定包文档格式为markdown
 
-# 生成requirements.txt pipreqs --encoding=utf8 py_ctp
+# 生成requirements.txt pipreqs --encoding=utf8 --force py_ctp
 
 setup(
     name='py_ctp',  # 包名
     python_requires='>=3.4.0',  # python环境
-    version='2.2.3',  # 包的版本
+    version='2.2.5',  # 包的版本
     description="Python CTP futures api",  # 包简介，显示在PyPI上
     long_description=long_description,  # 读取的Readme文档内容
     long_description_content_type=long_description_content_type,  # 指定包文档格式为markdown
