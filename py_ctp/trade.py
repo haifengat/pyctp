@@ -257,6 +257,7 @@ class CtpTrade():
             if pOrder.getOrderRef().isdigit():
                 of.Custom = int(pOrder.getOrderRef()) % 1000000
             of.InstrumentID = pOrder.getInstrumentID()
+            of.ExchangeID = pOrder.getExchangeID()
             of.InsertTime = pOrder.getInsertTime()
             of.Direction = DirectType.Buy if pOrder.getDirection() == TThostFtdcDirectionType.THOST_FTDC_D_Buy else DirectType.Sell
             ot = TThostFtdcOffsetFlagType(ord(pOrder.getCombOffsetFlag()[0]))
@@ -550,6 +551,7 @@ class CtpTrade():
                 FrontID=int(pOrderId.split('|')[1]),
                 SessionID=int(pOrderId.split('|')[0]),
                 InstrumentID=of.InstrumentID,
+                ExchangeID=of.ExchangeID,
                 ActionFlag=TThostFtdcActionFlagType.THOST_FTDC_AF_Delete)
 
     def ReqUserLogout(self):

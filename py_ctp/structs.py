@@ -42,6 +42,9 @@ class OrderField:
         '''合约'''
         self.InstrumentID = ""
         '''合约'''
+        '''交易所'''
+        self.ExchangeID = ""
+        '''交易所'''
         '''买卖'''
         self.Direction = DirectType.Buy
         '''买卖'''
@@ -87,7 +90,7 @@ class OrderField:
 
     def __str__(self):
         """"""
-        return '{self.OrderID}, {self.InstrumentID}, {self.Direction}, {self.Offset}, {self.LimitPrice}, {self.AvgPrice}, {self.InsertTime}, {self.TradeTime}, {self.TradeVolume}, {self.Volume}, {self.VolumeLeft}, {self.Status}, {self.StatusMsg}, {self.IsLocal}, {self.Custom}, {self.SysID}'.format(
+        return '{self.OrderID}, {self.InstrumentID}, {self.ExchangeID}, {self.Direction}, {self.Offset}, {self.LimitPrice}, {self.AvgPrice}, {self.InsertTime}, {self.TradeTime}, {self.TradeVolume}, {self.Volume}, {self.VolumeLeft}, {self.Status}, {self.StatusMsg}, {self.IsLocal}, {self.Custom}, {self.SysID}'.format(
             self=self)
 
     @property
@@ -95,6 +98,7 @@ class OrderField:
         return {
             'OrderID': self.OrderID,
             'InstrumentID': self.InstrumentID,
+            'ExchangeID': self.ExchangeID,
             'Direction': self.Direction.name,
             'Offset': self.Offset.name,
             'LimitPrice': self.LimitPrice,
@@ -305,6 +309,7 @@ class PositionField:
 
 class PositionDetail:
     """持仓明细"""
+
     def __init__(self):
         """"""
         self.Instrument = ''
