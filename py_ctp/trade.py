@@ -169,6 +169,7 @@ class CtpTrade():
         """"""
         inst = InstrumentField()
         inst.InstrumentID = pInstrument.getInstrumentID()
+        inst.InstrumentName = pInstrument.getInstrumentName()
         inst.ProductID = pInstrument.getProductID()
         inst.ExchangeID = pInstrument.getExchangeID()
         inst.VolumeMultiple = pInstrument.getVolumeMultiple()
