@@ -34,8 +34,8 @@ long_description_content_type = "text/markdown",  # 指定包文档格式为mark
 
 setup(
     name='py_ctp',  # 包名
-    python_requires='>=3.4.0',  # python环境
-    version='2.2.7',  # 包的版本
+    python_requires='>=3.7.0',  # python环境
+    version='2.2.8',  # 包的版本
     description="Python CTP futures api",  # 包简介，显示在PyPI上
     long_description=long_description,  # 读取的Readme文档内容
     long_description_content_type=long_description_content_type,  # 指定包文档格式为markdown

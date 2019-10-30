@@ -331,7 +331,7 @@ class CtpTrade():
             pf.TdPosition += tf.Volume
             pf.Position += tf.Volume
         else:
-            key = '{0}_{1}'.format(tf.InstrumentID, DirectType.Sell if tf.Direction == DirectType.Buy else DirectType.Buy)
+            key = '{0}_{1}'.format(tf.InstrumentID, 'Sell' if tf.Direction == DirectType.Buy else DirectType.Buy)
             pf = self.positions.get(key)
             if pf:  # 有可能出现无持仓的情况
                 if tf.Offset == OffsetType.CloseToday:
