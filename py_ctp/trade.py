@@ -331,16 +331,16 @@ class CtpTrade():
             pf.TdPosition += tf.Volume
             pf.Position += tf.Volume
         else:
-            key = '{0}_{1}'.format(tf.InstrumentID, 'Sell' if tf.Direction == DirectType.Buy else DirectType.Buy)
-            pf = self.positions.get(key)
+            key = '{0}_{1}'.format(tf.InstrumentID, 'Sell' if tf.Direction == DirectType.Buy else 'Buy')
+            pf:PositionField = self.positions.get(key)
             if pf:  # 有可能出现无持仓的情况
                 if tf.Offset == OffsetType.CloseToday:
                     pf.TdPosition -= tf.Volume
                 else:
-                    tdclose = min(pf.TdPosition, tf.Volume)
-                    if pf.TdPosition > 0:
-                        pf.TdPosition -= tdclose
-                    pf.YdPosition -= max(0, tf.Volume - tdclose)
+                    ydclose = min(pf.YdPosition, tf.Volume)
+                    if pf.YdPosition > 0:
+                        pf.YdPosition -= ydclose
+                    pf.TdPosition -= max(0, tf.Volume - ydclose)
                 pf.Position -= tf.Volume
         threading.Thread(target=self._onRtn, args=(of, tf)).start()
 
