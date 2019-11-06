@@ -302,7 +302,7 @@ class CtpTrade():
         tf.TradingDay = f.getTradingDay()
         tf.Volume = f.getVolume()
 
-        self.trades[tf.TradeID] = tf
+        self.trades[f'{tf.TradeID}{tf.Direction.value}'] = tf
 
         id = self._orderid_sysid[tf.SysID]
         of = self.orders[id]
@@ -332,7 +332,7 @@ class CtpTrade():
             pf.Position += tf.Volume
         else:
             key = '{0}_{1}'.format(tf.InstrumentID, 'Sell' if tf.Direction == DirectType.Buy else 'Buy')
-            pf:PositionField = self.positions.get(key)
+            pf: PositionField = self.positions.get(key)
             if pf:  # 有可能出现无持仓的情况
                 if tf.Offset == OffsetType.CloseToday:
                     pf.TdPosition -= tf.Volume
