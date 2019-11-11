@@ -123,26 +123,37 @@ class TradeField:
         """Constructor"""
         '''成交标识'''
         self.TradeID = ''
+        '''成交标识'''
         '''合约'''
         self.InstrumentID = ''
+        '''合约'''
         '''交易所'''
         self.ExchangeID = ''
+        '''交易所'''
         '''买卖'''
         self.Direction = DirectType.Buy
+        '''买卖'''
         '''开平'''
         self.Offset = OffsetType.Open
+        '''开平'''
         '''成交价'''
         self.Price = 0.0
+        '''成交价'''
         '''成交数量'''
         self.Volume = 0
+        '''成交数量'''
         '''成交时间'''
         self.TradeTime = ''
+        '''成交时间'''
         '''交易日'''
         self.TradingDay = ''
+        '''交易日'''
         ''''对应的委托标识'''
         self.OrderID = ''
+        ''''对应的委托标识'''
         '''对应的系统(交易所)ID'''
         self.SysID = ''
+        '''对应的系统(交易所)ID'''
 
     def __str__(self):
         """"""
@@ -221,22 +232,31 @@ class TradingAccount:
         """Constructor"""
         '''昨日结算'''
         self.PreBalance = 0.0
+        '''昨日结算'''
         '''持仓盈亏'''
         self.PositionProfit = 0.0
+        '''持仓盈亏'''
         '''平仓盈亏'''
         self.CloseProfit = 0.0
+        '''平仓盈亏'''
         '''手续费'''
         self.Commission = 0.0
+        '''手续费'''
         '''保证金'''
         self.CurrMargin = 0.0
+        '''保证金'''
         '''冻结'''
         self.FrozenCash = 0.0
+        '''冻结'''
         '''可用'''
         self.Available = 0.0
+        '''可用'''
         '''动态权益'''
         self.Fund = 0.0
+        '''动态权益'''
         '''风险度'''
         self.Risk = 0.0
+        '''风险度'''
 
     # ----------------------------------------------------------------------
     def __str__(self):
@@ -268,24 +288,33 @@ class PositionField:
         """Constructor"""
         '''合约'''
         self.InstrumentID = ''
-        '''多空'''
+        '''合约'''
         self.Direction = DirectType.Buy
+        '''多空'''
         '''持仓价格'''
         self.Price = 0.0
+        '''持仓价格'''
         '''持仓量'''
-        self.Position = 1
+        self.Position = 0
+        '''持仓量'''
         '''昨持仓'''
         self.YdPosition = 0
+        '''昨持仓'''
         '''今持仓'''
         self.TdPosition = 0
+        '''今持仓'''
         '''平仓盈亏'''
         self.CloseProfit = 0.0
+        '''平仓盈亏'''
         '''持仓盈亏'''
         self.PositionProfit = 0.0
+        '''持仓盈亏'''
         '''手续费'''
         self.Commission = 0.0
+        '''手续费'''
         '''保证金'''
         self.Margin = 0.0
+        '''保证金'''
 
     # ----------------------------------------------------------------------
     def __str__(self):
