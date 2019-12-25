@@ -181,7 +181,8 @@ class CtpTrade():
     def _OnRspQryPosition(self, pInvestorPosition: CThostFtdcInvestorPositionField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
         """"""
         if pInvestorPosition.getInstrumentID() != '':  # 偶尔出现NULL的数据导致数据转换错误
-            self._posi.append(pInvestorPosition)  # Struct(**f.__dict__)) #dict -> object
+            if pInvestorPosition.getInstrumentID() in self.instruments: # 解决交易所自主合成某些不可交易的套利合约的问题如 SPC y2005&p2001
+                self._posi.append(pInvestorPosition)  # Struct(**f.__dict__)) #dict -> object
 
         if bIsLast:
             # 先排序再group才有效

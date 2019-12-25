@@ -1,4 +1,4 @@
-#include "Trade.h"
+#include "trade.h"
 #include <string.h>
 int nReq;
 
@@ -350,24 +350,3 @@ DLL_EXPORT_C_DECL void* WINAPI ReqQueryCFMMCTradingAccountToken(CThostFtdcTrader
 DLL_EXPORT_C_DECL void* WINAPI ReqFromBankToFutureByFuture(CThostFtdcTraderApi *api, CThostFtdcReqTransferField *pReqTransfer, int nRequestID){api->ReqFromBankToFutureByFuture(pReqTransfer, nRequestID); return 0;}
 DLL_EXPORT_C_DECL void* WINAPI ReqFromFutureToBankByFuture(CThostFtdcTraderApi *api, CThostFtdcReqTransferField *pReqTransfer, int nRequestID){api->ReqFromFutureToBankByFuture(pReqTransfer, nRequestID); return 0;}
 DLL_EXPORT_C_DECL void* WINAPI ReqQueryBankAccountMoneyByFuture(CThostFtdcTraderApi *api, CThostFtdcReqQueryAccountField *pReqQueryAccount, int nRequestID){api->ReqQueryBankAccountMoneyByFuture(pReqQueryAccount, nRequestID); return 0;}
-// SE版本
-DLL_EXPORT_C_DECL void* WINAPI GetVersion() { return (void *)CThostFtdcTraderApi::GetApiVersion(); }
-
-DLL_EXPORT_C_DECL void* WINAPI RegisterUserSystemInfo(CThostFtdcTraderApi* api, CThostFtdcUserSystemInfoField* pUserSystemInfo)
-{
-	char pinfo[344];
-	int nLen;
-	CTP_GetSystemInfo(pinfo, nLen);
-	memcpy(pUserSystemInfo->ClientSystemInfo, pinfo, nLen);
-	api->RegisterUserSystemInfo(pUserSystemInfo);
-	return 0;
-}
-DLL_EXPORT_C_DECL void* WINAPI SubmitUserSystemInfo(CThostFtdcTraderApi* api, CThostFtdcUserSystemInfoField* pUserSystemInfo)
-{
-	char pinfo[344];
-	int nLen;
-	CTP_GetSystemInfo(pinfo, nLen);
-	memcpy(pUserSystemInfo->ClientSystemInfo, pinfo, nLen);
-	api->SubmitUserSystemInfo(pUserSystemInfo);
-	return 0;
-}

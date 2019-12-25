@@ -100,19 +100,14 @@ def run(generate_c: bool, generate_py: bool, generate_cs: bool = True):
 #define WINAPI      __cdecl
 #include "{src_dir}/{file_src}.h"
 #pragma comment(lib, "{src_dir}/{lib_name}.lib")
-#include "{src_dir}/DataCollect.h"
-#pragma comment(lib, "{src_dir}/WinDataCollect.lib")
 #else
 #define WINAPI      __stdcall
 #include "{src_dir}/{file_src}.h"
 #pragma comment(lib, "{src_dir}/{lib_name}.lib")
-#include "{src_dir}/DataCollect.h"
-#pragma comment(lib, "{src_dir}/WinDataCollect.lib")
 #endif
 #else
 #define WINAPI
 #include "{src_dir}/{file_src}.h"
-#include "{src_dir}/DataCollect.h"
 #endif
 
 #include <string.h>
@@ -538,28 +533,7 @@ namespace HaiFeng
         f_c_cpp.write('\n'.join(cpp_set))
         f_c_cpp.write(f'''\n\nDLL_EXPORT_C_DECL void* WINAPI CreateApi(){{return {create_api}("./log/");}}\nDLL_EXPORT_C_DECL void* WINAPI CreateSpi(){{return new {spi_class_name.title()}();}}\n''')
         f_c_cpp.write('\n'.join(cpp_req))
-        if spi_class_name.lower().endswith('trade'):
-            f_c_cpp.write('''\n// SE版本
-DLL_EXPORT_C_DECL void* WINAPI GetVersion() { return (void *)CThostFtdcTraderApi::GetApiVersion(); }
 
-DLL_EXPORT_C_DECL void* WINAPI RegisterUserSystemInfo(CThostFtdcTraderApi* api, CThostFtdcUserSystemInfoField* pUserSystemInfo)
-{
-	char pinfo[344];
-	int nLen;
-	CTP_GetSystemInfo(pinfo, nLen);
-	memcpy(pUserSystemInfo->ClientSystemInfo, pinfo, nLen);
-	api->RegisterUserSystemInfo(pUserSystemInfo);
-	return 0;
-}
-DLL_EXPORT_C_DECL void* WINAPI SubmitUserSystemInfo(CThostFtdcTraderApi* api, CThostFtdcUserSystemInfoField* pUserSystemInfo)
-{
-	char pinfo[344];
-	int nLen;
-	CTP_GetSystemInfo(pinfo, nLen);
-	memcpy(pUserSystemInfo->ClientSystemInfo, pinfo, nLen);
-	api->SubmitUserSystemInfo(pUserSystemInfo);
-	return 0;
-}''')
         # f_c_def.write('LIBRARY ctp_trade\nEXPORTS\nCreateApi\nCreateSpi\n')
         # f_c_def.write('\n'.join(def_req))
         # f_c_def.write('\n')
