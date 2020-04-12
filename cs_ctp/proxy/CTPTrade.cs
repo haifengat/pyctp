@@ -260,8 +260,12 @@ namespace HaiFeng
         {
             if (!string.IsNullOrEmpty(pInvestorPosition.InstrumentID))
             {
-                var f = pInvestorPosition;
-                _listPosi.Add(f);
+                // 排队交易所大额单边时所生成的非交易合约
+                if (this.DicInstrumentField.ContainsKey(pInvestorPosition.InstrumentID))
+                {
+                    var f = pInvestorPosition;
+                    _listPosi.Add(f);
+                }
             }
 
             if (bIsLast)
@@ -513,7 +517,8 @@ namespace HaiFeng
             Exchange exc;
             if (Enum.TryParse(pTrade.ExchangeID, out exc))
                 f.ExchangeID = exc;
-            if (DicTradeField.TryAdd(f.TradeID, f))// string.Format("{0}_{1}", f.TradeID, f.Direction), f))
+            // if (DicTradeField.TryAdd(f.TradeID, f))
+            if (DicTradeField.TryAdd(string.Format("{0}_{1}", f.TradeID, f.Direction == DirectionType.Buy ? 0 : 1), f))
             {
                 f.OrderID = id; //更新成交对应的委托ID
                 of.TradeTime = pTrade.TradeTime;

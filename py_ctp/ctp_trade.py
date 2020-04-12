@@ -77,11 +77,11 @@ class Trade:
         self.h.ReqAuthenticate.argtypes = [c_void_p, c_void_p, c_int32]
         self.h.ReqAuthenticate.restype = c_void_p
 
-        self.h.RegisterUserSystemInfo.argtypes = [c_void_p, c_void_p]
-        self.h.RegisterUserSystemInfo.restype = c_void_p
+        # self.h.RegisterUserSystemInfo.argtypes = [c_void_p, c_void_p]
+        # self.h.RegisterUserSystemInfo.restype = c_void_p
 
-        self.h.SubmitUserSystemInfo.argtypes = [c_void_p, c_void_p]
-        self.h.SubmitUserSystemInfo.restype = c_void_p
+        # self.h.SubmitUserSystemInfo.argtypes = [c_void_p, c_void_p]
+        # self.h.SubmitUserSystemInfo.restype = c_void_p
 
         self.h.ReqUserLogin.argtypes = [c_void_p, c_void_p, c_int32]
         self.h.ReqUserLogin.restype = c_void_p
