@@ -31,11 +31,12 @@ long_description = read_file('setup.md')
 long_description_content_type = "text/markdown",  # 指定包文档格式为markdown
 
 # 生成requirements.txt pipreqs --encoding=utf8 --force py_ctp
-
+# python setup.py sdist & twine upload dist/*         //.tar.gz
+# python setup.py bdist_wheel & twine upload dist/*   //.whl
 setup(
     name='py_ctp',  # 包名
-    python_requires='>=3.7.0',  # python环境
-    version='2.2.9',  # 包的版本
+    python_requires='>=3.6.0',  # python环境
+    version='2.3.2',  # 包的版本
     description="Python CTP futures api",  # 包简介，显示在PyPI上
     long_description=long_description,  # 读取的Readme文档内容
     long_description_content_type=long_description_content_type,  # 指定包文档格式为markdown

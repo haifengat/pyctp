@@ -82,14 +82,15 @@ if __name__ == "__main__":
     tt = TestTrade(front_trade, broker, investor, pwd, appid, auth_code, proc)
     tt.run()
     time.sleep(5)
-    tt.t.ReqOrderInsert('rb2001', DirectType.Buy, OffsetType.Open, 4000, 3)
+    # tt.t.ReqOrderInsert('rb2001', DirectType.Buy, OffsetType.Open, 4000, 3)
 
     qq = TestQuote(front_quote, broker, investor, pwd)
     qq.run()
     #
-    # time.sleep(6)
-    # for inst in tt.t.instruments.values():
-    #     print(inst)
+    time.sleep(6)
+    for inst in tt.t.instruments.values():
+        print(inst)
+    print(tt.t.account)
     input()
     tt.release()
     qq.release()
