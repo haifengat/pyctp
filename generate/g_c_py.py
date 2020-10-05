@@ -128,7 +128,7 @@ public:
         else
             return pRspInfo;
     }}\n\n''')
-                f_c_cpp.write(f'''#include "{spi_class_name.title()}.h"
+                f_c_cpp.write(f'''#include "{spi_class_name.lower()}.h"
 #include <string.h>
 int nReq;
 

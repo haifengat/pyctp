@@ -13,15 +13,13 @@
         * 设置项目为x64,否则会提示找不到windows.h
         * 打开ctp_c\\ctp.sln
         * 编译ctp_quote 和 ctp_trade项目
-        * 编译后生成的dll放在<red>py_ctp\lib32|lib64</red>目录下
+        * 编译后生成的dll放在 `py_ctp\lib32|lib64` 目录下
     * Linux
         * 设置系统语言为：zh_CN.UTF-8
-        * 复制文件到linux ctp_c\\*.h *.cpp 到ctp_c目录下
-        * 复制 ctp_20180109\\*.so到dll目录下
-        * 复制 py_ctp\\*.py到py_ctp目录下
-        * 进入dll目录，执行以下指令
-            * g++ -shared -fPIC -o ./ctp_trade.so ./trade.cpp ./thosttraderapi_se.so ./LinuxDataCollect.so
-            * g++ -shared -fPIC -o ./ctp_quote.so ./quote.cpp  ./thostmduserapi_se.so
+        * 复制 ctp_20180109\\*.so到 `py_ctp/lib64` 目录下
+        * 进入 `py_ctp/lib64` 目录，执行以下指令
+            * g++ -shared -fPIC -o ./ctp_trade.so ../../ctp_c/trade.cpp thosttraderapi_se.so
+            * g++ -shared -fPIC -o ./ctp_quote.so ../../ctp_c/quote.cpp  thostmduserapi_se.so
 * 测试
     * Python
         * 安装 `pip install py_ctp`
