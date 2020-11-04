@@ -256,7 +256,7 @@ DLL_EXPORT_C_DECL void WINAPI SetOnRspQueryBankAccountMoneyByFuture(Trade* spi, 
 DLL_EXPORT_C_DECL void WINAPI SetOnRtnOpenAccountByBank(Trade* spi, void* func){spi->_RtnOpenAccountByBank = func;}
 DLL_EXPORT_C_DECL void WINAPI SetOnRtnCancelAccountByBank(Trade* spi, void* func){spi->_RtnCancelAccountByBank = func;}
 DLL_EXPORT_C_DECL void WINAPI SetOnRtnChangeAccountByBank(Trade* spi, void* func){spi->_RtnChangeAccountByBank = func;}
-
+DLL_EXPORT_C_DECL void* WINAPI GetVersion() { return (void*)CThostFtdcTraderApi::GetApiVersion(); }
 DLL_EXPORT_C_DECL void* WINAPI CreateApi(){return CThostFtdcTraderApi::CreateFtdcTraderApi("./log/");}
 DLL_EXPORT_C_DECL void* WINAPI CreateSpi(){return new Trade();}
 DLL_EXPORT_C_DECL void* WINAPI Release(CThostFtdcTraderApi *api){api->Release(); return 0;}

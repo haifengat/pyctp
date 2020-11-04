@@ -45,6 +45,9 @@ class Trade:
         self.h.CreateSpi.argtypes = []
         self.h.CreateSpi.restype = c_void_p
 
+        self.h.GetVersion.argtypes = []
+        self.h.GetVersion.restype = c_char_p
+
         self.api = None
         self.spi = None
         self.nRequestID = 0
@@ -337,6 +340,9 @@ class Trade:
         self.spi = self.h.CreateSpi()
         return self.spi
 
+    def GetVersion(self):
+        v = str(self.h.GetVersion(), encoding='ascii')
+        return str(v)
 
     def Release(self):
         self.h.Release(self.api)

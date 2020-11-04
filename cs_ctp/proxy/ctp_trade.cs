@@ -68,11 +68,11 @@ namespace HaiFeng
 			string curPath = Environment.CurrentDirectory;
             var dll_path = new FileInfo(this.GetType().Assembly.Location).DirectoryName;
             Environment.CurrentDirectory = dll_path;
-            dll_path = Path.Combine(dll_path, "lib" + (Environment.Is64BitProcess ? "64" : "32"));
+            dll_path = Path.Combine(dll_path, "lib64");
             if (!Directory.Exists(dll_path))
             {
                 File.WriteAllBytes("lib.zip", Properties.Resources.lib);
-                ZipFile.ExtractToDirectory("lib.zip", ".");
+                ZipFile.ExtractToDirectory("lib.zip", "./lib64");
                 File.Delete("lib.zip");
             }
 			Environment.CurrentDirectory = dll_path;

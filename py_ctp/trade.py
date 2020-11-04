@@ -433,6 +433,9 @@ class CtpTrade():
         info.ErrorMsg = pRspInfo.getErrorMsg()
         threading.Thread(target=self.OnErrRtnForQuoteInsert, args=(self, pInputForQuote, info)).start()
 
+    def GetVersion(self):
+        return self.t.GetVersion()
+
     def ReqConnect(self, front: str):
         """连接交易前置
 
