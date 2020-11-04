@@ -29,3 +29,9 @@
         * 打开cs_ctp\ctp_test 项目进行调试
         * 打开cs_ctp\proxytest 项目测试.net封装
 
+* 代码管理
+    ```bash
+    eval `ssh-agent`
+    ssh-add /home/code/gitee_rsa
+    git push gitee
+    ```

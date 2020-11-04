@@ -102,5 +102,4 @@ if __name__ == "__main__":
     tt.release()
     qq.release()
     input()
-
 ```
