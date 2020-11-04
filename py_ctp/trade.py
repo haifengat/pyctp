@@ -11,6 +11,7 @@ import itertools
 import time
 import os
 import platform
+from time import sleep
 
 from .enums import OrderType, InstrumentStatus, DirectType, OffsetType, HedgeType, TradeTypeType
 from .structs import InfoField, InstrumentField, OrderField, OrderStatus, PositionField, TradeField, TradingAccount, PositionDetail
@@ -114,8 +115,7 @@ class CtpTrade():
             bIsLast: bool):
         if not self.logined:
             time.sleep(0.5)
-            """查询合约/持仓/权益"""
-            threading.Thread(target=self._qry).start()  # 开启查询
+            self.t.ReqQryInstrument()
 
     def _qry(self):
         """查询帐号相关信息"""
@@ -128,7 +128,6 @@ class CtpTrade():
                 break
             ord_cnt = len(self.orders)
             trd_cnt = len(self.trades)
-        self.t.ReqQryInstrument()
         time.sleep(1.1)
         self.t.ReqQryInvestorPosition(self.broker, self.investor)
         time.sleep(1.1)
@@ -141,14 +140,9 @@ class CtpTrade():
         info.ErrorMsg = '正确'
         threading.Thread(target=self.OnUserLogin, args=(self, info)).start()
         # 调用Release后程序异常退出,但不报错误:接口断开了仍然调用了查询指令
-        while self.logined:
-            """查询持仓与权益"""
-            self.t.ReqQryInvestorPosition(self.broker, self.investor)
-            time.sleep(1.1)
-            if not self.logined:
-                return
-            self.t.ReqQryTradingAccount(self.broker, self.investor)
-            time.sleep(1.1)
+        # while self.logined:
+        """查询持仓与权益"""
+        self.t.ReqQryInvestorPosition(self.broker, self.investor)
 
     def _OnRtnInstrumentStatus(self, pInstrumentStatus: CThostFtdcInstrumentStatusField):
         if pInstrumentStatus.getInstrumentID() == '':
@@ -177,6 +171,10 @@ class CtpTrade():
         inst.MaxOrderVolume = pInstrument.getMaxLimitOrderVolume()
         inst.ProductType = pInstrument.getProductClass().name  # ProductClassType.Futures -> Futures
         self.instruments[inst.InstrumentID] = inst
+        if bIsLast:
+            sleep(1.1)
+            """查询合约/持仓/权益"""
+            threading.Thread(target=self._qry).start()  # 开启查询
 
     def _OnRspQryPosition(self, pInvestorPosition: CThostFtdcInvestorPositionField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
         """"""
@@ -220,6 +218,12 @@ class CtpTrade():
                     pf.Price = 0 if pf.Position <= 0 else (cost / (vm if vm > 0 else 1) / pf.Position)
             self._posi.clear()
 
+            """查询持仓与权益"""
+            if not self.logined:
+                return
+            time.sleep(1.1)
+            self.t.ReqQryTradingAccount(self.broker, self.investor)
+
     def _OnRspQryPositionDetail(self, pInvestorPositionDetail: CThostFtdcInvestorPositionDetailField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
         """持仓明细"""
         if pInvestorPositionDetail.getInstrumentID() == '':
@@ -249,6 +253,12 @@ class CtpTrade():
         self.account.PreBalance = pTradingAccount.getPreBalance() + pTradingAccount.getDeposit() + pTradingAccount.getWithdraw()
         self.account.Fund = self.account.PreBalance + pTradingAccount.getCloseProfit() + pTradingAccount.getPositionProfit() - pTradingAccount.getCommission()
         self.account.Risk = 0 if self.account.Fund == 0 else self.account.CurrMargin / self.account.Fund
+        if bIsLast:
+            """查询持仓与权益"""
+            if not self.logined:
+                return
+            time.sleep(1.1)
+            self.t.ReqQryInvestorPosition(self.broker, self.investor)
 
     def _OnRtnOrder(self, pOrder: CThostFtdcOrderField):
         """"""

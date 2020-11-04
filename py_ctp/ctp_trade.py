@@ -6,9 +6,7 @@
 
 
 import os
-import sys
 import platform
-import ctypes
 import copy
 from .ctp_struct import *
 
@@ -17,24 +15,27 @@ class Trade:
 
     def __init__(self):
 
-        dllpath = os.path.join(os.path.abspath(os.path.dirname(__file__)), f"lib{'64' if sys.maxsize > 2**32 else '32'}")
+        dllpath = os.path.join(os.path.abspath(os.path.dirname(__file__)), "lib64")
         absolute_dllfile_path = os.path.join(dllpath, 'ctp_trade.' + ('dll' if 'Windows' in platform.system() else 'so'))
         if not os.path.exists(absolute_dllfile_path):
             print('缺少DLL接口文件')
             return
-
         # make log dir for api log
-        pre_dir = os.getcwd()
+        # pre_dir = os.getcwd()
         logdir = os.path.join(os.getcwd(), 'log')
         if not os.path.exists(logdir):
             os.mkdir(logdir)
 
-        dlldir = os.path.split(absolute_dllfile_path)[0]
-        if 'path' in os.environ:
-            os.environ['path'] += f';{dlldir}'
-        elif 'PATH' in os.environ:
-            os.environ['PATH'] += f';{dlldir}'
-        os.chdir(dlldir)
+        # dlldir = os.path.split(absolute_dllfile_path)[0]
+        
+        # os.system(f"export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:{dlldir}")
+        # if 'path' in os.environ:
+        #     os.environ['path'] += f';{dlldir}'
+        # elif 'PATH' in os.environ:
+        #     os.environ['PATH'] += f';{dlldir}'
+        # if 'LD_LIBRARY_PATH' in os.environ:
+        #     os.environ['LD_LIBRARY_PATH'] += ':' + dlldir + '/'
+        # os.chdir(dlldir)
 
         self.h = CDLL(absolute_dllfile_path)
 
@@ -325,7 +326,7 @@ class Trade:
 
         self.h.ReqQueryBankAccountMoneyByFuture.argtypes = [c_void_p, c_void_p, c_int32]
         self.h.ReqQueryBankAccountMoneyByFuture.restype = c_void_p
-        os.chdir(pre_dir)
+        # os.chdir(pre_dir)
 
 
     def CreateApi(self):

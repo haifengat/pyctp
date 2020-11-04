@@ -18,21 +18,16 @@
 #include "stddef.h"
 #ifdef WIN32
 #define WINAPI      __cdecl
-#include "../ctp_20190220_se_x86/ThostFtdcMdApi.h"
-#pragma comment(lib, "../ctp_20190220_se_x86/thostmduserapi_se.lib")
-#include "../ctp_20190220_se_x86/DataCollect.h"
-#pragma comment(lib, "../ctp_20190220_se_x86/WinDataCollect.lib")
+#include "../v6.3.16_T1_20190508/ThostFtdcMdApi.h"
+#pragma comment(lib, "../v6.3.16_T1_20190508/thostmduserapi_se.lib")
 #else
 #define WINAPI      __stdcall
-#include "../ctp_20190220_se_x64/ThostFtdcMdApi.h"
-#pragma comment(lib, "../ctp_20190220_se_x64/thostmduserapi_se.lib")
-#include "../ctp_20190220_se_x64/DataCollect.h"
-#pragma comment(lib, "../ctp_20190220_se_x64/WinDataCollect.lib")
+#include "../v6.3.16_T1_20190508/ThostFtdcMdApi.h"
+#pragma comment(lib, "../v6.3.16_T1_20190508/thostmduserapi_se.lib")
 #endif
 #else
 #define WINAPI
-#include "../ctp_20190220_se_x64/ThostFtdcMdApi.h"
-#include "../ctp_20190220_se_x64/DataCollect.h"
+#include "../v6.3.16_T1_20190508/ThostFtdcMdApi.h"
 #endif
 
 #include <string.h>
