@@ -8,6 +8,7 @@
 import os
 import sys
 import platform
+import ctypes
 import copy
 from .ctp_struct import *
 

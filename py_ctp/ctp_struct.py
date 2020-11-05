@@ -16065,6 +16065,64 @@ class  CThostFtdcQryBulletinField(Structure):
         return f"'ExchangeID'={self.getExchangeID()}, 'BulletinID'={self.getBulletinID()}, 'SequenceNo'={self.getSequenceNo()}, 'NewsType'={self.getNewsType()}, 'NewsUrgency'={self.getNewsUrgency()}"
 
 
+class  CThostFtdcMulticastInstrumentField(Structure):
+    """MulticastInstrument"""
+    _fields_ = [
+        ("TopicID", c_int32),
+        ("InstrumentID", c_char*31),
+        ("InstrumentNo", c_int32),
+        ("CodePrice", c_double),
+        ("VolumeMultiple", c_int32),
+        ("PriceTick", c_double),
+    ]
+
+    def getTopicID(self):
+        '''主题号'''
+        return self.TopicID
+
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getInstrumentNo(self):
+        '''合约编号'''
+        return self.InstrumentNo
+
+    def getCodePrice(self):
+        '''基准价'''
+        return self.CodePrice
+
+    def getVolumeMultiple(self):
+        '''合约数量乘数'''
+        return self.VolumeMultiple
+
+    def getPriceTick(self):
+        '''最小变动价位'''
+        return self.PriceTick
+
+    def __str__(self): # 可以直接print
+        return f"'TopicID'={self.getTopicID()}, 'InstrumentID'={self.getInstrumentID()}, 'InstrumentNo'={self.getInstrumentNo()}, 'CodePrice'={self.getCodePrice()}, 'VolumeMultiple'={self.getVolumeMultiple()}, 'PriceTick'={self.getPriceTick()}"
+
+
+class  CThostFtdcQryMulticastInstrumentField(Structure):
+    """QryMulticastInstrument"""
+    _fields_ = [
+        ("TopicID", c_int32),
+        ("InstrumentID", c_char*31),
+    ]
+
+    def getTopicID(self):
+        '''主题号'''
+        return self.TopicID
+
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def __str__(self): # 可以直接print
+        return f"'TopicID'={self.getTopicID()}, 'InstrumentID'={self.getInstrumentID()}"
+
+
 class  CThostFtdcReqOpenAccountField(Structure):
     """转帐开户请求"""
     _fields_ = [

@@ -11,8 +11,8 @@ import os
 # 切换到 generate 目录下
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 # src_dir = '../ctp_20180109_x86'
-# src_dir = '../v6.3.16_T1_20190508'   # 看穿式监管
-src_dir = '../v6.3.15_20190220'
+# src_dir = '../v6.3.15_20190220'
+src_dir = '../v6.3.16_T1_20190508'   # 看穿式监管
 data_type_file_name = 'ThostFtdcUserApiDataType'
 
 import g_enum

@@ -14712,6 +14712,56 @@ public struct  CThostFtdcQryBulletinField
 }
 
 /// <summary>
+/// MulticastInstrument
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public struct  CThostFtdcMulticastInstrumentField
+{
+	/// <summary>
+	/// 主题号
+	/// </summary>
+	public int TopicID;
+	/// <summary>
+	/// 合约代码
+	/// </summary>
+	[MarshalAs(UnmanagedType.ByValTStr, SizeConst=31)]
+	public string InstrumentID;
+	/// <summary>
+	/// 合约编号
+	/// </summary>
+	public int InstrumentNo;
+	/// <summary>
+	/// 基准价
+	/// </summary>
+	public double CodePrice;
+	/// <summary>
+	/// 合约数量乘数
+	/// </summary>
+	public int VolumeMultiple;
+	/// <summary>
+	/// 最小变动价位
+	/// </summary>
+	public double PriceTick;
+}
+
+/// <summary>
+/// QryMulticastInstrument
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public struct  CThostFtdcQryMulticastInstrumentField
+{
+	/// <summary>
+	/// 主题号
+	/// </summary>
+	public int TopicID;
+	/// <summary>
+	/// 合约代码
+	/// </summary>
+	[MarshalAs(UnmanagedType.ByValTStr, SizeConst=31)]
+	public string InstrumentID;
+}
+
+/// <summary>
 /// 转帐开户请求
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]

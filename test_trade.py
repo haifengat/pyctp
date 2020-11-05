@@ -11,14 +11,14 @@ import time
 
 
 class TestTrade(object):
-    def __init__(self, addr: str, broker: str, investor: str, pwd: str, appid: str, auth_code: str, proc: str):
+    def __init__(self, addr: str, broker: str, investor: str, pwd: str, appid: str, auth_code: str):
         self.front = addr
         self.broker = broker
         self.investor = investor
         self.pwd = pwd
         self.appid = appid
         self.authcode = auth_code
-        self.proc = proc
+        self.proc = '@haifeng'
 
         self.t = CtpTrade()
         self.t.OnConnected = self.on_connect
@@ -75,14 +75,8 @@ if __name__ == "__main__":
     pwd = '1'
     appid = 'simnow_client_test'
     auth_code = '0000000000000000'
-    proc = ''
-    if investor == '':
-        investor = input('invesotr:')
-        pwd = input('password:')
-        appid = input('appid:')
-        auth_code = input('auth code:')
-        proc = input('product info:')
-    tt = TestTrade(front_trade, broker, investor, pwd, appid, auth_code, proc)
+    
+    tt = TestTrade(front_trade, broker, investor, pwd, appid, auth_code)
     tt.run()
     time.sleep(10)
     print('account info')
