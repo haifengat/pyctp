@@ -36,6 +36,7 @@ class TestTrade(object):
         self.t.ReqUserLogin(self.investor, self.pwd, self.broker, self.proc, self.appid, self.authcode)
 
     def run(self):
+        print(self.t.GetVersion())
         self.t.ReqConnect(self.front)
         # self.t.ReqConnect('tcp://192.168.52.4:41205')
 

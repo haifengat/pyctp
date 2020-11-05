@@ -35,3 +35,9 @@
     ssh-add /home/code/gitee_rsa
     git push gitee
     ```
+## 更新
+### 20201104
+更新:接口更新到6.3.16;不再支持32位; 解决lnx下so路径问题;解决合约过多导致的bug;
+连接simnow，须用官方6.3.15的文件覆盖lib64下同名文件
+## 安装
+pip install --no-binary :all: py-ctp

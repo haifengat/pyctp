@@ -32,17 +32,19 @@ long_description = read_file('setup.md')
 # 生成requirements.txt pipreqs --encoding=utf8 --force py_ctp
 # python setup.py sdist && twine upload dist/*         //.tar.gz
 # pip install --upgrade setuptools wheel keyring
-# python setup.py bdist_wheel && twine upload dist/*   //.whl
+# python setup.py sdist_wheel && twine upload dist/*   //.whl
 setup(
     name='py_ctp',  # 包名
     python_requires='>=3.6.0',  # python环境
-    version='2.3.3',  # 包的版本
+    version='2.3.4',  # 包的版本
     description="Python CTP futures api",  # 包简介，显示在PyPI上
     long_description=long_description,  # 读取的Readme文档内容
     long_description_content_type = "text/markdown",  # 指定包文档格式为markdown
     author="HaiFeng",  # 作者相关信息
     author_email='haifengat@vip.qq.com',
     url='https://github.com/haifengat/hf_ctp_py_proxy',
+    # library_dirs = ['/usr/lib'],
+    # extra_link_args.append（'-Wl，-rpath，'+ lib_path）
     # 指定包信息，还可以用find_packages()函数
     # packages=find_packages(),
     packages=['py_ctp'],
