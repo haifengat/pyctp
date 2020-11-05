@@ -6,6 +6,7 @@
 
 
 import os
+import sys
 import platform
 import copy
 from .ctp_struct import *
@@ -15,27 +16,16 @@ class Trade:
 
     def __init__(self):
 
-        dllpath = os.path.join(os.path.abspath(os.path.dirname(__file__)), "lib64")
+        dllpath = os.path.join(os.path.abspath(os.path.dirname(__file__)), f"lib{'64' if sys.maxsize > 2**32 else '32'}")
         absolute_dllfile_path = os.path.join(dllpath, 'ctp_trade.' + ('dll' if 'Windows' in platform.system() else 'so'))
         if not os.path.exists(absolute_dllfile_path):
             print('缺少DLL接口文件')
             return
+
         # make log dir for api log
-        # pre_dir = os.getcwd()
         logdir = os.path.join(os.getcwd(), 'log')
         if not os.path.exists(logdir):
             os.mkdir(logdir)
-
-        # dlldir = os.path.split(absolute_dllfile_path)[0]
-        
-        # os.system(f"export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:{dlldir}")
-        # if 'path' in os.environ:
-        #     os.environ['path'] += f';{dlldir}'
-        # elif 'PATH' in os.environ:
-        #     os.environ['PATH'] += f';{dlldir}'
-        # if 'LD_LIBRARY_PATH' in os.environ:
-        #     os.environ['LD_LIBRARY_PATH'] += ':' + dlldir + '/'
-        # os.chdir(dlldir)
 
         self.h = CDLL(absolute_dllfile_path)
 
@@ -45,12 +35,11 @@ class Trade:
         self.h.CreateSpi.argtypes = []
         self.h.CreateSpi.restype = c_void_p
 
-        self.h.GetVersion.argtypes = []
-        self.h.GetVersion.restype = c_char_p
-
         self.api = None
         self.spi = None
         self.nRequestID = 0
+        self.h.GetVersion.argtypes = []
+        self.h.GetVersion.restype = c_char_p
         self.h.Release.argtypes = [c_void_p]
         self.h.Release.restype = c_void_p
 
@@ -81,11 +70,11 @@ class Trade:
         self.h.ReqAuthenticate.argtypes = [c_void_p, c_void_p, c_int32]
         self.h.ReqAuthenticate.restype = c_void_p
 
-        # self.h.RegisterUserSystemInfo.argtypes = [c_void_p, c_void_p]
-        # self.h.RegisterUserSystemInfo.restype = c_void_p
+        self.h.RegisterUserSystemInfo.argtypes = [c_void_p, c_void_p]
+        self.h.RegisterUserSystemInfo.restype = c_void_p
 
-        # self.h.SubmitUserSystemInfo.argtypes = [c_void_p, c_void_p]
-        # self.h.SubmitUserSystemInfo.restype = c_void_p
+        self.h.SubmitUserSystemInfo.argtypes = [c_void_p, c_void_p]
+        self.h.SubmitUserSystemInfo.restype = c_void_p
 
         self.h.ReqUserLogin.argtypes = [c_void_p, c_void_p, c_int32]
         self.h.ReqUserLogin.restype = c_void_p
@@ -329,7 +318,6 @@ class Trade:
 
         self.h.ReqQueryBankAccountMoneyByFuture.argtypes = [c_void_p, c_void_p, c_int32]
         self.h.ReqQueryBankAccountMoneyByFuture.restype = c_void_p
-        # os.chdir(pre_dir)
 
 
     def CreateApi(self):
@@ -340,9 +328,11 @@ class Trade:
         self.spi = self.h.CreateSpi()
         return self.spi
 
+
     def GetVersion(self):
         v = str(self.h.GetVersion(), encoding='ascii')
         return str(v)
+
 
     def Release(self):
         self.h.Release(self.api)

@@ -182,6 +182,11 @@ class {spi_class_name.title()}:
         self.api = None
         self.spi = None
         self.nRequestID = 0''')
+                if spi_class_name.lower() == 'trade':
+                    f_py.write('''
+        self.h.GetVersion.argtypes = []
+        self.h.GetVersion.restype = c_char_p''')
+
 
             if generate_cs:
                 f_cs.write(f'''using System;
@@ -477,6 +482,10 @@ namespace HaiFeng
                                         py_params += f", {l[0]}: float = .0"
                                         py_params_stru.append(f"{n}.{l[0]} = {l[0]}")
                                         cs_params.append(f'double {l[0]} = 0.0')
+                                    elif 'c_int' in type_name:
+                                        py_params += f", {l[0]}: int = 0"
+                                        py_params_stru.append(f"{n}.{l[0]} = {l[0]}")
+                                        cs_params.append(f'int {l[0]} = 0')
                                     else:
                                         raise Exception(f'no type: {type_name}')
                                         # py_params += f"{l[0]}: {[k for k, v in type_dict.items() if v == type_name][0]}" # c_bool => bool
@@ -519,8 +528,8 @@ namespace HaiFeng
     def {req_name}(self{py_params}):{py_params_stru}
         self.h.{req_name}(self.api{py_params_name})''')
 
-                    if not req_name.endswith('UserSystemInfo'):
-                        cpp_req.append(f'DLL_EXPORT_C_DECL void* WINAPI {req_name}({api_class_name} *api{req_params}){{api->{req_name}({req_params_name}); return 0;}}')
+                    # if not req_name.endswith('UserSystemInfo'):
+                    cpp_req.append(f'DLL_EXPORT_C_DECL void* WINAPI {req_name}({api_class_name} *api{req_params}){{api->{req_name}({req_params_name}); return 0;}}')
                     def_req.append(req_name)
 
     if generate_c:
@@ -531,7 +540,9 @@ namespace HaiFeng
         f_c_cpp.write('\n}\n\n')
 
         f_c_cpp.write('\n'.join(cpp_set))
-        f_c_cpp.write(f'''\n\nDLL_EXPORT_C_DECL void* WINAPI CreateApi(){{return {create_api}("./log/");}}\nDLL_EXPORT_C_DECL void* WINAPI CreateSpi(){{return new {spi_class_name.title()}();}}\n''')
+        f_c_cpp.write(f'''\n\nDLL_EXPORT_C_DECL void* WINAPI CreateApi(){{return {create_api}("./log/");}}\nDLL_EXPORT_C_DECL void* WINAPI CreateSpi(){{return new {spi_class_name.title()}();}}\n\n''')
+        if spi_class_name.lower() == 'trade':
+            f_c_cpp.write("DLL_EXPORT_C_DECL void* WINAPI GetVersion() { return (void*)CThostFtdcTraderApi::GetApiVersion(); }\n")
         f_c_cpp.write('\n'.join(cpp_req))
 
         # f_c_def.write('LIBRARY ctp_trade\nEXPORTS\nCreateApi\nCreateSpi\n')
@@ -551,6 +562,11 @@ namespace HaiFeng
     def CreateSpi(self):
         self.spi = self.h.CreateSpi()
         return self.spi\n\n''')
+        if spi_class_name.lower() == 'trade':
+            f_py.write('''
+    def GetVersion(self):
+        v = str(self.h.GetVersion(), encoding='ascii')
+        return str(v)\n\n''')
         f_py.write('\n'.join(py_req_def_body))
         f_py.write(f"\n\n{' '*4}def RegCB(self):")
         f_py.write('\n'.join(py_on_reg))

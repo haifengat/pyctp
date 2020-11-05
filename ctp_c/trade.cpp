@@ -256,9 +256,11 @@ DLL_EXPORT_C_DECL void WINAPI SetOnRspQueryBankAccountMoneyByFuture(Trade* spi, 
 DLL_EXPORT_C_DECL void WINAPI SetOnRtnOpenAccountByBank(Trade* spi, void* func){spi->_RtnOpenAccountByBank = func;}
 DLL_EXPORT_C_DECL void WINAPI SetOnRtnCancelAccountByBank(Trade* spi, void* func){spi->_RtnCancelAccountByBank = func;}
 DLL_EXPORT_C_DECL void WINAPI SetOnRtnChangeAccountByBank(Trade* spi, void* func){spi->_RtnChangeAccountByBank = func;}
-DLL_EXPORT_C_DECL void* WINAPI GetVersion() { return (void*)CThostFtdcTraderApi::GetApiVersion(); }
+
 DLL_EXPORT_C_DECL void* WINAPI CreateApi(){return CThostFtdcTraderApi::CreateFtdcTraderApi("./log/");}
 DLL_EXPORT_C_DECL void* WINAPI CreateSpi(){return new Trade();}
+
+DLL_EXPORT_C_DECL void* WINAPI GetVersion() { return (void*)CThostFtdcTraderApi::GetApiVersion(); }
 DLL_EXPORT_C_DECL void* WINAPI Release(CThostFtdcTraderApi *api){api->Release(); return 0;}
 DLL_EXPORT_C_DECL void* WINAPI Init(CThostFtdcTraderApi *api){api->Init(); return 0;}
 DLL_EXPORT_C_DECL void* WINAPI Join(CThostFtdcTraderApi *api){api->Join(); return 0;}
@@ -269,6 +271,8 @@ DLL_EXPORT_C_DECL void* WINAPI RegisterSpi(CThostFtdcTraderApi *api, CThostFtdcT
 DLL_EXPORT_C_DECL void* WINAPI SubscribePrivateTopic(CThostFtdcTraderApi *api, THOST_TE_RESUME_TYPE nResumeType){api->SubscribePrivateTopic(nResumeType); return 0;}
 DLL_EXPORT_C_DECL void* WINAPI SubscribePublicTopic(CThostFtdcTraderApi *api, THOST_TE_RESUME_TYPE nResumeType){api->SubscribePublicTopic(nResumeType); return 0;}
 DLL_EXPORT_C_DECL void* WINAPI ReqAuthenticate(CThostFtdcTraderApi *api, CThostFtdcReqAuthenticateField *pReqAuthenticateField, int nRequestID){api->ReqAuthenticate(pReqAuthenticateField, nRequestID); return 0;}
+DLL_EXPORT_C_DECL void* WINAPI RegisterUserSystemInfo(CThostFtdcTraderApi *api, CThostFtdcUserSystemInfoField *pUserSystemInfo){api->RegisterUserSystemInfo(pUserSystemInfo); return 0;}
+DLL_EXPORT_C_DECL void* WINAPI SubmitUserSystemInfo(CThostFtdcTraderApi *api, CThostFtdcUserSystemInfoField *pUserSystemInfo){api->SubmitUserSystemInfo(pUserSystemInfo); return 0;}
 DLL_EXPORT_C_DECL void* WINAPI ReqUserLogin(CThostFtdcTraderApi *api, CThostFtdcReqUserLoginField *pReqUserLoginField, int nRequestID){api->ReqUserLogin(pReqUserLoginField, nRequestID); return 0;}
 DLL_EXPORT_C_DECL void* WINAPI ReqUserLogout(CThostFtdcTraderApi *api, CThostFtdcUserLogoutField *pUserLogout, int nRequestID){api->ReqUserLogout(pUserLogout, nRequestID); return 0;}
 DLL_EXPORT_C_DECL void* WINAPI ReqUserPasswordUpdate(CThostFtdcTraderApi *api, CThostFtdcUserPasswordUpdateField *pUserPasswordUpdate, int nRequestID){api->ReqUserPasswordUpdate(pUserPasswordUpdate, nRequestID); return 0;}

@@ -37,8 +37,8 @@ class TestTrade(object):
 
     def run(self):
         print(self.t.GetVersion())
+        print('trade connect...')
         self.t.ReqConnect(self.front)
-        # self.t.ReqConnect('tcp://192.168.52.4:41205')
 
     def release(self):
         self.t.ReqUserLogout()
@@ -55,10 +55,12 @@ class TestQuote(object):
         self.pwd = pwd
 
         self.q = CtpQuote()
+        self.q.OnTick = lambda o, x: print(x)
         self.q.OnConnected = lambda x: self.q.ReqUserLogin(self.investor, self.pwd, self.broker)
-        self.q.OnUserLogin = lambda o, i: self.q.ReqSubscribeMarketData('rb1910')
+        self.q.OnUserLogin = lambda o, i: self.q.ReqSubscribeMarketData('rb2101')
 
     def run(self):
+        print('quote connecting...')
         self.q.ReqConnect(self.front)
 
     def release(self):
@@ -69,7 +71,7 @@ if __name__ == "__main__":
     front_trade = 'tcp://180.168.146.187:10101'
     front_quote = 'tcp://180.168.146.187:10111'
     broker = '9999'
-    investor = '008105'
+    investor = '008107'
     pwd = '1'
     appid = 'simnow_client_test'
     auth_code = '0000000000000000'
@@ -82,17 +84,20 @@ if __name__ == "__main__":
         proc = input('product info:')
     tt = TestTrade(front_trade, broker, investor, pwd, appid, auth_code, proc)
     tt.run()
-    time.sleep(5)
-    # tt.t.ReqOrderInsert('rb2001', DirectType.Buy, OffsetType.Open, 4000, 3)
+    time.sleep(10)
+    print('account info')
+    print(tt.t.account)
+    # tt.t.ReqOrderInsert('rb2101', DirectType.Buy, OffsetType.Open, 4000, 3)
 
     qq = TestQuote(front_quote, broker, investor, pwd)
     qq.run()
-    #
-    time.sleep(6)
-    for inst in tt.t.instruments.values():
-        print(inst)
-    print(tt.t.account)
+    
+    time.sleep(5)
+    print('press ENTER key to release')
     input()
+    # for inst in tt.t.instruments.values():
+    #     print(inst)
+    print('trade release')
     tt.release()
+    print('quote release')
     qq.release()
-    input()

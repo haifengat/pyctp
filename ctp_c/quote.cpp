@@ -33,6 +33,7 @@ DLL_EXPORT_C_DECL void WINAPI SetOnRtnForQuoteRsp(Quote* spi, void* func){spi->_
 
 DLL_EXPORT_C_DECL void* WINAPI CreateApi(){return CThostFtdcMdApi::CreateFtdcMdApi("./log/");}
 DLL_EXPORT_C_DECL void* WINAPI CreateSpi(){return new Quote();}
+
 DLL_EXPORT_C_DECL void* WINAPI Release(CThostFtdcMdApi *api){api->Release(); return 0;}
 DLL_EXPORT_C_DECL void* WINAPI Init(CThostFtdcMdApi *api){api->Init(); return 0;}
 DLL_EXPORT_C_DECL void* WINAPI Join(CThostFtdcMdApi *api){api->Join(); return 0;}

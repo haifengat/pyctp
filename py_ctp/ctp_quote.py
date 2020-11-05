@@ -6,6 +6,7 @@
 
 
 import os
+import sys
 import platform
 import ctypes
 import copy
@@ -16,25 +17,16 @@ class Quote:
 
     def __init__(self):
 
-        dllpath = os.path.join(os.path.abspath(os.path.dirname(__file__)), "lib64")
+        dllpath = os.path.join(os.path.abspath(os.path.dirname(__file__)), f"lib{'64' if sys.maxsize > 2**32 else '32'}")
         absolute_dllfile_path = os.path.join(dllpath, 'ctp_quote.' + ('dll' if 'Windows' in platform.system() else 'so'))
         if not os.path.exists(absolute_dllfile_path):
             print('缺少DLL接口文件')
             return
 
         # make log dir for api log
-        # pre_dir = os.getcwd()
         logdir = os.path.join(os.getcwd(), 'log')
         if not os.path.exists(logdir):
             os.mkdir(logdir)
-
-        # dlldir = os.path.split(absolute_dllfile_path)[0]
-        # if 'path' in os.environ:
-        #     os.environ['path'] += f';{dlldir}'
-        # elif 'PATH' in os.environ:
-        #     os.environ['PATH'] += f';{dlldir}'
-        # os.chdir(dlldir)
-
         self.h = CDLL(absolute_dllfile_path)
 
         self.h.CreateApi.argtypes = []
@@ -84,7 +76,6 @@ class Quote:
 
         self.h.ReqUserLogout.argtypes = [c_void_p, c_void_p, c_int32]
         self.h.ReqUserLogout.restype = c_void_p
-        # os.chdir(pre_dir)
 
 
     def CreateApi(self):

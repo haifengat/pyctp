@@ -125,7 +125,7 @@ class CtpQuote(object):
         tick.PreOpenInterest = pDepthMarketData.getPreOpenInterest()
 
         # 用线程会导入多数据入库时报错
-        # threading.Thread(target=self.OnTick, (self, tick))
+        # threading.Thread(target=self.OnTick, args=(self, tick))
         self.OnTick(self, tick)
 
     def OnDisConnected(self, obj, error: int):

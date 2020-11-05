@@ -68,11 +68,11 @@ namespace HaiFeng
 			string curPath = Environment.CurrentDirectory;
             var dll_path = new FileInfo(this.GetType().Assembly.Location).DirectoryName;
             Environment.CurrentDirectory = dll_path;
-            dll_path = Path.Combine(dll_path, "lib64");
+            dll_path = Path.Combine(dll_path, "lib" + (Environment.Is64BitProcess ? "64" : "32"));
             if (!Directory.Exists(dll_path))
             {
                 File.WriteAllBytes("lib.zip", Properties.Resources.lib);
-                ZipFile.ExtractToDirectory("lib.zip", "./lib64");
+                ZipFile.ExtractToDirectory("lib.zip", ".");
                 File.Delete("lib.zip");
             }
 			Environment.CurrentDirectory = dll_path;
@@ -357,7 +357,7 @@ namespace HaiFeng
         }
                     
 
-        public IntPtr RegisterUserSystemInfo(string BrokerID = "",string UserID = "",int ClientSystemInfoLen = 1,string ClientSystemInfo = "",string ClientPublicIP = "",int ClientIPPort = 1,string ClientLoginTime = "",string ClientAppID = "")
+        public IntPtr RegisterUserSystemInfo(string BrokerID = "",string UserID = "",int ClientSystemInfoLen = 0,string ClientSystemInfo = "",string ClientPublicIP = "",int ClientIPPort = 0,string ClientLoginTime = "",string ClientAppID = "")
         {
 			CThostFtdcUserSystemInfoField pUserSystemInfo = new CThostFtdcUserSystemInfoField
 			{
@@ -374,7 +374,7 @@ namespace HaiFeng
         }
                     
 
-        public IntPtr SubmitUserSystemInfo(string BrokerID = "",string UserID = "",int ClientSystemInfoLen = 1,string ClientSystemInfo = "",string ClientPublicIP = "",int ClientIPPort = 1,string ClientLoginTime = "",string ClientAppID = "")
+        public IntPtr SubmitUserSystemInfo(string BrokerID = "",string UserID = "",int ClientSystemInfoLen = 0,string ClientSystemInfo = "",string ClientPublicIP = "",int ClientIPPort = 0,string ClientLoginTime = "",string ClientAppID = "")
         {
 			CThostFtdcUserSystemInfoField pUserSystemInfo = new CThostFtdcUserSystemInfoField
 			{
@@ -391,7 +391,7 @@ namespace HaiFeng
         }
                     
 
-        public IntPtr ReqUserLogin(string TradingDay = "",string BrokerID = "",string UserID = "",string Password = "",string UserProductInfo = "",string InterfaceProductInfo = "",string ProtocolInfo = "",string MacAddress = "",string OneTimePassword = "",string ClientIPAddress = "",string LoginRemark = "",int ClientIPPort = 1)
+        public IntPtr ReqUserLogin(string TradingDay = "",string BrokerID = "",string UserID = "",string Password = "",string UserProductInfo = "",string InterfaceProductInfo = "",string ProtocolInfo = "",string MacAddress = "",string OneTimePassword = "",string ClientIPAddress = "",string LoginRemark = "",int ClientIPPort = 0)
         {
 			CThostFtdcReqUserLoginField pReqUserLoginField = new CThostFtdcReqUserLoginField
 			{
@@ -486,7 +486,7 @@ namespace HaiFeng
         }
                     
 
-        public IntPtr ReqUserLoginWithCaptcha(string TradingDay = "",string BrokerID = "",string UserID = "",string Password = "",string UserProductInfo = "",string InterfaceProductInfo = "",string ProtocolInfo = "",string MacAddress = "",string ClientIPAddress = "",string LoginRemark = "",string Captcha = "",int ClientIPPort = 1)
+        public IntPtr ReqUserLoginWithCaptcha(string TradingDay = "",string BrokerID = "",string UserID = "",string Password = "",string UserProductInfo = "",string InterfaceProductInfo = "",string ProtocolInfo = "",string MacAddress = "",string ClientIPAddress = "",string LoginRemark = "",string Captcha = "",int ClientIPPort = 0)
         {
 			CThostFtdcReqUserLoginWithCaptchaField pReqUserLoginWithCaptcha = new CThostFtdcReqUserLoginWithCaptchaField
 			{
@@ -507,7 +507,7 @@ namespace HaiFeng
         }
                     
 
-        public IntPtr ReqUserLoginWithText(string TradingDay = "",string BrokerID = "",string UserID = "",string Password = "",string UserProductInfo = "",string InterfaceProductInfo = "",string ProtocolInfo = "",string MacAddress = "",string ClientIPAddress = "",string LoginRemark = "",string Text = "",int ClientIPPort = 1)
+        public IntPtr ReqUserLoginWithText(string TradingDay = "",string BrokerID = "",string UserID = "",string Password = "",string UserProductInfo = "",string InterfaceProductInfo = "",string ProtocolInfo = "",string MacAddress = "",string ClientIPAddress = "",string LoginRemark = "",string Text = "",int ClientIPPort = 0)
         {
 			CThostFtdcReqUserLoginWithTextField pReqUserLoginWithText = new CThostFtdcReqUserLoginWithTextField
 			{
@@ -528,7 +528,7 @@ namespace HaiFeng
         }
                     
 
-        public IntPtr ReqUserLoginWithOTP(string TradingDay = "",string BrokerID = "",string UserID = "",string Password = "",string UserProductInfo = "",string InterfaceProductInfo = "",string ProtocolInfo = "",string MacAddress = "",string ClientIPAddress = "",string LoginRemark = "",string OTPPassword = "",int ClientIPPort = 1)
+        public IntPtr ReqUserLoginWithOTP(string TradingDay = "",string BrokerID = "",string UserID = "",string Password = "",string UserProductInfo = "",string InterfaceProductInfo = "",string ProtocolInfo = "",string MacAddress = "",string ClientIPAddress = "",string LoginRemark = "",string OTPPassword = "",int ClientIPPort = 0)
         {
 			CThostFtdcReqUserLoginWithOTPField pReqUserLoginWithOTP = new CThostFtdcReqUserLoginWithOTPField
 			{
@@ -549,7 +549,7 @@ namespace HaiFeng
         }
                     
 
-        public IntPtr ReqOrderInsert(string BrokerID = "",string InvestorID = "",string InstrumentID = "",string OrderRef = "",string UserID = "",TThostFtdcOrderPriceTypeType OrderPriceType = TThostFtdcOrderPriceTypeType.THOST_FTDC_OPT_AnyPrice,TThostFtdcDirectionType Direction = TThostFtdcDirectionType.THOST_FTDC_D_Buy,string CombOffsetFlag = "",string CombHedgeFlag = "",double LimitPrice = 0.0,int VolumeTotalOriginal = 1,TThostFtdcTimeConditionType TimeCondition = TThostFtdcTimeConditionType.THOST_FTDC_TC_IOC,string GTDDate = "",TThostFtdcVolumeConditionType VolumeCondition = TThostFtdcVolumeConditionType.THOST_FTDC_VC_AV,int MinVolume = 1,TThostFtdcContingentConditionType ContingentCondition = TThostFtdcContingentConditionType.THOST_FTDC_CC_Immediately,double StopPrice = 0.0,TThostFtdcForceCloseReasonType ForceCloseReason = TThostFtdcForceCloseReasonType.THOST_FTDC_FCC_NotForceClose,int IsAutoSuspend = 1,string BusinessUnit = "",int RequestID = 1,int UserForceClose = 1,int IsSwapOrder = 1,string ExchangeID = "",string InvestUnitID = "",string AccountID = "",string CurrencyID = "",string ClientID = "",string IPAddress = "",string MacAddress = "")
+        public IntPtr ReqOrderInsert(string BrokerID = "",string InvestorID = "",string InstrumentID = "",string OrderRef = "",string UserID = "",TThostFtdcOrderPriceTypeType OrderPriceType = TThostFtdcOrderPriceTypeType.THOST_FTDC_OPT_AnyPrice,TThostFtdcDirectionType Direction = TThostFtdcDirectionType.THOST_FTDC_D_Buy,string CombOffsetFlag = "",string CombHedgeFlag = "",double LimitPrice = 0.0,int VolumeTotalOriginal = 0,TThostFtdcTimeConditionType TimeCondition = TThostFtdcTimeConditionType.THOST_FTDC_TC_IOC,string GTDDate = "",TThostFtdcVolumeConditionType VolumeCondition = TThostFtdcVolumeConditionType.THOST_FTDC_VC_AV,int MinVolume = 0,TThostFtdcContingentConditionType ContingentCondition = TThostFtdcContingentConditionType.THOST_FTDC_CC_Immediately,double StopPrice = 0.0,TThostFtdcForceCloseReasonType ForceCloseReason = TThostFtdcForceCloseReasonType.THOST_FTDC_FCC_NotForceClose,int IsAutoSuspend = 0,string BusinessUnit = "",int RequestID = 0,int UserForceClose = 0,int IsSwapOrder = 0,string ExchangeID = "",string InvestUnitID = "",string AccountID = "",string CurrencyID = "",string ClientID = "",string IPAddress = "",string MacAddress = "")
         {
 			CThostFtdcInputOrderField pInputOrder = new CThostFtdcInputOrderField
 			{
@@ -588,7 +588,7 @@ namespace HaiFeng
         }
                     
 
-        public IntPtr ReqParkedOrderInsert(string BrokerID = "",string InvestorID = "",string InstrumentID = "",string OrderRef = "",string UserID = "",TThostFtdcOrderPriceTypeType OrderPriceType = TThostFtdcOrderPriceTypeType.THOST_FTDC_OPT_AnyPrice,TThostFtdcDirectionType Direction = TThostFtdcDirectionType.THOST_FTDC_D_Buy,string CombOffsetFlag = "",string CombHedgeFlag = "",double LimitPrice = 0.0,int VolumeTotalOriginal = 1,TThostFtdcTimeConditionType TimeCondition = TThostFtdcTimeConditionType.THOST_FTDC_TC_IOC,string GTDDate = "",TThostFtdcVolumeConditionType VolumeCondition = TThostFtdcVolumeConditionType.THOST_FTDC_VC_AV,int MinVolume = 1,TThostFtdcContingentConditionType ContingentCondition = TThostFtdcContingentConditionType.THOST_FTDC_CC_Immediately,double StopPrice = 0.0,TThostFtdcForceCloseReasonType ForceCloseReason = TThostFtdcForceCloseReasonType.THOST_FTDC_FCC_NotForceClose,int IsAutoSuspend = 1,string BusinessUnit = "",int RequestID = 1,int UserForceClose = 1,string ExchangeID = "",string ParkedOrderID = "",TThostFtdcUserTypeType UserType = TThostFtdcUserTypeType.THOST_FTDC_UT_Investor,TThostFtdcParkedOrderStatusType Status = TThostFtdcParkedOrderStatusType.THOST_FTDC_PAOS_NotSend,int ErrorID = 1,string ErrorMsg = "",int IsSwapOrder = 1,string AccountID = "",string CurrencyID = "",string ClientID = "",string InvestUnitID = "",string IPAddress = "",string MacAddress = "")
+        public IntPtr ReqParkedOrderInsert(string BrokerID = "",string InvestorID = "",string InstrumentID = "",string OrderRef = "",string UserID = "",TThostFtdcOrderPriceTypeType OrderPriceType = TThostFtdcOrderPriceTypeType.THOST_FTDC_OPT_AnyPrice,TThostFtdcDirectionType Direction = TThostFtdcDirectionType.THOST_FTDC_D_Buy,string CombOffsetFlag = "",string CombHedgeFlag = "",double LimitPrice = 0.0,int VolumeTotalOriginal = 0,TThostFtdcTimeConditionType TimeCondition = TThostFtdcTimeConditionType.THOST_FTDC_TC_IOC,string GTDDate = "",TThostFtdcVolumeConditionType VolumeCondition = TThostFtdcVolumeConditionType.THOST_FTDC_VC_AV,int MinVolume = 0,TThostFtdcContingentConditionType ContingentCondition = TThostFtdcContingentConditionType.THOST_FTDC_CC_Immediately,double StopPrice = 0.0,TThostFtdcForceCloseReasonType ForceCloseReason = TThostFtdcForceCloseReasonType.THOST_FTDC_FCC_NotForceClose,int IsAutoSuspend = 0,string BusinessUnit = "",int RequestID = 0,int UserForceClose = 0,string ExchangeID = "",string ParkedOrderID = "",TThostFtdcUserTypeType UserType = TThostFtdcUserTypeType.THOST_FTDC_UT_Investor,TThostFtdcParkedOrderStatusType Status = TThostFtdcParkedOrderStatusType.THOST_FTDC_PAOS_NotSend,int ErrorID = 0,string ErrorMsg = "",int IsSwapOrder = 0,string AccountID = "",string CurrencyID = "",string ClientID = "",string InvestUnitID = "",string IPAddress = "",string MacAddress = "")
         {
 			CThostFtdcParkedOrderField pParkedOrder = new CThostFtdcParkedOrderField
 			{
@@ -632,7 +632,7 @@ namespace HaiFeng
         }
                     
 
-        public IntPtr ReqParkedOrderAction(string BrokerID = "",string InvestorID = "",int OrderActionRef = 1,string OrderRef = "",int RequestID = 1,int FrontID = 1,int SessionID = 1,string ExchangeID = "",string OrderSysID = "",TThostFtdcActionFlagType ActionFlag = TThostFtdcActionFlagType.THOST_FTDC_AF_Delete,double LimitPrice = 0.0,int VolumeChange = 1,string UserID = "",string InstrumentID = "",string ParkedOrderActionID = "",TThostFtdcUserTypeType UserType = TThostFtdcUserTypeType.THOST_FTDC_UT_Investor,TThostFtdcParkedOrderStatusType Status = TThostFtdcParkedOrderStatusType.THOST_FTDC_PAOS_NotSend,int ErrorID = 1,string ErrorMsg = "",string InvestUnitID = "",string IPAddress = "",string MacAddress = "")
+        public IntPtr ReqParkedOrderAction(string BrokerID = "",string InvestorID = "",int OrderActionRef = 0,string OrderRef = "",int RequestID = 0,int FrontID = 0,int SessionID = 0,string ExchangeID = "",string OrderSysID = "",TThostFtdcActionFlagType ActionFlag = TThostFtdcActionFlagType.THOST_FTDC_AF_Delete,double LimitPrice = 0.0,int VolumeChange = 0,string UserID = "",string InstrumentID = "",string ParkedOrderActionID = "",TThostFtdcUserTypeType UserType = TThostFtdcUserTypeType.THOST_FTDC_UT_Investor,TThostFtdcParkedOrderStatusType Status = TThostFtdcParkedOrderStatusType.THOST_FTDC_PAOS_NotSend,int ErrorID = 0,string ErrorMsg = "",string InvestUnitID = "",string IPAddress = "",string MacAddress = "")
         {
 			CThostFtdcParkedOrderActionField pParkedOrderAction = new CThostFtdcParkedOrderActionField
 			{
@@ -663,7 +663,7 @@ namespace HaiFeng
         }
                     
 
-        public IntPtr ReqOrderAction(string BrokerID = "",string InvestorID = "",int OrderActionRef = 1,string OrderRef = "",int RequestID = 1,int FrontID = 1,int SessionID = 1,string ExchangeID = "",string OrderSysID = "",TThostFtdcActionFlagType ActionFlag = TThostFtdcActionFlagType.THOST_FTDC_AF_Delete,double LimitPrice = 0.0,int VolumeChange = 1,string UserID = "",string InstrumentID = "",string InvestUnitID = "",string IPAddress = "",string MacAddress = "")
+        public IntPtr ReqOrderAction(string BrokerID = "",string InvestorID = "",int OrderActionRef = 0,string OrderRef = "",int RequestID = 0,int FrontID = 0,int SessionID = 0,string ExchangeID = "",string OrderSysID = "",TThostFtdcActionFlagType ActionFlag = TThostFtdcActionFlagType.THOST_FTDC_AF_Delete,double LimitPrice = 0.0,int VolumeChange = 0,string UserID = "",string InstrumentID = "",string InvestUnitID = "",string IPAddress = "",string MacAddress = "")
         {
 			CThostFtdcInputOrderActionField pInputOrderAction = new CThostFtdcInputOrderActionField
 			{
@@ -689,7 +689,7 @@ namespace HaiFeng
         }
                     
 
-        public IntPtr ReqQueryMaxOrderVolume(string BrokerID = "",string InvestorID = "",string InstrumentID = "",TThostFtdcDirectionType Direction = TThostFtdcDirectionType.THOST_FTDC_D_Buy,TThostFtdcOffsetFlagType OffsetFlag = TThostFtdcOffsetFlagType.THOST_FTDC_OF_Open,TThostFtdcHedgeFlagType HedgeFlag = TThostFtdcHedgeFlagType.THOST_FTDC_HF_Speculation,int MaxVolume = 1,string ExchangeID = "",string InvestUnitID = "")
+        public IntPtr ReqQueryMaxOrderVolume(string BrokerID = "",string InvestorID = "",string InstrumentID = "",TThostFtdcDirectionType Direction = TThostFtdcDirectionType.THOST_FTDC_D_Buy,TThostFtdcOffsetFlagType OffsetFlag = TThostFtdcOffsetFlagType.THOST_FTDC_OF_Open,TThostFtdcHedgeFlagType HedgeFlag = TThostFtdcHedgeFlagType.THOST_FTDC_HF_Speculation,int MaxVolume = 0,string ExchangeID = "",string InvestUnitID = "")
         {
 			CThostFtdcQueryMaxOrderVolumeField pQueryMaxOrderVolume = new CThostFtdcQueryMaxOrderVolumeField
 			{
@@ -707,7 +707,7 @@ namespace HaiFeng
         }
                     
 
-        public IntPtr ReqSettlementInfoConfirm(string BrokerID = "",string InvestorID = "",string ConfirmDate = "",string ConfirmTime = "",int SettlementID = 1,string AccountID = "",string CurrencyID = "")
+        public IntPtr ReqSettlementInfoConfirm(string BrokerID = "",string InvestorID = "",string ConfirmDate = "",string ConfirmTime = "",int SettlementID = 0,string AccountID = "",string CurrencyID = "")
         {
 			CThostFtdcSettlementInfoConfirmField pSettlementInfoConfirm = new CThostFtdcSettlementInfoConfirmField
 			{
@@ -749,7 +749,7 @@ namespace HaiFeng
         }
                     
 
-        public IntPtr ReqExecOrderInsert(string BrokerID = "",string InvestorID = "",string InstrumentID = "",string ExecOrderRef = "",string UserID = "",int Volume = 1,int RequestID = 1,string BusinessUnit = "",TThostFtdcOffsetFlagType OffsetFlag = TThostFtdcOffsetFlagType.THOST_FTDC_OF_Open,TThostFtdcHedgeFlagType HedgeFlag = TThostFtdcHedgeFlagType.THOST_FTDC_HF_Speculation,TThostFtdcActionTypeType ActionType = TThostFtdcActionTypeType.THOST_FTDC_ACTP_Exec,TThostFtdcPosiDirectionType PosiDirection = TThostFtdcPosiDirectionType.THOST_FTDC_PD_Net,TThostFtdcExecOrderPositionFlagType ReservePositionFlag = TThostFtdcExecOrderPositionFlagType.THOST_FTDC_EOPF_Reserve,TThostFtdcExecOrderCloseFlagType CloseFlag = TThostFtdcExecOrderCloseFlagType.THOST_FTDC_EOCF_AutoClose,string ExchangeID = "",string InvestUnitID = "",string AccountID = "",string CurrencyID = "",string ClientID = "",string IPAddress = "",string MacAddress = "")
+        public IntPtr ReqExecOrderInsert(string BrokerID = "",string InvestorID = "",string InstrumentID = "",string ExecOrderRef = "",string UserID = "",int Volume = 0,int RequestID = 0,string BusinessUnit = "",TThostFtdcOffsetFlagType OffsetFlag = TThostFtdcOffsetFlagType.THOST_FTDC_OF_Open,TThostFtdcHedgeFlagType HedgeFlag = TThostFtdcHedgeFlagType.THOST_FTDC_HF_Speculation,TThostFtdcActionTypeType ActionType = TThostFtdcActionTypeType.THOST_FTDC_ACTP_Exec,TThostFtdcPosiDirectionType PosiDirection = TThostFtdcPosiDirectionType.THOST_FTDC_PD_Net,TThostFtdcExecOrderPositionFlagType ReservePositionFlag = TThostFtdcExecOrderPositionFlagType.THOST_FTDC_EOPF_Reserve,TThostFtdcExecOrderCloseFlagType CloseFlag = TThostFtdcExecOrderCloseFlagType.THOST_FTDC_EOCF_AutoClose,string ExchangeID = "",string InvestUnitID = "",string AccountID = "",string CurrencyID = "",string ClientID = "",string IPAddress = "",string MacAddress = "")
         {
 			CThostFtdcInputExecOrderField pInputExecOrder = new CThostFtdcInputExecOrderField
 			{
@@ -779,7 +779,7 @@ namespace HaiFeng
         }
                     
 
-        public IntPtr ReqExecOrderAction(string BrokerID = "",string InvestorID = "",int ExecOrderActionRef = 1,string ExecOrderRef = "",int RequestID = 1,int FrontID = 1,int SessionID = 1,string ExchangeID = "",string ExecOrderSysID = "",TThostFtdcActionFlagType ActionFlag = TThostFtdcActionFlagType.THOST_FTDC_AF_Delete,string UserID = "",string InstrumentID = "",string InvestUnitID = "",string IPAddress = "",string MacAddress = "")
+        public IntPtr ReqExecOrderAction(string BrokerID = "",string InvestorID = "",int ExecOrderActionRef = 0,string ExecOrderRef = "",int RequestID = 0,int FrontID = 0,int SessionID = 0,string ExchangeID = "",string ExecOrderSysID = "",TThostFtdcActionFlagType ActionFlag = TThostFtdcActionFlagType.THOST_FTDC_AF_Delete,string UserID = "",string InstrumentID = "",string InvestUnitID = "",string IPAddress = "",string MacAddress = "")
         {
 			CThostFtdcInputExecOrderActionField pInputExecOrderAction = new CThostFtdcInputExecOrderActionField
 			{
@@ -821,7 +821,7 @@ namespace HaiFeng
         }
                     
 
-        public IntPtr ReqQuoteInsert(string BrokerID = "",string InvestorID = "",string InstrumentID = "",string QuoteRef = "",string UserID = "",double AskPrice = 0.0,double BidPrice = 0.0,int AskVolume = 1,int BidVolume = 1,int RequestID = 1,string BusinessUnit = "",TThostFtdcOffsetFlagType AskOffsetFlag = TThostFtdcOffsetFlagType.THOST_FTDC_OF_Open,TThostFtdcOffsetFlagType BidOffsetFlag = TThostFtdcOffsetFlagType.THOST_FTDC_OF_Open,TThostFtdcHedgeFlagType AskHedgeFlag = TThostFtdcHedgeFlagType.THOST_FTDC_HF_Speculation,TThostFtdcHedgeFlagType BidHedgeFlag = TThostFtdcHedgeFlagType.THOST_FTDC_HF_Speculation,string AskOrderRef = "",string BidOrderRef = "",string ForQuoteSysID = "",string ExchangeID = "",string InvestUnitID = "",string ClientID = "",string IPAddress = "",string MacAddress = "")
+        public IntPtr ReqQuoteInsert(string BrokerID = "",string InvestorID = "",string InstrumentID = "",string QuoteRef = "",string UserID = "",double AskPrice = 0.0,double BidPrice = 0.0,int AskVolume = 0,int BidVolume = 0,int RequestID = 0,string BusinessUnit = "",TThostFtdcOffsetFlagType AskOffsetFlag = TThostFtdcOffsetFlagType.THOST_FTDC_OF_Open,TThostFtdcOffsetFlagType BidOffsetFlag = TThostFtdcOffsetFlagType.THOST_FTDC_OF_Open,TThostFtdcHedgeFlagType AskHedgeFlag = TThostFtdcHedgeFlagType.THOST_FTDC_HF_Speculation,TThostFtdcHedgeFlagType BidHedgeFlag = TThostFtdcHedgeFlagType.THOST_FTDC_HF_Speculation,string AskOrderRef = "",string BidOrderRef = "",string ForQuoteSysID = "",string ExchangeID = "",string InvestUnitID = "",string ClientID = "",string IPAddress = "",string MacAddress = "")
         {
 			CThostFtdcInputQuoteField pInputQuote = new CThostFtdcInputQuoteField
 			{
@@ -853,7 +853,7 @@ namespace HaiFeng
         }
                     
 
-        public IntPtr ReqQuoteAction(string BrokerID = "",string InvestorID = "",int QuoteActionRef = 1,string QuoteRef = "",int RequestID = 1,int FrontID = 1,int SessionID = 1,string ExchangeID = "",string QuoteSysID = "",TThostFtdcActionFlagType ActionFlag = TThostFtdcActionFlagType.THOST_FTDC_AF_Delete,string UserID = "",string InstrumentID = "",string InvestUnitID = "",string ClientID = "",string IPAddress = "",string MacAddress = "")
+        public IntPtr ReqQuoteAction(string BrokerID = "",string InvestorID = "",int QuoteActionRef = 0,string QuoteRef = "",int RequestID = 0,int FrontID = 0,int SessionID = 0,string ExchangeID = "",string QuoteSysID = "",TThostFtdcActionFlagType ActionFlag = TThostFtdcActionFlagType.THOST_FTDC_AF_Delete,string UserID = "",string InstrumentID = "",string InvestUnitID = "",string ClientID = "",string IPAddress = "",string MacAddress = "")
         {
 			CThostFtdcInputQuoteActionField pInputQuoteAction = new CThostFtdcInputQuoteActionField
 			{
@@ -878,7 +878,7 @@ namespace HaiFeng
         }
                     
 
-        public IntPtr ReqBatchOrderAction(string BrokerID = "",string InvestorID = "",int OrderActionRef = 1,int RequestID = 1,int FrontID = 1,int SessionID = 1,string ExchangeID = "",string UserID = "",string InvestUnitID = "",string IPAddress = "",string MacAddress = "")
+        public IntPtr ReqBatchOrderAction(string BrokerID = "",string InvestorID = "",int OrderActionRef = 0,int RequestID = 0,int FrontID = 0,int SessionID = 0,string ExchangeID = "",string UserID = "",string InvestUnitID = "",string IPAddress = "",string MacAddress = "")
         {
 			CThostFtdcInputBatchOrderActionField pInputBatchOrderAction = new CThostFtdcInputBatchOrderActionField
 			{
@@ -898,7 +898,7 @@ namespace HaiFeng
         }
                     
 
-        public IntPtr ReqOptionSelfCloseInsert(string BrokerID = "",string InvestorID = "",string InstrumentID = "",string OptionSelfCloseRef = "",string UserID = "",int Volume = 1,int RequestID = 1,string BusinessUnit = "",TThostFtdcHedgeFlagType HedgeFlag = TThostFtdcHedgeFlagType.THOST_FTDC_HF_Speculation,TThostFtdcOptSelfCloseFlagType OptSelfCloseFlag = TThostFtdcOptSelfCloseFlagType.THOST_FTDC_OSCF_CloseSelfOptionPosition,string ExchangeID = "",string InvestUnitID = "",string AccountID = "",string CurrencyID = "",string ClientID = "",string IPAddress = "",string MacAddress = "")
+        public IntPtr ReqOptionSelfCloseInsert(string BrokerID = "",string InvestorID = "",string InstrumentID = "",string OptionSelfCloseRef = "",string UserID = "",int Volume = 0,int RequestID = 0,string BusinessUnit = "",TThostFtdcHedgeFlagType HedgeFlag = TThostFtdcHedgeFlagType.THOST_FTDC_HF_Speculation,TThostFtdcOptSelfCloseFlagType OptSelfCloseFlag = TThostFtdcOptSelfCloseFlagType.THOST_FTDC_OSCF_CloseSelfOptionPosition,string ExchangeID = "",string InvestUnitID = "",string AccountID = "",string CurrencyID = "",string ClientID = "",string IPAddress = "",string MacAddress = "")
         {
 			CThostFtdcInputOptionSelfCloseField pInputOptionSelfClose = new CThostFtdcInputOptionSelfCloseField
 			{
@@ -924,7 +924,7 @@ namespace HaiFeng
         }
                     
 
-        public IntPtr ReqOptionSelfCloseAction(string BrokerID = "",string InvestorID = "",int OptionSelfCloseActionRef = 1,string OptionSelfCloseRef = "",int RequestID = 1,int FrontID = 1,int SessionID = 1,string ExchangeID = "",string OptionSelfCloseSysID = "",TThostFtdcActionFlagType ActionFlag = TThostFtdcActionFlagType.THOST_FTDC_AF_Delete,string UserID = "",string InstrumentID = "",string InvestUnitID = "",string IPAddress = "",string MacAddress = "")
+        public IntPtr ReqOptionSelfCloseAction(string BrokerID = "",string InvestorID = "",int OptionSelfCloseActionRef = 0,string OptionSelfCloseRef = "",int RequestID = 0,int FrontID = 0,int SessionID = 0,string ExchangeID = "",string OptionSelfCloseSysID = "",TThostFtdcActionFlagType ActionFlag = TThostFtdcActionFlagType.THOST_FTDC_AF_Delete,string UserID = "",string InstrumentID = "",string InvestUnitID = "",string IPAddress = "",string MacAddress = "")
         {
 			CThostFtdcInputOptionSelfCloseActionField pInputOptionSelfCloseAction = new CThostFtdcInputOptionSelfCloseActionField
 			{
@@ -948,7 +948,7 @@ namespace HaiFeng
         }
                     
 
-        public IntPtr ReqCombActionInsert(string BrokerID = "",string InvestorID = "",string InstrumentID = "",string CombActionRef = "",string UserID = "",TThostFtdcDirectionType Direction = TThostFtdcDirectionType.THOST_FTDC_D_Buy,int Volume = 1,TThostFtdcCombDirectionType CombDirection = TThostFtdcCombDirectionType.THOST_FTDC_CMDR_Comb,TThostFtdcHedgeFlagType HedgeFlag = TThostFtdcHedgeFlagType.THOST_FTDC_HF_Speculation,string ExchangeID = "",string IPAddress = "",string MacAddress = "",string InvestUnitID = "")
+        public IntPtr ReqCombActionInsert(string BrokerID = "",string InvestorID = "",string InstrumentID = "",string CombActionRef = "",string UserID = "",TThostFtdcDirectionType Direction = TThostFtdcDirectionType.THOST_FTDC_D_Buy,int Volume = 0,TThostFtdcCombDirectionType CombDirection = TThostFtdcCombDirectionType.THOST_FTDC_CMDR_Comb,TThostFtdcHedgeFlagType HedgeFlag = TThostFtdcHedgeFlagType.THOST_FTDC_HF_Speculation,string ExchangeID = "",string IPAddress = "",string MacAddress = "",string InvestUnitID = "")
         {
 			CThostFtdcInputCombActionField pInputCombAction = new CThostFtdcInputCombActionField
 			{
@@ -1643,7 +1643,7 @@ namespace HaiFeng
         }
                     
 
-        public IntPtr ReqFromBankToFutureByFuture(string TradeCode = "",string BankID = "",string BankBranchID = "",string BrokerID = "",string BrokerBranchID = "",string TradeDate = "",string TradeTime = "",string BankSerial = "",string TradingDay = "",int PlateSerial = 1,TThostFtdcLastFragmentType LastFragment = TThostFtdcLastFragmentType.THOST_FTDC_LF_Yes,int SessionID = 1,string CustomerName = "",TThostFtdcIdCardTypeType IdCardType = TThostFtdcIdCardTypeType.THOST_FTDC_ICT_EID,string IdentifiedCardNo = "",TThostFtdcCustTypeType CustType = TThostFtdcCustTypeType.THOST_FTDC_CUSTT_Person,string BankAccount = "",string BankPassWord = "",string AccountID = "",string Password = "",int InstallID = 1,int FutureSerial = 1,string UserID = "",TThostFtdcYesNoIndicatorType VerifyCertNoFlag = TThostFtdcYesNoIndicatorType.THOST_FTDC_YNI_Yes,string CurrencyID = "",double TradeAmount = 0.0,double FutureFetchAmount = 0.0,TThostFtdcFeePayFlagType FeePayFlag = TThostFtdcFeePayFlagType.THOST_FTDC_FPF_BEN,double CustFee = 0.0,double BrokerFee = 0.0,string Message = "",string Digest = "",TThostFtdcBankAccTypeType BankAccType = TThostFtdcBankAccTypeType.THOST_FTDC_BAT_BankBook,string DeviceID = "",TThostFtdcBankAccTypeType BankSecuAccType = TThostFtdcBankAccTypeType.THOST_FTDC_BAT_BankBook,string BrokerIDByBank = "",string BankSecuAcc = "",TThostFtdcPwdFlagType BankPwdFlag = TThostFtdcPwdFlagType.THOST_FTDC_BPWDF_NoCheck,TThostFtdcPwdFlagType SecuPwdFlag = TThostFtdcPwdFlagType.THOST_FTDC_BPWDF_NoCheck,string OperNo = "",int RequestID = 1,int TID = 1,TThostFtdcTransferStatusType TransferStatus = TThostFtdcTransferStatusType.THOST_FTDC_TRFS_Normal,string LongCustomerName = "")
+        public IntPtr ReqFromBankToFutureByFuture(string TradeCode = "",string BankID = "",string BankBranchID = "",string BrokerID = "",string BrokerBranchID = "",string TradeDate = "",string TradeTime = "",string BankSerial = "",string TradingDay = "",int PlateSerial = 0,TThostFtdcLastFragmentType LastFragment = TThostFtdcLastFragmentType.THOST_FTDC_LF_Yes,int SessionID = 0,string CustomerName = "",TThostFtdcIdCardTypeType IdCardType = TThostFtdcIdCardTypeType.THOST_FTDC_ICT_EID,string IdentifiedCardNo = "",TThostFtdcCustTypeType CustType = TThostFtdcCustTypeType.THOST_FTDC_CUSTT_Person,string BankAccount = "",string BankPassWord = "",string AccountID = "",string Password = "",int InstallID = 0,int FutureSerial = 0,string UserID = "",TThostFtdcYesNoIndicatorType VerifyCertNoFlag = TThostFtdcYesNoIndicatorType.THOST_FTDC_YNI_Yes,string CurrencyID = "",double TradeAmount = 0.0,double FutureFetchAmount = 0.0,TThostFtdcFeePayFlagType FeePayFlag = TThostFtdcFeePayFlagType.THOST_FTDC_FPF_BEN,double CustFee = 0.0,double BrokerFee = 0.0,string Message = "",string Digest = "",TThostFtdcBankAccTypeType BankAccType = TThostFtdcBankAccTypeType.THOST_FTDC_BAT_BankBook,string DeviceID = "",TThostFtdcBankAccTypeType BankSecuAccType = TThostFtdcBankAccTypeType.THOST_FTDC_BAT_BankBook,string BrokerIDByBank = "",string BankSecuAcc = "",TThostFtdcPwdFlagType BankPwdFlag = TThostFtdcPwdFlagType.THOST_FTDC_BPWDF_NoCheck,TThostFtdcPwdFlagType SecuPwdFlag = TThostFtdcPwdFlagType.THOST_FTDC_BPWDF_NoCheck,string OperNo = "",int RequestID = 0,int TID = 0,TThostFtdcTransferStatusType TransferStatus = TThostFtdcTransferStatusType.THOST_FTDC_TRFS_Normal,string LongCustomerName = "")
         {
 			CThostFtdcReqTransferField pReqTransfer = new CThostFtdcReqTransferField
 			{
@@ -1696,7 +1696,7 @@ namespace HaiFeng
         }
                     
 
-        public IntPtr ReqFromFutureToBankByFuture(string TradeCode = "",string BankID = "",string BankBranchID = "",string BrokerID = "",string BrokerBranchID = "",string TradeDate = "",string TradeTime = "",string BankSerial = "",string TradingDay = "",int PlateSerial = 1,TThostFtdcLastFragmentType LastFragment = TThostFtdcLastFragmentType.THOST_FTDC_LF_Yes,int SessionID = 1,string CustomerName = "",TThostFtdcIdCardTypeType IdCardType = TThostFtdcIdCardTypeType.THOST_FTDC_ICT_EID,string IdentifiedCardNo = "",TThostFtdcCustTypeType CustType = TThostFtdcCustTypeType.THOST_FTDC_CUSTT_Person,string BankAccount = "",string BankPassWord = "",string AccountID = "",string Password = "",int InstallID = 1,int FutureSerial = 1,string UserID = "",TThostFtdcYesNoIndicatorType VerifyCertNoFlag = TThostFtdcYesNoIndicatorType.THOST_FTDC_YNI_Yes,string CurrencyID = "",double TradeAmount = 0.0,double FutureFetchAmount = 0.0,TThostFtdcFeePayFlagType FeePayFlag = TThostFtdcFeePayFlagType.THOST_FTDC_FPF_BEN,double CustFee = 0.0,double BrokerFee = 0.0,string Message = "",string Digest = "",TThostFtdcBankAccTypeType BankAccType = TThostFtdcBankAccTypeType.THOST_FTDC_BAT_BankBook,string DeviceID = "",TThostFtdcBankAccTypeType BankSecuAccType = TThostFtdcBankAccTypeType.THOST_FTDC_BAT_BankBook,string BrokerIDByBank = "",string BankSecuAcc = "",TThostFtdcPwdFlagType BankPwdFlag = TThostFtdcPwdFlagType.THOST_FTDC_BPWDF_NoCheck,TThostFtdcPwdFlagType SecuPwdFlag = TThostFtdcPwdFlagType.THOST_FTDC_BPWDF_NoCheck,string OperNo = "",int RequestID = 1,int TID = 1,TThostFtdcTransferStatusType TransferStatus = TThostFtdcTransferStatusType.THOST_FTDC_TRFS_Normal,string LongCustomerName = "")
+        public IntPtr ReqFromFutureToBankByFuture(string TradeCode = "",string BankID = "",string BankBranchID = "",string BrokerID = "",string BrokerBranchID = "",string TradeDate = "",string TradeTime = "",string BankSerial = "",string TradingDay = "",int PlateSerial = 0,TThostFtdcLastFragmentType LastFragment = TThostFtdcLastFragmentType.THOST_FTDC_LF_Yes,int SessionID = 0,string CustomerName = "",TThostFtdcIdCardTypeType IdCardType = TThostFtdcIdCardTypeType.THOST_FTDC_ICT_EID,string IdentifiedCardNo = "",TThostFtdcCustTypeType CustType = TThostFtdcCustTypeType.THOST_FTDC_CUSTT_Person,string BankAccount = "",string BankPassWord = "",string AccountID = "",string Password = "",int InstallID = 0,int FutureSerial = 0,string UserID = "",TThostFtdcYesNoIndicatorType VerifyCertNoFlag = TThostFtdcYesNoIndicatorType.THOST_FTDC_YNI_Yes,string CurrencyID = "",double TradeAmount = 0.0,double FutureFetchAmount = 0.0,TThostFtdcFeePayFlagType FeePayFlag = TThostFtdcFeePayFlagType.THOST_FTDC_FPF_BEN,double CustFee = 0.0,double BrokerFee = 0.0,string Message = "",string Digest = "",TThostFtdcBankAccTypeType BankAccType = TThostFtdcBankAccTypeType.THOST_FTDC_BAT_BankBook,string DeviceID = "",TThostFtdcBankAccTypeType BankSecuAccType = TThostFtdcBankAccTypeType.THOST_FTDC_BAT_BankBook,string BrokerIDByBank = "",string BankSecuAcc = "",TThostFtdcPwdFlagType BankPwdFlag = TThostFtdcPwdFlagType.THOST_FTDC_BPWDF_NoCheck,TThostFtdcPwdFlagType SecuPwdFlag = TThostFtdcPwdFlagType.THOST_FTDC_BPWDF_NoCheck,string OperNo = "",int RequestID = 0,int TID = 0,TThostFtdcTransferStatusType TransferStatus = TThostFtdcTransferStatusType.THOST_FTDC_TRFS_Normal,string LongCustomerName = "")
         {
 			CThostFtdcReqTransferField pReqTransfer = new CThostFtdcReqTransferField
 			{
@@ -1749,7 +1749,7 @@ namespace HaiFeng
         }
                     
 
-        public IntPtr ReqQueryBankAccountMoneyByFuture(string TradeCode = "",string BankID = "",string BankBranchID = "",string BrokerID = "",string BrokerBranchID = "",string TradeDate = "",string TradeTime = "",string BankSerial = "",string TradingDay = "",int PlateSerial = 1,TThostFtdcLastFragmentType LastFragment = TThostFtdcLastFragmentType.THOST_FTDC_LF_Yes,int SessionID = 1,string CustomerName = "",TThostFtdcIdCardTypeType IdCardType = TThostFtdcIdCardTypeType.THOST_FTDC_ICT_EID,string IdentifiedCardNo = "",TThostFtdcCustTypeType CustType = TThostFtdcCustTypeType.THOST_FTDC_CUSTT_Person,string BankAccount = "",string BankPassWord = "",string AccountID = "",string Password = "",int FutureSerial = 1,int InstallID = 1,string UserID = "",TThostFtdcYesNoIndicatorType VerifyCertNoFlag = TThostFtdcYesNoIndicatorType.THOST_FTDC_YNI_Yes,string CurrencyID = "",string Digest = "",TThostFtdcBankAccTypeType BankAccType = TThostFtdcBankAccTypeType.THOST_FTDC_BAT_BankBook,string DeviceID = "",TThostFtdcBankAccTypeType BankSecuAccType = TThostFtdcBankAccTypeType.THOST_FTDC_BAT_BankBook,string BrokerIDByBank = "",string BankSecuAcc = "",TThostFtdcPwdFlagType BankPwdFlag = TThostFtdcPwdFlagType.THOST_FTDC_BPWDF_NoCheck,TThostFtdcPwdFlagType SecuPwdFlag = TThostFtdcPwdFlagType.THOST_FTDC_BPWDF_NoCheck,string OperNo = "",int RequestID = 1,int TID = 1,string LongCustomerName = "")
+        public IntPtr ReqQueryBankAccountMoneyByFuture(string TradeCode = "",string BankID = "",string BankBranchID = "",string BrokerID = "",string BrokerBranchID = "",string TradeDate = "",string TradeTime = "",string BankSerial = "",string TradingDay = "",int PlateSerial = 0,TThostFtdcLastFragmentType LastFragment = TThostFtdcLastFragmentType.THOST_FTDC_LF_Yes,int SessionID = 0,string CustomerName = "",TThostFtdcIdCardTypeType IdCardType = TThostFtdcIdCardTypeType.THOST_FTDC_ICT_EID,string IdentifiedCardNo = "",TThostFtdcCustTypeType CustType = TThostFtdcCustTypeType.THOST_FTDC_CUSTT_Person,string BankAccount = "",string BankPassWord = "",string AccountID = "",string Password = "",int FutureSerial = 0,int InstallID = 0,string UserID = "",TThostFtdcYesNoIndicatorType VerifyCertNoFlag = TThostFtdcYesNoIndicatorType.THOST_FTDC_YNI_Yes,string CurrencyID = "",string Digest = "",TThostFtdcBankAccTypeType BankAccType = TThostFtdcBankAccTypeType.THOST_FTDC_BAT_BankBook,string DeviceID = "",TThostFtdcBankAccTypeType BankSecuAccType = TThostFtdcBankAccTypeType.THOST_FTDC_BAT_BankBook,string BrokerIDByBank = "",string BankSecuAcc = "",TThostFtdcPwdFlagType BankPwdFlag = TThostFtdcPwdFlagType.THOST_FTDC_BPWDF_NoCheck,TThostFtdcPwdFlagType SecuPwdFlag = TThostFtdcPwdFlagType.THOST_FTDC_BPWDF_NoCheck,string OperNo = "",int RequestID = 0,int TID = 0,string LongCustomerName = "")
         {
 			CThostFtdcReqQueryAccountField pReqQueryAccount = new CThostFtdcReqQueryAccountField
 			{

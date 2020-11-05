@@ -18,11 +18,14 @@
         * 设置系统语言为：zh_CN.UTF-8
         * 复制 ctp_20180109\\*.so到 `py_ctp/lib64` 目录下
         * 进入 `py_ctp/lib64` 目录，执行以下指令, -Wl,rpath=指定so路径(需要与setup.py中的data_files配合使用)
-            * g++ -shared -fPIC -Wl,-rpath /usr/lib/py_ctp -o ./ctp_trade.so ../../ctp_c/trade.cpp thosttraderapi_se.so
-            * g++ -shared -fPIC -Wl,-rpath /usr/lib/py_ctp -o ./ctp_quote.so ../../ctp_c/quote.cpp  thostmduserapi_se.so
+            * cd py_ctp/lib64/ && \cp ../../v6.3.15_20190220/*.so . && g++ -shared -fPIC -Wl,-rpath /usr/lib/py_ctp -o ./ctp_trade.so ../../ctp_c/trade.cpp thosttraderapi_se.so && g++ -shared -fPIC -Wl,-rpath /usr/lib/py_ctp -o ./ctp_quote.so ../../ctp_c/quote.cpp  thostmduserapi_se.so
 * 测试
     * Python
-        * 安装 `pip install py_ctp`
+        * 安装 
+        ```python
+        pip install --no-binary :all: py-ctp==6.3.15
+        pip install --no-binary :all: py-ctp==6.3.16
+        ```
         * 测试代码 https://pypi.org/project/py-ctp/
     * C#
         * `copy cs_ctp\*.cs cs_ctp\ctp_test\`

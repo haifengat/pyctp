@@ -18,16 +18,16 @@
 #include "stddef.h"
 #ifdef WIN32
 #define WINAPI      __cdecl
-#include "../v6.3.16_T1_20190508/ThostFtdcTraderApi.h"
-#pragma comment(lib, "../v6.3.16_T1_20190508/thosttraderapi_se.lib")
+#include "../v6.3.15_20190220/ThostFtdcTraderApi.h"
+#pragma comment(lib, "../v6.3.15_20190220/thosttraderapi_se.lib")
 #else
 #define WINAPI      __stdcall
-#include "../v6.3.16_T1_20190508/ThostFtdcTraderApi.h"
-#pragma comment(lib, "../v6.3.16_T1_20190508/thosttraderapi_se.lib")
+#include "../v6.3.15_20190220/ThostFtdcTraderApi.h"
+#pragma comment(lib, "../v6.3.15_20190220/thosttraderapi_se.lib")
 #endif
 #else
 #define WINAPI
-#include "../v6.3.16_T1_20190508/ThostFtdcTraderApi.h"
+#include "../v6.3.15_20190220/ThostFtdcTraderApi.h"
 #endif
 
 #include <string.h>

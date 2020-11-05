@@ -4,10 +4,12 @@
 
 ## 更新
 ### 2.3.3-20201104
-更新:接口更新到6.3.16;不再支持32位; 解决lnx下so路径问题;解决合约过多导致的bug;
-连接simnow，须用官方6.3.15的文件覆盖lib64下同名文件
+更新:不再支持32位; 解决lnx下so路径问题;解决合约过多导致的bug;
+## 版本
+与官方版本保持一致：6.3.15  6.3.16
 ## 安装
-pip install --no-binary :all: py-ctp
+pip install --no-binary :all: py-ctp==2.3.15.n
+pip install --no-binary :all: py-ctp==2.3.16.n
 
 #### 示例
 

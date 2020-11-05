@@ -86,6 +86,6 @@ class {s_name}(Structure):
 
 
 if __name__ == '__main__':
-    src_dir = '../ctp_20180109_x86'
+    src_dir = '../v6.3.16_T1_20190508'
     struct_file_name = 'ThostFtdcUserApiStruct'
     run()
