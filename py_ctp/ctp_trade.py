@@ -27,6 +27,11 @@ class Trade:
         logdir = os.path.join(os.getcwd(), 'log')
         if not os.path.exists(logdir):
             os.mkdir(logdir)
+ 
+        dlldir = os.path.split(absolute_dllfile_path)[0]
+        # change work directory
+        cur_path = os.getcwd()
+        os.chdir(dlldir)
 
         self.h = CDLL(absolute_dllfile_path)
 
@@ -319,6 +324,7 @@ class Trade:
 
         self.h.ReqQueryBankAccountMoneyByFuture.argtypes = [c_void_p, c_void_p, c_int32]
         self.h.ReqQueryBankAccountMoneyByFuture.restype = c_void_p
+        os.chdir(cur_path)
 
 
     def CreateApi(self):

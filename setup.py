@@ -32,11 +32,11 @@ long_description = read_file('setup.md')
 # 生成requirements.txt pipreqs --encoding=utf8 --force py_ctp
 # rm dist -rf && python setup.py sdist && twine upload dist/*         //.tar.gz
 # pip install --upgrade setuptools wheel keyring
-# python setup.py sdist_wheel && twine upload dist/*   //.whl
+# python setup.py bdist_wheel && twine upload dist/*   //.whl
 setup(
     name='py_ctp',  # 包名
     python_requires='>=3.6.0',  # python环境
-    version='2.3.16',  # 包的版本
+    version='6.3.15.1106',
     description="Python CTP futures api",  # 包简介，显示在PyPI上
     long_description=long_description,  # 读取的Readme文档内容
     long_description_content_type = "text/markdown",  # 指定包文档格式为markdown
@@ -52,11 +52,8 @@ setup(
     include_package_data=True,
     license="MIT License",
     platforms="any",
-    data_files=['README.md', ('/usr/lib/py_ctp', ['py_ctp/lib64/thostmduserapi_se.so', 'py_ctp/lib64/thosttraderapi_se.so'])],
+    # data_files=['README.md', ('/usr/lib/py_ctp', ['py_ctp/lib64/thostmduserapi_se.so', 'py_ctp/lib64/thosttraderapi_se.so'])],
     classifiers=[
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.4",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "License :: OSI Approved :: MIT License",

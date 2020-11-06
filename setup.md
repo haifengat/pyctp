@@ -3,13 +3,13 @@
 上期技术期货交易api之python封装，实现接口调用。支持windows(x86/x64) linux(x64).
 
 ## 更新
-### 2.3.3-20201104
+### 20201104
 更新:不再支持32位; 解决lnx下so路径问题;解决合约过多导致的bug;
 ## 版本
 与官方版本保持一致：6.3.15  6.3.16
 ## 安装
-pip install --no-binary :all: py-ctp==2.3.15.n
-pip install --no-binary :all: py-ctp==2.3.16.n
+pip install py-ctp==2.3.15.nnnn
+pip install py-ctp==2.3.16.nnnn
 
 #### 示例
 

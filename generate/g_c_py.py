@@ -165,6 +165,11 @@ class {spi_class_name.title()}:
         logdir = os.path.join(os.getcwd(), 'log')
         if not os.path.exists(logdir):
             os.mkdir(logdir)
+ 
+        dlldir = os.path.split(absolute_dllfile_path)[0]
+        # change work directory
+        cur_path = os.getcwd()
+        os.chdir(dlldir)
 
         self.h = CDLL(absolute_dllfile_path)
 
@@ -546,7 +551,8 @@ namespace HaiFeng
         # f_c_def.write('\n'.join(def_on))
 
     if generate_py:
-        f_py.write('\n'.join(py_req_type_def))
+        f_py.write('\n'.join(py_req_type_def)) 
+        f_py.write(f"\n{' '*8}os.chdir(cur_path)") # py切换工作路径
         f_py.write('\n\n')
         f_py.write('''
     def CreateApi(self):
