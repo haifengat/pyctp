@@ -68,13 +68,13 @@ namespace HaiFeng
 			string curPath = Environment.CurrentDirectory;
             var dll_path = new FileInfo(this.GetType().Assembly.Location).DirectoryName;
             Environment.CurrentDirectory = dll_path;
-            dll_path = Path.Combine(dll_path, "lib" + (Environment.Is64BitProcess ? "64" : "32"));
-            if (!Directory.Exists(dll_path))
-            {
-                File.WriteAllBytes("lib.zip", Properties.Resources.lib);
-                ZipFile.ExtractToDirectory("lib.zip", ".");
-                File.Delete("lib.zip");
-            }
+			dll_path = Path.Combine(dll_path, "lib64");
+			if (!Directory.Exists(dll_path))
+			{
+				File.WriteAllBytes("lib.zip", Properties.Resources.lib64);
+				ZipFile.ExtractToDirectory("lib.zip", ".");
+				File.Delete("lib.zip");
+			}
 			Environment.CurrentDirectory = dll_path;
 			_handle = LoadLibrary(Path.Combine(dll_path, "ctp_trade.dll"));
 			if (_handle == IntPtr.Zero)
