@@ -1,7 +1,6 @@
 from setuptools import setup
 import os
 from os import path as os_path
-import shutil
 
 this_directory = os_path.abspath(os_path.dirname(__file__))
 
@@ -36,7 +35,7 @@ long_description = read_file('setup.md')
 setup(
     name='py_ctp',  # 包名
     python_requires='>=3.6.0',  # python环境
-    version='6.3.15.1106',
+    version='6.3.15.1126',
     description="Python CTP futures api",  # 包简介，显示在PyPI上
     long_description=long_description,  # 读取的Readme文档内容
     long_description_content_type = "text/markdown",  # 指定包文档格式为markdown
