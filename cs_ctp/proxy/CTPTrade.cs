@@ -97,6 +97,7 @@ namespace HaiFeng
             _t.SetOnRspSettlementInfoConfirm((DeleOnRspSettlementInfoConfirm)AddDele(new DeleOnRspSettlementInfoConfirm(CTPOnRspSettlementInfoConfirm)));
             _t.SetOnFrontDisconnected((DeleOnFrontDisconnected)AddDele(new DeleOnFrontDisconnected(CTPOnFrontDisconnected)));
             _t.SetOnRspQryInstrument((DeleOnRspQryInstrument)AddDele(new DeleOnRspQryInstrument(CTPOnRspQryInstrument)));
+            _t.SetOnRspQryClassifiedInstrument((DeleOnRspQryClassifiedInstrument)AddDele(new DeleOnRspQryClassifiedInstrument(CTPOnRspQryClassifiedInstrument)));
             _t.SetOnRspQryInvestorPosition((DeleOnRspQryInvestorPosition)AddDele(new DeleOnRspQryInvestorPosition(CTPOnRspQryInvestorPosition)));
             _t.SetOnRspQryTradingAccount((DeleOnRspQryTradingAccount)AddDele(new DeleOnRspQryTradingAccount(CTPOnRspQryTradingAccount)));
             _t.SetOnRspOrderInsert((DeleOnRspOrderInsert)AddDele(new DeleOnRspOrderInsert(CTPOnRspOrderInsert)));
@@ -174,7 +175,10 @@ namespace HaiFeng
 
         private void CTPOnRspSettlementInfoConfirm(ref CThostFtdcSettlementInfoConfirmField pSettlementInfoConfirm, ref CThostFtdcRspInfoField pRspInfo, int nRequestID, bool bIsLast)
         {
-            _t.ReqQryInstrument();
+            if (this.Broker == "9999")
+                _t.ReqQryInstrument();
+            else
+                _t.ReqQryClassifiedInstrument();
         }
 
         private void CTPOnRtnInstrumentStatus(ref CThostFtdcInstrumentStatusField pInstrumentStatus)
@@ -197,6 +201,11 @@ namespace HaiFeng
             {
                 _OnRtnExchangeStatus?.Invoke(this, new StatusEventArgs { Exchange = pInstrumentStatus.InstrumentID, Status = status });
             }
+        }
+
+        private void CTPOnRspQryClassifiedInstrument(ref CThostFtdcInstrumentField pInstrument, ref CThostFtdcRspInfoField pRspInfo, int nRequestID, bool bIsLast)
+        {
+            CTPOnRspQryInstrument(ref pInstrument,ref pRspInfo, nRequestID, bIsLast);
         }
 
         private void CTPOnRspQryInstrument(ref CThostFtdcInstrumentField pInstrument, ref CThostFtdcRspInfoField pRspInfo, int nRequestID, bool bIsLast)

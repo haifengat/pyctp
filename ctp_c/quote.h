@@ -19,11 +19,11 @@
 #ifdef WIN32
 #define WINAPI      __cdecl
 #include "../v6.5.1/ThostFtdcMdApi.h"
-#pragma comment(lib, "../v6.5.1/thostmduserapi_se.lib")
+#pragma comment(lib, "../v6.5.1/win/thostmduserapi_se.lib")
 #else
 #define WINAPI      __stdcall
 #include "../v6.5.1/ThostFtdcMdApi.h"
-#pragma comment(lib, "../v6.5.1/thostmduserapi_se.lib")
+#pragma comment(lib, "../v6.5.1/win/thostmduserapi_se.lib")
 #endif
 #else
 #define WINAPI
