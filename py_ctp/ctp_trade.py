@@ -124,8 +124,8 @@ class Trade:
         self.h.ReqOrderAction.argtypes = [c_void_p, c_void_p, c_int32]
         self.h.ReqOrderAction.restype = c_void_p
 
-        self.h.ReqQueryMaxOrderVolume.argtypes = [c_void_p, c_void_p, c_int32]
-        self.h.ReqQueryMaxOrderVolume.restype = c_void_p
+        self.h.ReqQryMaxOrderVolume.argtypes = [c_void_p, c_void_p, c_int32]
+        self.h.ReqQryMaxOrderVolume.restype = c_void_p
 
         self.h.ReqSettlementInfoConfirm.argtypes = [c_void_p, c_void_p, c_int32]
         self.h.ReqSettlementInfoConfirm.restype = c_void_p
@@ -324,6 +324,12 @@ class Trade:
 
         self.h.ReqQueryBankAccountMoneyByFuture.argtypes = [c_void_p, c_void_p, c_int32]
         self.h.ReqQueryBankAccountMoneyByFuture.restype = c_void_p
+
+        self.h.ReqQryClassifiedInstrument.argtypes = [c_void_p, c_void_p, c_int32]
+        self.h.ReqQryClassifiedInstrument.restype = c_void_p
+
+        self.h.ReqQryCombPromotionParam.argtypes = [c_void_p, c_void_p, c_int32]
+        self.h.ReqQryCombPromotionParam.restype = c_void_p
         os.chdir(cur_path)
 
 
@@ -382,31 +388,33 @@ class Trade:
         self.nRequestID += 1
         self.h.ReqAuthenticate(self.api, byref(pReqAuthenticateField), self.nRequestID)
 
-    def RegisterUserSystemInfo(self, BrokerID: str = '', UserID: str = '', ClientSystemInfoLen: int = 0, ClientSystemInfo: str = '', ClientPublicIP: str = '', ClientIPPort: int = 0, ClientLoginTime: str = '', ClientAppID: str = ''):
+    def RegisterUserSystemInfo(self, BrokerID: str = '', UserID: str = '', ClientSystemInfoLen: int = 0, ClientSystemInfo: str = '', reserve1: str = '', ClientIPPort: int = 0, ClientLoginTime: str = '', ClientAppID: str = '', ClientPublicIP: str = ''):
         pUserSystemInfo = CThostFtdcUserSystemInfoField()
         pUserSystemInfo.BrokerID = bytes(BrokerID, encoding='ascii')
         pUserSystemInfo.UserID = bytes(UserID, encoding='ascii')
         pUserSystemInfo.ClientSystemInfoLen = ClientSystemInfoLen
         pUserSystemInfo.ClientSystemInfo = bytes(ClientSystemInfo, encoding='ascii')
-        pUserSystemInfo.ClientPublicIP = bytes(ClientPublicIP, encoding='ascii')
+        pUserSystemInfo.reserve1 = bytes(reserve1, encoding='ascii')
         pUserSystemInfo.ClientIPPort = ClientIPPort
         pUserSystemInfo.ClientLoginTime = bytes(ClientLoginTime, encoding='ascii')
         pUserSystemInfo.ClientAppID = bytes(ClientAppID, encoding='ascii')
+        pUserSystemInfo.ClientPublicIP = bytes(ClientPublicIP, encoding='ascii')
         self.h.RegisterUserSystemInfo(self.api, byref(pUserSystemInfo))
 
-    def SubmitUserSystemInfo(self, BrokerID: str = '', UserID: str = '', ClientSystemInfoLen: int = 0, ClientSystemInfo: str = '', ClientPublicIP: str = '', ClientIPPort: int = 0, ClientLoginTime: str = '', ClientAppID: str = ''):
+    def SubmitUserSystemInfo(self, BrokerID: str = '', UserID: str = '', ClientSystemInfoLen: int = 0, ClientSystemInfo: str = '', reserve1: str = '', ClientIPPort: int = 0, ClientLoginTime: str = '', ClientAppID: str = '', ClientPublicIP: str = ''):
         pUserSystemInfo = CThostFtdcUserSystemInfoField()
         pUserSystemInfo.BrokerID = bytes(BrokerID, encoding='ascii')
         pUserSystemInfo.UserID = bytes(UserID, encoding='ascii')
         pUserSystemInfo.ClientSystemInfoLen = ClientSystemInfoLen
         pUserSystemInfo.ClientSystemInfo = bytes(ClientSystemInfo, encoding='ascii')
-        pUserSystemInfo.ClientPublicIP = bytes(ClientPublicIP, encoding='ascii')
+        pUserSystemInfo.reserve1 = bytes(reserve1, encoding='ascii')
         pUserSystemInfo.ClientIPPort = ClientIPPort
         pUserSystemInfo.ClientLoginTime = bytes(ClientLoginTime, encoding='ascii')
         pUserSystemInfo.ClientAppID = bytes(ClientAppID, encoding='ascii')
+        pUserSystemInfo.ClientPublicIP = bytes(ClientPublicIP, encoding='ascii')
         self.h.SubmitUserSystemInfo(self.api, byref(pUserSystemInfo))
 
-    def ReqUserLogin(self, TradingDay: str = '', BrokerID: str = '', UserID: str = '', Password: str = '', UserProductInfo: str = '', InterfaceProductInfo: str = '', ProtocolInfo: str = '', MacAddress: str = '', OneTimePassword: str = '', ClientIPAddress: str = '', LoginRemark: str = '', ClientIPPort: int = 0):
+    def ReqUserLogin(self, TradingDay: str = '', BrokerID: str = '', UserID: str = '', Password: str = '', UserProductInfo: str = '', InterfaceProductInfo: str = '', ProtocolInfo: str = '', MacAddress: str = '', OneTimePassword: str = '', reserve1: str = '', LoginRemark: str = '', ClientIPPort: int = 0, ClientIPAddress: str = ''):
         pReqUserLoginField = CThostFtdcReqUserLoginField()
         pReqUserLoginField.TradingDay = bytes(TradingDay, encoding='ascii')
         pReqUserLoginField.BrokerID = bytes(BrokerID, encoding='ascii')
@@ -417,9 +425,10 @@ class Trade:
         pReqUserLoginField.ProtocolInfo = bytes(ProtocolInfo, encoding='ascii')
         pReqUserLoginField.MacAddress = bytes(MacAddress, encoding='ascii')
         pReqUserLoginField.OneTimePassword = bytes(OneTimePassword, encoding='ascii')
-        pReqUserLoginField.ClientIPAddress = bytes(ClientIPAddress, encoding='ascii')
+        pReqUserLoginField.reserve1 = bytes(reserve1, encoding='ascii')
         pReqUserLoginField.LoginRemark = bytes(LoginRemark, encoding='ascii')
         pReqUserLoginField.ClientIPPort = ClientIPPort
+        pReqUserLoginField.ClientIPAddress = bytes(ClientIPAddress, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqUserLogin(self.api, byref(pReqUserLoginField), self.nRequestID)
 
@@ -473,7 +482,7 @@ class Trade:
         self.nRequestID += 1
         self.h.ReqGenUserText(self.api, byref(pReqGenUserText), self.nRequestID)
 
-    def ReqUserLoginWithCaptcha(self, TradingDay: str = '', BrokerID: str = '', UserID: str = '', Password: str = '', UserProductInfo: str = '', InterfaceProductInfo: str = '', ProtocolInfo: str = '', MacAddress: str = '', ClientIPAddress: str = '', LoginRemark: str = '', Captcha: str = '', ClientIPPort: int = 0):
+    def ReqUserLoginWithCaptcha(self, TradingDay: str = '', BrokerID: str = '', UserID: str = '', Password: str = '', UserProductInfo: str = '', InterfaceProductInfo: str = '', ProtocolInfo: str = '', MacAddress: str = '', reserve1: str = '', LoginRemark: str = '', Captcha: str = '', ClientIPPort: int = 0, ClientIPAddress: str = ''):
         pReqUserLoginWithCaptcha = CThostFtdcReqUserLoginWithCaptchaField()
         pReqUserLoginWithCaptcha.TradingDay = bytes(TradingDay, encoding='ascii')
         pReqUserLoginWithCaptcha.BrokerID = bytes(BrokerID, encoding='ascii')
@@ -483,14 +492,15 @@ class Trade:
         pReqUserLoginWithCaptcha.InterfaceProductInfo = bytes(InterfaceProductInfo, encoding='ascii')
         pReqUserLoginWithCaptcha.ProtocolInfo = bytes(ProtocolInfo, encoding='ascii')
         pReqUserLoginWithCaptcha.MacAddress = bytes(MacAddress, encoding='ascii')
-        pReqUserLoginWithCaptcha.ClientIPAddress = bytes(ClientIPAddress, encoding='ascii')
+        pReqUserLoginWithCaptcha.reserve1 = bytes(reserve1, encoding='ascii')
         pReqUserLoginWithCaptcha.LoginRemark = bytes(LoginRemark, encoding='ascii')
         pReqUserLoginWithCaptcha.Captcha = bytes(Captcha, encoding='ascii')
         pReqUserLoginWithCaptcha.ClientIPPort = ClientIPPort
+        pReqUserLoginWithCaptcha.ClientIPAddress = bytes(ClientIPAddress, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqUserLoginWithCaptcha(self.api, byref(pReqUserLoginWithCaptcha), self.nRequestID)
 
-    def ReqUserLoginWithText(self, TradingDay: str = '', BrokerID: str = '', UserID: str = '', Password: str = '', UserProductInfo: str = '', InterfaceProductInfo: str = '', ProtocolInfo: str = '', MacAddress: str = '', ClientIPAddress: str = '', LoginRemark: str = '', Text: str = '', ClientIPPort: int = 0):
+    def ReqUserLoginWithText(self, TradingDay: str = '', BrokerID: str = '', UserID: str = '', Password: str = '', UserProductInfo: str = '', InterfaceProductInfo: str = '', ProtocolInfo: str = '', MacAddress: str = '', reserve1: str = '', LoginRemark: str = '', Text: str = '', ClientIPPort: int = 0, ClientIPAddress: str = ''):
         pReqUserLoginWithText = CThostFtdcReqUserLoginWithTextField()
         pReqUserLoginWithText.TradingDay = bytes(TradingDay, encoding='ascii')
         pReqUserLoginWithText.BrokerID = bytes(BrokerID, encoding='ascii')
@@ -500,14 +510,15 @@ class Trade:
         pReqUserLoginWithText.InterfaceProductInfo = bytes(InterfaceProductInfo, encoding='ascii')
         pReqUserLoginWithText.ProtocolInfo = bytes(ProtocolInfo, encoding='ascii')
         pReqUserLoginWithText.MacAddress = bytes(MacAddress, encoding='ascii')
-        pReqUserLoginWithText.ClientIPAddress = bytes(ClientIPAddress, encoding='ascii')
+        pReqUserLoginWithText.reserve1 = bytes(reserve1, encoding='ascii')
         pReqUserLoginWithText.LoginRemark = bytes(LoginRemark, encoding='ascii')
         pReqUserLoginWithText.Text = bytes(Text, encoding='ascii')
         pReqUserLoginWithText.ClientIPPort = ClientIPPort
+        pReqUserLoginWithText.ClientIPAddress = bytes(ClientIPAddress, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqUserLoginWithText(self.api, byref(pReqUserLoginWithText), self.nRequestID)
 
-    def ReqUserLoginWithOTP(self, TradingDay: str = '', BrokerID: str = '', UserID: str = '', Password: str = '', UserProductInfo: str = '', InterfaceProductInfo: str = '', ProtocolInfo: str = '', MacAddress: str = '', ClientIPAddress: str = '', LoginRemark: str = '', OTPPassword: str = '', ClientIPPort: int = 0):
+    def ReqUserLoginWithOTP(self, TradingDay: str = '', BrokerID: str = '', UserID: str = '', Password: str = '', UserProductInfo: str = '', InterfaceProductInfo: str = '', ProtocolInfo: str = '', MacAddress: str = '', reserve1: str = '', LoginRemark: str = '', OTPPassword: str = '', ClientIPPort: int = 0, ClientIPAddress: str = ''):
         pReqUserLoginWithOTP = CThostFtdcReqUserLoginWithOTPField()
         pReqUserLoginWithOTP.TradingDay = bytes(TradingDay, encoding='ascii')
         pReqUserLoginWithOTP.BrokerID = bytes(BrokerID, encoding='ascii')
@@ -517,18 +528,19 @@ class Trade:
         pReqUserLoginWithOTP.InterfaceProductInfo = bytes(InterfaceProductInfo, encoding='ascii')
         pReqUserLoginWithOTP.ProtocolInfo = bytes(ProtocolInfo, encoding='ascii')
         pReqUserLoginWithOTP.MacAddress = bytes(MacAddress, encoding='ascii')
-        pReqUserLoginWithOTP.ClientIPAddress = bytes(ClientIPAddress, encoding='ascii')
+        pReqUserLoginWithOTP.reserve1 = bytes(reserve1, encoding='ascii')
         pReqUserLoginWithOTP.LoginRemark = bytes(LoginRemark, encoding='ascii')
         pReqUserLoginWithOTP.OTPPassword = bytes(OTPPassword, encoding='ascii')
         pReqUserLoginWithOTP.ClientIPPort = ClientIPPort
+        pReqUserLoginWithOTP.ClientIPAddress = bytes(ClientIPAddress, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqUserLoginWithOTP(self.api, byref(pReqUserLoginWithOTP), self.nRequestID)
 
-    def ReqOrderInsert(self, BrokerID: str = '', InvestorID: str = '', InstrumentID: str = '', OrderRef: str = '', UserID: str = '', OrderPriceType: TThostFtdcOrderPriceTypeType = list(TThostFtdcOrderPriceTypeType)[0], Direction: TThostFtdcDirectionType = list(TThostFtdcDirectionType)[0], CombOffsetFlag: str = '', CombHedgeFlag: str = '', LimitPrice: float = .0, VolumeTotalOriginal: int = 0, TimeCondition: TThostFtdcTimeConditionType = list(TThostFtdcTimeConditionType)[0], GTDDate: str = '', VolumeCondition: TThostFtdcVolumeConditionType = list(TThostFtdcVolumeConditionType)[0], MinVolume: int = 0, ContingentCondition: TThostFtdcContingentConditionType = list(TThostFtdcContingentConditionType)[0], StopPrice: float = .0, ForceCloseReason: TThostFtdcForceCloseReasonType = list(TThostFtdcForceCloseReasonType)[0], IsAutoSuspend: int = 0, BusinessUnit: str = '', RequestID: int = 0, UserForceClose: int = 0, IsSwapOrder: int = 0, ExchangeID: str = '', InvestUnitID: str = '', AccountID: str = '', CurrencyID: str = '', ClientID: str = '', IPAddress: str = '', MacAddress: str = ''):
+    def ReqOrderInsert(self, BrokerID: str = '', InvestorID: str = '', reserve1: str = '', OrderRef: str = '', UserID: str = '', OrderPriceType: TThostFtdcOrderPriceTypeType = list(TThostFtdcOrderPriceTypeType)[0], Direction: TThostFtdcDirectionType = list(TThostFtdcDirectionType)[0], CombOffsetFlag: str = '', CombHedgeFlag: str = '', LimitPrice: float = .0, VolumeTotalOriginal: int = 0, TimeCondition: TThostFtdcTimeConditionType = list(TThostFtdcTimeConditionType)[0], GTDDate: str = '', VolumeCondition: TThostFtdcVolumeConditionType = list(TThostFtdcVolumeConditionType)[0], MinVolume: int = 0, ContingentCondition: TThostFtdcContingentConditionType = list(TThostFtdcContingentConditionType)[0], StopPrice: float = .0, ForceCloseReason: TThostFtdcForceCloseReasonType = list(TThostFtdcForceCloseReasonType)[0], IsAutoSuspend: int = 0, BusinessUnit: str = '', RequestID: int = 0, UserForceClose: int = 0, IsSwapOrder: int = 0, ExchangeID: str = '', InvestUnitID: str = '', AccountID: str = '', CurrencyID: str = '', ClientID: str = '', reserve2: str = '', MacAddress: str = '', InstrumentID: str = '', IPAddress: str = ''):
         pInputOrder = CThostFtdcInputOrderField()
         pInputOrder.BrokerID = bytes(BrokerID, encoding='ascii')
         pInputOrder.InvestorID = bytes(InvestorID, encoding='ascii')
-        pInputOrder.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pInputOrder.reserve1 = bytes(reserve1, encoding='ascii')
         pInputOrder.OrderRef = bytes(OrderRef, encoding='ascii')
         pInputOrder.UserID = bytes(UserID, encoding='ascii')
         pInputOrder.OrderPriceType = OrderPriceType.value
@@ -554,16 +566,18 @@ class Trade:
         pInputOrder.AccountID = bytes(AccountID, encoding='ascii')
         pInputOrder.CurrencyID = bytes(CurrencyID, encoding='ascii')
         pInputOrder.ClientID = bytes(ClientID, encoding='ascii')
-        pInputOrder.IPAddress = bytes(IPAddress, encoding='ascii')
+        pInputOrder.reserve2 = bytes(reserve2, encoding='ascii')
         pInputOrder.MacAddress = bytes(MacAddress, encoding='ascii')
+        pInputOrder.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pInputOrder.IPAddress = bytes(IPAddress, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqOrderInsert(self.api, byref(pInputOrder), self.nRequestID)
 
-    def ReqParkedOrderInsert(self, BrokerID: str = '', InvestorID: str = '', InstrumentID: str = '', OrderRef: str = '', UserID: str = '', OrderPriceType: TThostFtdcOrderPriceTypeType = list(TThostFtdcOrderPriceTypeType)[0], Direction: TThostFtdcDirectionType = list(TThostFtdcDirectionType)[0], CombOffsetFlag: str = '', CombHedgeFlag: str = '', LimitPrice: float = .0, VolumeTotalOriginal: int = 0, TimeCondition: TThostFtdcTimeConditionType = list(TThostFtdcTimeConditionType)[0], GTDDate: str = '', VolumeCondition: TThostFtdcVolumeConditionType = list(TThostFtdcVolumeConditionType)[0], MinVolume: int = 0, ContingentCondition: TThostFtdcContingentConditionType = list(TThostFtdcContingentConditionType)[0], StopPrice: float = .0, ForceCloseReason: TThostFtdcForceCloseReasonType = list(TThostFtdcForceCloseReasonType)[0], IsAutoSuspend: int = 0, BusinessUnit: str = '', RequestID: int = 0, UserForceClose: int = 0, ExchangeID: str = '', ParkedOrderID: str = '', UserType: TThostFtdcUserTypeType = list(TThostFtdcUserTypeType)[0], Status: TThostFtdcParkedOrderStatusType = list(TThostFtdcParkedOrderStatusType)[0], ErrorID: int = 0, ErrorMsg: str = '', IsSwapOrder: int = 0, AccountID: str = '', CurrencyID: str = '', ClientID: str = '', InvestUnitID: str = '', IPAddress: str = '', MacAddress: str = ''):
+    def ReqParkedOrderInsert(self, BrokerID: str = '', InvestorID: str = '', reserve1: str = '', OrderRef: str = '', UserID: str = '', OrderPriceType: TThostFtdcOrderPriceTypeType = list(TThostFtdcOrderPriceTypeType)[0], Direction: TThostFtdcDirectionType = list(TThostFtdcDirectionType)[0], CombOffsetFlag: str = '', CombHedgeFlag: str = '', LimitPrice: float = .0, VolumeTotalOriginal: int = 0, TimeCondition: TThostFtdcTimeConditionType = list(TThostFtdcTimeConditionType)[0], GTDDate: str = '', VolumeCondition: TThostFtdcVolumeConditionType = list(TThostFtdcVolumeConditionType)[0], MinVolume: int = 0, ContingentCondition: TThostFtdcContingentConditionType = list(TThostFtdcContingentConditionType)[0], StopPrice: float = .0, ForceCloseReason: TThostFtdcForceCloseReasonType = list(TThostFtdcForceCloseReasonType)[0], IsAutoSuspend: int = 0, BusinessUnit: str = '', RequestID: int = 0, UserForceClose: int = 0, ExchangeID: str = '', ParkedOrderID: str = '', UserType: TThostFtdcUserTypeType = list(TThostFtdcUserTypeType)[0], Status: TThostFtdcParkedOrderStatusType = list(TThostFtdcParkedOrderStatusType)[0], ErrorID: int = 0, ErrorMsg: str = '', IsSwapOrder: int = 0, AccountID: str = '', CurrencyID: str = '', ClientID: str = '', InvestUnitID: str = '', reserve2: str = '', MacAddress: str = '', InstrumentID: str = '', IPAddress: str = ''):
         pParkedOrder = CThostFtdcParkedOrderField()
         pParkedOrder.BrokerID = bytes(BrokerID, encoding='ascii')
         pParkedOrder.InvestorID = bytes(InvestorID, encoding='ascii')
-        pParkedOrder.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pParkedOrder.reserve1 = bytes(reserve1, encoding='ascii')
         pParkedOrder.OrderRef = bytes(OrderRef, encoding='ascii')
         pParkedOrder.UserID = bytes(UserID, encoding='ascii')
         pParkedOrder.OrderPriceType = OrderPriceType.value
@@ -594,12 +608,14 @@ class Trade:
         pParkedOrder.CurrencyID = bytes(CurrencyID, encoding='ascii')
         pParkedOrder.ClientID = bytes(ClientID, encoding='ascii')
         pParkedOrder.InvestUnitID = bytes(InvestUnitID, encoding='ascii')
-        pParkedOrder.IPAddress = bytes(IPAddress, encoding='ascii')
+        pParkedOrder.reserve2 = bytes(reserve2, encoding='ascii')
         pParkedOrder.MacAddress = bytes(MacAddress, encoding='ascii')
+        pParkedOrder.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pParkedOrder.IPAddress = bytes(IPAddress, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqParkedOrderInsert(self.api, byref(pParkedOrder), self.nRequestID)
 
-    def ReqParkedOrderAction(self, BrokerID: str = '', InvestorID: str = '', OrderActionRef: int = 0, OrderRef: str = '', RequestID: int = 0, FrontID: int = 0, SessionID: int = 0, ExchangeID: str = '', OrderSysID: str = '', ActionFlag: TThostFtdcActionFlagType = list(TThostFtdcActionFlagType)[0], LimitPrice: float = .0, VolumeChange: int = 0, UserID: str = '', InstrumentID: str = '', ParkedOrderActionID: str = '', UserType: TThostFtdcUserTypeType = list(TThostFtdcUserTypeType)[0], Status: TThostFtdcParkedOrderStatusType = list(TThostFtdcParkedOrderStatusType)[0], ErrorID: int = 0, ErrorMsg: str = '', InvestUnitID: str = '', IPAddress: str = '', MacAddress: str = ''):
+    def ReqParkedOrderAction(self, BrokerID: str = '', InvestorID: str = '', OrderActionRef: int = 0, OrderRef: str = '', RequestID: int = 0, FrontID: int = 0, SessionID: int = 0, ExchangeID: str = '', OrderSysID: str = '', ActionFlag: TThostFtdcActionFlagType = list(TThostFtdcActionFlagType)[0], LimitPrice: float = .0, VolumeChange: int = 0, UserID: str = '', reserve1: str = '', ParkedOrderActionID: str = '', UserType: TThostFtdcUserTypeType = list(TThostFtdcUserTypeType)[0], Status: TThostFtdcParkedOrderStatusType = list(TThostFtdcParkedOrderStatusType)[0], ErrorID: int = 0, ErrorMsg: str = '', InvestUnitID: str = '', reserve2: str = '', MacAddress: str = '', InstrumentID: str = '', IPAddress: str = ''):
         pParkedOrderAction = CThostFtdcParkedOrderActionField()
         pParkedOrderAction.BrokerID = bytes(BrokerID, encoding='ascii')
         pParkedOrderAction.InvestorID = bytes(InvestorID, encoding='ascii')
@@ -614,19 +630,21 @@ class Trade:
         pParkedOrderAction.LimitPrice = LimitPrice
         pParkedOrderAction.VolumeChange = VolumeChange
         pParkedOrderAction.UserID = bytes(UserID, encoding='ascii')
-        pParkedOrderAction.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pParkedOrderAction.reserve1 = bytes(reserve1, encoding='ascii')
         pParkedOrderAction.ParkedOrderActionID = bytes(ParkedOrderActionID, encoding='ascii')
         pParkedOrderAction.UserType = UserType.value
         pParkedOrderAction.Status = Status.value
         pParkedOrderAction.ErrorID = ErrorID
         pParkedOrderAction.ErrorMsg = bytes(ErrorMsg, encoding='ascii')
         pParkedOrderAction.InvestUnitID = bytes(InvestUnitID, encoding='ascii')
-        pParkedOrderAction.IPAddress = bytes(IPAddress, encoding='ascii')
+        pParkedOrderAction.reserve2 = bytes(reserve2, encoding='ascii')
         pParkedOrderAction.MacAddress = bytes(MacAddress, encoding='ascii')
+        pParkedOrderAction.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pParkedOrderAction.IPAddress = bytes(IPAddress, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqParkedOrderAction(self.api, byref(pParkedOrderAction), self.nRequestID)
 
-    def ReqOrderAction(self, BrokerID: str = '', InvestorID: str = '', OrderActionRef: int = 0, OrderRef: str = '', RequestID: int = 0, FrontID: int = 0, SessionID: int = 0, ExchangeID: str = '', OrderSysID: str = '', ActionFlag: TThostFtdcActionFlagType = list(TThostFtdcActionFlagType)[0], LimitPrice: float = .0, VolumeChange: int = 0, UserID: str = '', InstrumentID: str = '', InvestUnitID: str = '', IPAddress: str = '', MacAddress: str = ''):
+    def ReqOrderAction(self, BrokerID: str = '', InvestorID: str = '', OrderActionRef: int = 0, OrderRef: str = '', RequestID: int = 0, FrontID: int = 0, SessionID: int = 0, ExchangeID: str = '', OrderSysID: str = '', ActionFlag: TThostFtdcActionFlagType = list(TThostFtdcActionFlagType)[0], LimitPrice: float = .0, VolumeChange: int = 0, UserID: str = '', reserve1: str = '', InvestUnitID: str = '', reserve2: str = '', MacAddress: str = '', InstrumentID: str = '', IPAddress: str = ''):
         pInputOrderAction = CThostFtdcInputOrderActionField()
         pInputOrderAction.BrokerID = bytes(BrokerID, encoding='ascii')
         pInputOrderAction.InvestorID = bytes(InvestorID, encoding='ascii')
@@ -641,26 +659,29 @@ class Trade:
         pInputOrderAction.LimitPrice = LimitPrice
         pInputOrderAction.VolumeChange = VolumeChange
         pInputOrderAction.UserID = bytes(UserID, encoding='ascii')
-        pInputOrderAction.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pInputOrderAction.reserve1 = bytes(reserve1, encoding='ascii')
         pInputOrderAction.InvestUnitID = bytes(InvestUnitID, encoding='ascii')
-        pInputOrderAction.IPAddress = bytes(IPAddress, encoding='ascii')
+        pInputOrderAction.reserve2 = bytes(reserve2, encoding='ascii')
         pInputOrderAction.MacAddress = bytes(MacAddress, encoding='ascii')
+        pInputOrderAction.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pInputOrderAction.IPAddress = bytes(IPAddress, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqOrderAction(self.api, byref(pInputOrderAction), self.nRequestID)
 
-    def ReqQueryMaxOrderVolume(self, BrokerID: str = '', InvestorID: str = '', InstrumentID: str = '', Direction: TThostFtdcDirectionType = list(TThostFtdcDirectionType)[0], OffsetFlag: TThostFtdcOffsetFlagType = list(TThostFtdcOffsetFlagType)[0], HedgeFlag: TThostFtdcHedgeFlagType = list(TThostFtdcHedgeFlagType)[0], MaxVolume: int = 0, ExchangeID: str = '', InvestUnitID: str = ''):
-        pQueryMaxOrderVolume = CThostFtdcQueryMaxOrderVolumeField()
-        pQueryMaxOrderVolume.BrokerID = bytes(BrokerID, encoding='ascii')
-        pQueryMaxOrderVolume.InvestorID = bytes(InvestorID, encoding='ascii')
-        pQueryMaxOrderVolume.InstrumentID = bytes(InstrumentID, encoding='ascii')
-        pQueryMaxOrderVolume.Direction = Direction.value
-        pQueryMaxOrderVolume.OffsetFlag = OffsetFlag.value
-        pQueryMaxOrderVolume.HedgeFlag = HedgeFlag.value
-        pQueryMaxOrderVolume.MaxVolume = MaxVolume
-        pQueryMaxOrderVolume.ExchangeID = bytes(ExchangeID, encoding='ascii')
-        pQueryMaxOrderVolume.InvestUnitID = bytes(InvestUnitID, encoding='ascii')
+    def ReqQryMaxOrderVolume(self, BrokerID: str = '', InvestorID: str = '', reserve1: str = '', Direction: TThostFtdcDirectionType = list(TThostFtdcDirectionType)[0], OffsetFlag: TThostFtdcOffsetFlagType = list(TThostFtdcOffsetFlagType)[0], HedgeFlag: TThostFtdcHedgeFlagType = list(TThostFtdcHedgeFlagType)[0], MaxVolume: int = 0, ExchangeID: str = '', InvestUnitID: str = '', InstrumentID: str = ''):
+        pQryMaxOrderVolume = CThostFtdcQryMaxOrderVolumeField()
+        pQryMaxOrderVolume.BrokerID = bytes(BrokerID, encoding='ascii')
+        pQryMaxOrderVolume.InvestorID = bytes(InvestorID, encoding='ascii')
+        pQryMaxOrderVolume.reserve1 = bytes(reserve1, encoding='ascii')
+        pQryMaxOrderVolume.Direction = Direction.value
+        pQryMaxOrderVolume.OffsetFlag = OffsetFlag.value
+        pQryMaxOrderVolume.HedgeFlag = HedgeFlag.value
+        pQryMaxOrderVolume.MaxVolume = MaxVolume
+        pQryMaxOrderVolume.ExchangeID = bytes(ExchangeID, encoding='ascii')
+        pQryMaxOrderVolume.InvestUnitID = bytes(InvestUnitID, encoding='ascii')
+        pQryMaxOrderVolume.InstrumentID = bytes(InstrumentID, encoding='ascii')
         self.nRequestID += 1
-        self.h.ReqQueryMaxOrderVolume(self.api, byref(pQueryMaxOrderVolume), self.nRequestID)
+        self.h.ReqQryMaxOrderVolume(self.api, byref(pQryMaxOrderVolume), self.nRequestID)
 
     def ReqSettlementInfoConfirm(self, BrokerID: str = '', InvestorID: str = '', ConfirmDate: str = '', ConfirmTime: str = '', SettlementID: int = 0, AccountID: str = '', CurrencyID: str = ''):
         pSettlementInfoConfirm = CThostFtdcSettlementInfoConfirmField()
@@ -692,11 +713,11 @@ class Trade:
         self.nRequestID += 1
         self.h.ReqRemoveParkedOrderAction(self.api, byref(pRemoveParkedOrderAction), self.nRequestID)
 
-    def ReqExecOrderInsert(self, BrokerID: str = '', InvestorID: str = '', InstrumentID: str = '', ExecOrderRef: str = '', UserID: str = '', Volume: int = 0, RequestID: int = 0, BusinessUnit: str = '', OffsetFlag: TThostFtdcOffsetFlagType = list(TThostFtdcOffsetFlagType)[0], HedgeFlag: TThostFtdcHedgeFlagType = list(TThostFtdcHedgeFlagType)[0], ActionType: TThostFtdcActionTypeType = list(TThostFtdcActionTypeType)[0], PosiDirection: TThostFtdcPosiDirectionType = list(TThostFtdcPosiDirectionType)[0], ReservePositionFlag: TThostFtdcExecOrderPositionFlagType = list(TThostFtdcExecOrderPositionFlagType)[0], CloseFlag: TThostFtdcExecOrderCloseFlagType = list(TThostFtdcExecOrderCloseFlagType)[0], ExchangeID: str = '', InvestUnitID: str = '', AccountID: str = '', CurrencyID: str = '', ClientID: str = '', IPAddress: str = '', MacAddress: str = ''):
+    def ReqExecOrderInsert(self, BrokerID: str = '', InvestorID: str = '', reserve1: str = '', ExecOrderRef: str = '', UserID: str = '', Volume: int = 0, RequestID: int = 0, BusinessUnit: str = '', OffsetFlag: TThostFtdcOffsetFlagType = list(TThostFtdcOffsetFlagType)[0], HedgeFlag: TThostFtdcHedgeFlagType = list(TThostFtdcHedgeFlagType)[0], ActionType: TThostFtdcActionTypeType = list(TThostFtdcActionTypeType)[0], PosiDirection: TThostFtdcPosiDirectionType = list(TThostFtdcPosiDirectionType)[0], ReservePositionFlag: TThostFtdcExecOrderPositionFlagType = list(TThostFtdcExecOrderPositionFlagType)[0], CloseFlag: TThostFtdcExecOrderCloseFlagType = list(TThostFtdcExecOrderCloseFlagType)[0], ExchangeID: str = '', InvestUnitID: str = '', AccountID: str = '', CurrencyID: str = '', ClientID: str = '', reserve2: str = '', MacAddress: str = '', InstrumentID: str = '', IPAddress: str = ''):
         pInputExecOrder = CThostFtdcInputExecOrderField()
         pInputExecOrder.BrokerID = bytes(BrokerID, encoding='ascii')
         pInputExecOrder.InvestorID = bytes(InvestorID, encoding='ascii')
-        pInputExecOrder.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pInputExecOrder.reserve1 = bytes(reserve1, encoding='ascii')
         pInputExecOrder.ExecOrderRef = bytes(ExecOrderRef, encoding='ascii')
         pInputExecOrder.UserID = bytes(UserID, encoding='ascii')
         pInputExecOrder.Volume = Volume
@@ -713,12 +734,14 @@ class Trade:
         pInputExecOrder.AccountID = bytes(AccountID, encoding='ascii')
         pInputExecOrder.CurrencyID = bytes(CurrencyID, encoding='ascii')
         pInputExecOrder.ClientID = bytes(ClientID, encoding='ascii')
-        pInputExecOrder.IPAddress = bytes(IPAddress, encoding='ascii')
+        pInputExecOrder.reserve2 = bytes(reserve2, encoding='ascii')
         pInputExecOrder.MacAddress = bytes(MacAddress, encoding='ascii')
+        pInputExecOrder.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pInputExecOrder.IPAddress = bytes(IPAddress, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqExecOrderInsert(self.api, byref(pInputExecOrder), self.nRequestID)
 
-    def ReqExecOrderAction(self, BrokerID: str = '', InvestorID: str = '', ExecOrderActionRef: int = 0, ExecOrderRef: str = '', RequestID: int = 0, FrontID: int = 0, SessionID: int = 0, ExchangeID: str = '', ExecOrderSysID: str = '', ActionFlag: TThostFtdcActionFlagType = list(TThostFtdcActionFlagType)[0], UserID: str = '', InstrumentID: str = '', InvestUnitID: str = '', IPAddress: str = '', MacAddress: str = ''):
+    def ReqExecOrderAction(self, BrokerID: str = '', InvestorID: str = '', ExecOrderActionRef: int = 0, ExecOrderRef: str = '', RequestID: int = 0, FrontID: int = 0, SessionID: int = 0, ExchangeID: str = '', ExecOrderSysID: str = '', ActionFlag: TThostFtdcActionFlagType = list(TThostFtdcActionFlagType)[0], UserID: str = '', reserve1: str = '', InvestUnitID: str = '', reserve2: str = '', MacAddress: str = '', InstrumentID: str = '', IPAddress: str = ''):
         pInputExecOrderAction = CThostFtdcInputExecOrderActionField()
         pInputExecOrderAction.BrokerID = bytes(BrokerID, encoding='ascii')
         pInputExecOrderAction.InvestorID = bytes(InvestorID, encoding='ascii')
@@ -731,32 +754,36 @@ class Trade:
         pInputExecOrderAction.ExecOrderSysID = bytes(ExecOrderSysID, encoding='ascii')
         pInputExecOrderAction.ActionFlag = ActionFlag.value
         pInputExecOrderAction.UserID = bytes(UserID, encoding='ascii')
-        pInputExecOrderAction.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pInputExecOrderAction.reserve1 = bytes(reserve1, encoding='ascii')
         pInputExecOrderAction.InvestUnitID = bytes(InvestUnitID, encoding='ascii')
-        pInputExecOrderAction.IPAddress = bytes(IPAddress, encoding='ascii')
+        pInputExecOrderAction.reserve2 = bytes(reserve2, encoding='ascii')
         pInputExecOrderAction.MacAddress = bytes(MacAddress, encoding='ascii')
+        pInputExecOrderAction.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pInputExecOrderAction.IPAddress = bytes(IPAddress, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqExecOrderAction(self.api, byref(pInputExecOrderAction), self.nRequestID)
 
-    def ReqForQuoteInsert(self, BrokerID: str = '', InvestorID: str = '', InstrumentID: str = '', ForQuoteRef: str = '', UserID: str = '', ExchangeID: str = '', InvestUnitID: str = '', IPAddress: str = '', MacAddress: str = ''):
+    def ReqForQuoteInsert(self, BrokerID: str = '', InvestorID: str = '', reserve1: str = '', ForQuoteRef: str = '', UserID: str = '', ExchangeID: str = '', InvestUnitID: str = '', reserve2: str = '', MacAddress: str = '', InstrumentID: str = '', IPAddress: str = ''):
         pInputForQuote = CThostFtdcInputForQuoteField()
         pInputForQuote.BrokerID = bytes(BrokerID, encoding='ascii')
         pInputForQuote.InvestorID = bytes(InvestorID, encoding='ascii')
-        pInputForQuote.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pInputForQuote.reserve1 = bytes(reserve1, encoding='ascii')
         pInputForQuote.ForQuoteRef = bytes(ForQuoteRef, encoding='ascii')
         pInputForQuote.UserID = bytes(UserID, encoding='ascii')
         pInputForQuote.ExchangeID = bytes(ExchangeID, encoding='ascii')
         pInputForQuote.InvestUnitID = bytes(InvestUnitID, encoding='ascii')
-        pInputForQuote.IPAddress = bytes(IPAddress, encoding='ascii')
+        pInputForQuote.reserve2 = bytes(reserve2, encoding='ascii')
         pInputForQuote.MacAddress = bytes(MacAddress, encoding='ascii')
+        pInputForQuote.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pInputForQuote.IPAddress = bytes(IPAddress, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqForQuoteInsert(self.api, byref(pInputForQuote), self.nRequestID)
 
-    def ReqQuoteInsert(self, BrokerID: str = '', InvestorID: str = '', InstrumentID: str = '', QuoteRef: str = '', UserID: str = '', AskPrice: float = .0, BidPrice: float = .0, AskVolume: int = 0, BidVolume: int = 0, RequestID: int = 0, BusinessUnit: str = '', AskOffsetFlag: TThostFtdcOffsetFlagType = list(TThostFtdcOffsetFlagType)[0], BidOffsetFlag: TThostFtdcOffsetFlagType = list(TThostFtdcOffsetFlagType)[0], AskHedgeFlag: TThostFtdcHedgeFlagType = list(TThostFtdcHedgeFlagType)[0], BidHedgeFlag: TThostFtdcHedgeFlagType = list(TThostFtdcHedgeFlagType)[0], AskOrderRef: str = '', BidOrderRef: str = '', ForQuoteSysID: str = '', ExchangeID: str = '', InvestUnitID: str = '', ClientID: str = '', IPAddress: str = '', MacAddress: str = ''):
+    def ReqQuoteInsert(self, BrokerID: str = '', InvestorID: str = '', reserve1: str = '', QuoteRef: str = '', UserID: str = '', AskPrice: float = .0, BidPrice: float = .0, AskVolume: int = 0, BidVolume: int = 0, RequestID: int = 0, BusinessUnit: str = '', AskOffsetFlag: TThostFtdcOffsetFlagType = list(TThostFtdcOffsetFlagType)[0], BidOffsetFlag: TThostFtdcOffsetFlagType = list(TThostFtdcOffsetFlagType)[0], AskHedgeFlag: TThostFtdcHedgeFlagType = list(TThostFtdcHedgeFlagType)[0], BidHedgeFlag: TThostFtdcHedgeFlagType = list(TThostFtdcHedgeFlagType)[0], AskOrderRef: str = '', BidOrderRef: str = '', ForQuoteSysID: str = '', ExchangeID: str = '', InvestUnitID: str = '', ClientID: str = '', reserve2: str = '', MacAddress: str = '', InstrumentID: str = '', IPAddress: str = ''):
         pInputQuote = CThostFtdcInputQuoteField()
         pInputQuote.BrokerID = bytes(BrokerID, encoding='ascii')
         pInputQuote.InvestorID = bytes(InvestorID, encoding='ascii')
-        pInputQuote.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pInputQuote.reserve1 = bytes(reserve1, encoding='ascii')
         pInputQuote.QuoteRef = bytes(QuoteRef, encoding='ascii')
         pInputQuote.UserID = bytes(UserID, encoding='ascii')
         pInputQuote.AskPrice = AskPrice
@@ -775,12 +802,14 @@ class Trade:
         pInputQuote.ExchangeID = bytes(ExchangeID, encoding='ascii')
         pInputQuote.InvestUnitID = bytes(InvestUnitID, encoding='ascii')
         pInputQuote.ClientID = bytes(ClientID, encoding='ascii')
-        pInputQuote.IPAddress = bytes(IPAddress, encoding='ascii')
+        pInputQuote.reserve2 = bytes(reserve2, encoding='ascii')
         pInputQuote.MacAddress = bytes(MacAddress, encoding='ascii')
+        pInputQuote.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pInputQuote.IPAddress = bytes(IPAddress, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQuoteInsert(self.api, byref(pInputQuote), self.nRequestID)
 
-    def ReqQuoteAction(self, BrokerID: str = '', InvestorID: str = '', QuoteActionRef: int = 0, QuoteRef: str = '', RequestID: int = 0, FrontID: int = 0, SessionID: int = 0, ExchangeID: str = '', QuoteSysID: str = '', ActionFlag: TThostFtdcActionFlagType = list(TThostFtdcActionFlagType)[0], UserID: str = '', InstrumentID: str = '', InvestUnitID: str = '', ClientID: str = '', IPAddress: str = '', MacAddress: str = ''):
+    def ReqQuoteAction(self, BrokerID: str = '', InvestorID: str = '', QuoteActionRef: int = 0, QuoteRef: str = '', RequestID: int = 0, FrontID: int = 0, SessionID: int = 0, ExchangeID: str = '', QuoteSysID: str = '', ActionFlag: TThostFtdcActionFlagType = list(TThostFtdcActionFlagType)[0], UserID: str = '', reserve1: str = '', InvestUnitID: str = '', ClientID: str = '', reserve2: str = '', MacAddress: str = '', InstrumentID: str = '', IPAddress: str = ''):
         pInputQuoteAction = CThostFtdcInputQuoteActionField()
         pInputQuoteAction.BrokerID = bytes(BrokerID, encoding='ascii')
         pInputQuoteAction.InvestorID = bytes(InvestorID, encoding='ascii')
@@ -793,15 +822,17 @@ class Trade:
         pInputQuoteAction.QuoteSysID = bytes(QuoteSysID, encoding='ascii')
         pInputQuoteAction.ActionFlag = ActionFlag.value
         pInputQuoteAction.UserID = bytes(UserID, encoding='ascii')
-        pInputQuoteAction.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pInputQuoteAction.reserve1 = bytes(reserve1, encoding='ascii')
         pInputQuoteAction.InvestUnitID = bytes(InvestUnitID, encoding='ascii')
         pInputQuoteAction.ClientID = bytes(ClientID, encoding='ascii')
-        pInputQuoteAction.IPAddress = bytes(IPAddress, encoding='ascii')
+        pInputQuoteAction.reserve2 = bytes(reserve2, encoding='ascii')
         pInputQuoteAction.MacAddress = bytes(MacAddress, encoding='ascii')
+        pInputQuoteAction.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pInputQuoteAction.IPAddress = bytes(IPAddress, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQuoteAction(self.api, byref(pInputQuoteAction), self.nRequestID)
 
-    def ReqBatchOrderAction(self, BrokerID: str = '', InvestorID: str = '', OrderActionRef: int = 0, RequestID: int = 0, FrontID: int = 0, SessionID: int = 0, ExchangeID: str = '', UserID: str = '', InvestUnitID: str = '', IPAddress: str = '', MacAddress: str = ''):
+    def ReqBatchOrderAction(self, BrokerID: str = '', InvestorID: str = '', OrderActionRef: int = 0, RequestID: int = 0, FrontID: int = 0, SessionID: int = 0, ExchangeID: str = '', UserID: str = '', InvestUnitID: str = '', reserve1: str = '', MacAddress: str = '', IPAddress: str = ''):
         pInputBatchOrderAction = CThostFtdcInputBatchOrderActionField()
         pInputBatchOrderAction.BrokerID = bytes(BrokerID, encoding='ascii')
         pInputBatchOrderAction.InvestorID = bytes(InvestorID, encoding='ascii')
@@ -812,16 +843,17 @@ class Trade:
         pInputBatchOrderAction.ExchangeID = bytes(ExchangeID, encoding='ascii')
         pInputBatchOrderAction.UserID = bytes(UserID, encoding='ascii')
         pInputBatchOrderAction.InvestUnitID = bytes(InvestUnitID, encoding='ascii')
-        pInputBatchOrderAction.IPAddress = bytes(IPAddress, encoding='ascii')
+        pInputBatchOrderAction.reserve1 = bytes(reserve1, encoding='ascii')
         pInputBatchOrderAction.MacAddress = bytes(MacAddress, encoding='ascii')
+        pInputBatchOrderAction.IPAddress = bytes(IPAddress, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqBatchOrderAction(self.api, byref(pInputBatchOrderAction), self.nRequestID)
 
-    def ReqOptionSelfCloseInsert(self, BrokerID: str = '', InvestorID: str = '', InstrumentID: str = '', OptionSelfCloseRef: str = '', UserID: str = '', Volume: int = 0, RequestID: int = 0, BusinessUnit: str = '', HedgeFlag: TThostFtdcHedgeFlagType = list(TThostFtdcHedgeFlagType)[0], OptSelfCloseFlag: TThostFtdcOptSelfCloseFlagType = list(TThostFtdcOptSelfCloseFlagType)[0], ExchangeID: str = '', InvestUnitID: str = '', AccountID: str = '', CurrencyID: str = '', ClientID: str = '', IPAddress: str = '', MacAddress: str = ''):
+    def ReqOptionSelfCloseInsert(self, BrokerID: str = '', InvestorID: str = '', reserve1: str = '', OptionSelfCloseRef: str = '', UserID: str = '', Volume: int = 0, RequestID: int = 0, BusinessUnit: str = '', HedgeFlag: TThostFtdcHedgeFlagType = list(TThostFtdcHedgeFlagType)[0], OptSelfCloseFlag: TThostFtdcOptSelfCloseFlagType = list(TThostFtdcOptSelfCloseFlagType)[0], ExchangeID: str = '', InvestUnitID: str = '', AccountID: str = '', CurrencyID: str = '', ClientID: str = '', reserve2: str = '', MacAddress: str = '', InstrumentID: str = '', IPAddress: str = ''):
         pInputOptionSelfClose = CThostFtdcInputOptionSelfCloseField()
         pInputOptionSelfClose.BrokerID = bytes(BrokerID, encoding='ascii')
         pInputOptionSelfClose.InvestorID = bytes(InvestorID, encoding='ascii')
-        pInputOptionSelfClose.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pInputOptionSelfClose.reserve1 = bytes(reserve1, encoding='ascii')
         pInputOptionSelfClose.OptionSelfCloseRef = bytes(OptionSelfCloseRef, encoding='ascii')
         pInputOptionSelfClose.UserID = bytes(UserID, encoding='ascii')
         pInputOptionSelfClose.Volume = Volume
@@ -834,12 +866,14 @@ class Trade:
         pInputOptionSelfClose.AccountID = bytes(AccountID, encoding='ascii')
         pInputOptionSelfClose.CurrencyID = bytes(CurrencyID, encoding='ascii')
         pInputOptionSelfClose.ClientID = bytes(ClientID, encoding='ascii')
-        pInputOptionSelfClose.IPAddress = bytes(IPAddress, encoding='ascii')
+        pInputOptionSelfClose.reserve2 = bytes(reserve2, encoding='ascii')
         pInputOptionSelfClose.MacAddress = bytes(MacAddress, encoding='ascii')
+        pInputOptionSelfClose.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pInputOptionSelfClose.IPAddress = bytes(IPAddress, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqOptionSelfCloseInsert(self.api, byref(pInputOptionSelfClose), self.nRequestID)
 
-    def ReqOptionSelfCloseAction(self, BrokerID: str = '', InvestorID: str = '', OptionSelfCloseActionRef: int = 0, OptionSelfCloseRef: str = '', RequestID: int = 0, FrontID: int = 0, SessionID: int = 0, ExchangeID: str = '', OptionSelfCloseSysID: str = '', ActionFlag: TThostFtdcActionFlagType = list(TThostFtdcActionFlagType)[0], UserID: str = '', InstrumentID: str = '', InvestUnitID: str = '', IPAddress: str = '', MacAddress: str = ''):
+    def ReqOptionSelfCloseAction(self, BrokerID: str = '', InvestorID: str = '', OptionSelfCloseActionRef: int = 0, OptionSelfCloseRef: str = '', RequestID: int = 0, FrontID: int = 0, SessionID: int = 0, ExchangeID: str = '', OptionSelfCloseSysID: str = '', ActionFlag: TThostFtdcActionFlagType = list(TThostFtdcActionFlagType)[0], UserID: str = '', reserve1: str = '', InvestUnitID: str = '', reserve2: str = '', MacAddress: str = '', InstrumentID: str = '', IPAddress: str = ''):
         pInputOptionSelfCloseAction = CThostFtdcInputOptionSelfCloseActionField()
         pInputOptionSelfCloseAction.BrokerID = bytes(BrokerID, encoding='ascii')
         pInputOptionSelfCloseAction.InvestorID = bytes(InvestorID, encoding='ascii')
@@ -852,18 +886,20 @@ class Trade:
         pInputOptionSelfCloseAction.OptionSelfCloseSysID = bytes(OptionSelfCloseSysID, encoding='ascii')
         pInputOptionSelfCloseAction.ActionFlag = ActionFlag.value
         pInputOptionSelfCloseAction.UserID = bytes(UserID, encoding='ascii')
-        pInputOptionSelfCloseAction.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pInputOptionSelfCloseAction.reserve1 = bytes(reserve1, encoding='ascii')
         pInputOptionSelfCloseAction.InvestUnitID = bytes(InvestUnitID, encoding='ascii')
-        pInputOptionSelfCloseAction.IPAddress = bytes(IPAddress, encoding='ascii')
+        pInputOptionSelfCloseAction.reserve2 = bytes(reserve2, encoding='ascii')
         pInputOptionSelfCloseAction.MacAddress = bytes(MacAddress, encoding='ascii')
+        pInputOptionSelfCloseAction.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pInputOptionSelfCloseAction.IPAddress = bytes(IPAddress, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqOptionSelfCloseAction(self.api, byref(pInputOptionSelfCloseAction), self.nRequestID)
 
-    def ReqCombActionInsert(self, BrokerID: str = '', InvestorID: str = '', InstrumentID: str = '', CombActionRef: str = '', UserID: str = '', Direction: TThostFtdcDirectionType = list(TThostFtdcDirectionType)[0], Volume: int = 0, CombDirection: TThostFtdcCombDirectionType = list(TThostFtdcCombDirectionType)[0], HedgeFlag: TThostFtdcHedgeFlagType = list(TThostFtdcHedgeFlagType)[0], ExchangeID: str = '', IPAddress: str = '', MacAddress: str = '', InvestUnitID: str = ''):
+    def ReqCombActionInsert(self, BrokerID: str = '', InvestorID: str = '', reserve1: str = '', CombActionRef: str = '', UserID: str = '', Direction: TThostFtdcDirectionType = list(TThostFtdcDirectionType)[0], Volume: int = 0, CombDirection: TThostFtdcCombDirectionType = list(TThostFtdcCombDirectionType)[0], HedgeFlag: TThostFtdcHedgeFlagType = list(TThostFtdcHedgeFlagType)[0], ExchangeID: str = '', reserve2: str = '', MacAddress: str = '', InvestUnitID: str = '', FrontID: int = 0, SessionID: int = 0, InstrumentID: str = '', IPAddress: str = ''):
         pInputCombAction = CThostFtdcInputCombActionField()
         pInputCombAction.BrokerID = bytes(BrokerID, encoding='ascii')
         pInputCombAction.InvestorID = bytes(InvestorID, encoding='ascii')
-        pInputCombAction.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pInputCombAction.reserve1 = bytes(reserve1, encoding='ascii')
         pInputCombAction.CombActionRef = bytes(CombActionRef, encoding='ascii')
         pInputCombAction.UserID = bytes(UserID, encoding='ascii')
         pInputCombAction.Direction = Direction.value
@@ -871,45 +907,52 @@ class Trade:
         pInputCombAction.CombDirection = CombDirection.value
         pInputCombAction.HedgeFlag = HedgeFlag.value
         pInputCombAction.ExchangeID = bytes(ExchangeID, encoding='ascii')
-        pInputCombAction.IPAddress = bytes(IPAddress, encoding='ascii')
+        pInputCombAction.reserve2 = bytes(reserve2, encoding='ascii')
         pInputCombAction.MacAddress = bytes(MacAddress, encoding='ascii')
         pInputCombAction.InvestUnitID = bytes(InvestUnitID, encoding='ascii')
+        pInputCombAction.FrontID = FrontID
+        pInputCombAction.SessionID = SessionID
+        pInputCombAction.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pInputCombAction.IPAddress = bytes(IPAddress, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqCombActionInsert(self.api, byref(pInputCombAction), self.nRequestID)
 
-    def ReqQryOrder(self, BrokerID: str = '', InvestorID: str = '', InstrumentID: str = '', ExchangeID: str = '', OrderSysID: str = '', InsertTimeStart: str = '', InsertTimeEnd: str = '', InvestUnitID: str = ''):
+    def ReqQryOrder(self, BrokerID: str = '', InvestorID: str = '', reserve1: str = '', ExchangeID: str = '', OrderSysID: str = '', InsertTimeStart: str = '', InsertTimeEnd: str = '', InvestUnitID: str = '', InstrumentID: str = ''):
         pQryOrder = CThostFtdcQryOrderField()
         pQryOrder.BrokerID = bytes(BrokerID, encoding='ascii')
         pQryOrder.InvestorID = bytes(InvestorID, encoding='ascii')
-        pQryOrder.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pQryOrder.reserve1 = bytes(reserve1, encoding='ascii')
         pQryOrder.ExchangeID = bytes(ExchangeID, encoding='ascii')
         pQryOrder.OrderSysID = bytes(OrderSysID, encoding='ascii')
         pQryOrder.InsertTimeStart = bytes(InsertTimeStart, encoding='ascii')
         pQryOrder.InsertTimeEnd = bytes(InsertTimeEnd, encoding='ascii')
         pQryOrder.InvestUnitID = bytes(InvestUnitID, encoding='ascii')
+        pQryOrder.InstrumentID = bytes(InstrumentID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQryOrder(self.api, byref(pQryOrder), self.nRequestID)
 
-    def ReqQryTrade(self, BrokerID: str = '', InvestorID: str = '', InstrumentID: str = '', ExchangeID: str = '', TradeID: str = '', TradeTimeStart: str = '', TradeTimeEnd: str = '', InvestUnitID: str = ''):
+    def ReqQryTrade(self, BrokerID: str = '', InvestorID: str = '', reserve1: str = '', ExchangeID: str = '', TradeID: str = '', TradeTimeStart: str = '', TradeTimeEnd: str = '', InvestUnitID: str = '', InstrumentID: str = ''):
         pQryTrade = CThostFtdcQryTradeField()
         pQryTrade.BrokerID = bytes(BrokerID, encoding='ascii')
         pQryTrade.InvestorID = bytes(InvestorID, encoding='ascii')
-        pQryTrade.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pQryTrade.reserve1 = bytes(reserve1, encoding='ascii')
         pQryTrade.ExchangeID = bytes(ExchangeID, encoding='ascii')
         pQryTrade.TradeID = bytes(TradeID, encoding='ascii')
         pQryTrade.TradeTimeStart = bytes(TradeTimeStart, encoding='ascii')
         pQryTrade.TradeTimeEnd = bytes(TradeTimeEnd, encoding='ascii')
         pQryTrade.InvestUnitID = bytes(InvestUnitID, encoding='ascii')
+        pQryTrade.InstrumentID = bytes(InstrumentID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQryTrade(self.api, byref(pQryTrade), self.nRequestID)
 
-    def ReqQryInvestorPosition(self, BrokerID: str = '', InvestorID: str = '', InstrumentID: str = '', ExchangeID: str = '', InvestUnitID: str = ''):
+    def ReqQryInvestorPosition(self, BrokerID: str = '', InvestorID: str = '', reserve1: str = '', ExchangeID: str = '', InvestUnitID: str = '', InstrumentID: str = ''):
         pQryInvestorPosition = CThostFtdcQryInvestorPositionField()
         pQryInvestorPosition.BrokerID = bytes(BrokerID, encoding='ascii')
         pQryInvestorPosition.InvestorID = bytes(InvestorID, encoding='ascii')
-        pQryInvestorPosition.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pQryInvestorPosition.reserve1 = bytes(reserve1, encoding='ascii')
         pQryInvestorPosition.ExchangeID = bytes(ExchangeID, encoding='ascii')
         pQryInvestorPosition.InvestUnitID = bytes(InvestUnitID, encoding='ascii')
+        pQryInvestorPosition.InstrumentID = bytes(InstrumentID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQryInvestorPosition(self.api, byref(pQryInvestorPosition), self.nRequestID)
 
@@ -941,24 +984,26 @@ class Trade:
         self.nRequestID += 1
         self.h.ReqQryTradingCode(self.api, byref(pQryTradingCode), self.nRequestID)
 
-    def ReqQryInstrumentMarginRate(self, BrokerID: str = '', InvestorID: str = '', InstrumentID: str = '', HedgeFlag: TThostFtdcHedgeFlagType = list(TThostFtdcHedgeFlagType)[0], ExchangeID: str = '', InvestUnitID: str = ''):
+    def ReqQryInstrumentMarginRate(self, BrokerID: str = '', InvestorID: str = '', reserve1: str = '', HedgeFlag: TThostFtdcHedgeFlagType = list(TThostFtdcHedgeFlagType)[0], ExchangeID: str = '', InvestUnitID: str = '', InstrumentID: str = ''):
         pQryInstrumentMarginRate = CThostFtdcQryInstrumentMarginRateField()
         pQryInstrumentMarginRate.BrokerID = bytes(BrokerID, encoding='ascii')
         pQryInstrumentMarginRate.InvestorID = bytes(InvestorID, encoding='ascii')
-        pQryInstrumentMarginRate.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pQryInstrumentMarginRate.reserve1 = bytes(reserve1, encoding='ascii')
         pQryInstrumentMarginRate.HedgeFlag = HedgeFlag.value
         pQryInstrumentMarginRate.ExchangeID = bytes(ExchangeID, encoding='ascii')
         pQryInstrumentMarginRate.InvestUnitID = bytes(InvestUnitID, encoding='ascii')
+        pQryInstrumentMarginRate.InstrumentID = bytes(InstrumentID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQryInstrumentMarginRate(self.api, byref(pQryInstrumentMarginRate), self.nRequestID)
 
-    def ReqQryInstrumentCommissionRate(self, BrokerID: str = '', InvestorID: str = '', InstrumentID: str = '', ExchangeID: str = '', InvestUnitID: str = ''):
+    def ReqQryInstrumentCommissionRate(self, BrokerID: str = '', InvestorID: str = '', reserve1: str = '', ExchangeID: str = '', InvestUnitID: str = '', InstrumentID: str = ''):
         pQryInstrumentCommissionRate = CThostFtdcQryInstrumentCommissionRateField()
         pQryInstrumentCommissionRate.BrokerID = bytes(BrokerID, encoding='ascii')
         pQryInstrumentCommissionRate.InvestorID = bytes(InvestorID, encoding='ascii')
-        pQryInstrumentCommissionRate.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pQryInstrumentCommissionRate.reserve1 = bytes(reserve1, encoding='ascii')
         pQryInstrumentCommissionRate.ExchangeID = bytes(ExchangeID, encoding='ascii')
         pQryInstrumentCommissionRate.InvestUnitID = bytes(InvestUnitID, encoding='ascii')
+        pQryInstrumentCommissionRate.InstrumentID = bytes(InstrumentID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQryInstrumentCommissionRate(self.api, byref(pQryInstrumentCommissionRate), self.nRequestID)
 
@@ -968,27 +1013,32 @@ class Trade:
         self.nRequestID += 1
         self.h.ReqQryExchange(self.api, byref(pQryExchange), self.nRequestID)
 
-    def ReqQryProduct(self, ProductID: str = '', ProductClass: TThostFtdcProductClassType = list(TThostFtdcProductClassType)[0], ExchangeID: str = ''):
+    def ReqQryProduct(self, reserve1: str = '', ProductClass: TThostFtdcProductClassType = list(TThostFtdcProductClassType)[0], ExchangeID: str = '', ProductID: str = ''):
         pQryProduct = CThostFtdcQryProductField()
-        pQryProduct.ProductID = bytes(ProductID, encoding='ascii')
+        pQryProduct.reserve1 = bytes(reserve1, encoding='ascii')
         pQryProduct.ProductClass = ProductClass.value
         pQryProduct.ExchangeID = bytes(ExchangeID, encoding='ascii')
+        pQryProduct.ProductID = bytes(ProductID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQryProduct(self.api, byref(pQryProduct), self.nRequestID)
 
-    def ReqQryInstrument(self, InstrumentID: str = '', ExchangeID: str = '', ExchangeInstID: str = '', ProductID: str = ''):
+    def ReqQryInstrument(self, reserve1: str = '', ExchangeID: str = '', reserve2: str = '', reserve3: str = '', InstrumentID: str = '', ExchangeInstID: str = '', ProductID: str = ''):
         pQryInstrument = CThostFtdcQryInstrumentField()
-        pQryInstrument.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pQryInstrument.reserve1 = bytes(reserve1, encoding='ascii')
         pQryInstrument.ExchangeID = bytes(ExchangeID, encoding='ascii')
+        pQryInstrument.reserve2 = bytes(reserve2, encoding='ascii')
+        pQryInstrument.reserve3 = bytes(reserve3, encoding='ascii')
+        pQryInstrument.InstrumentID = bytes(InstrumentID, encoding='ascii')
         pQryInstrument.ExchangeInstID = bytes(ExchangeInstID, encoding='ascii')
         pQryInstrument.ProductID = bytes(ProductID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQryInstrument(self.api, byref(pQryInstrument), self.nRequestID)
 
-    def ReqQryDepthMarketData(self, InstrumentID: str = '', ExchangeID: str = ''):
+    def ReqQryDepthMarketData(self, reserve1: str = '', ExchangeID: str = '', InstrumentID: str = ''):
         pQryDepthMarketData = CThostFtdcQryDepthMarketDataField()
-        pQryDepthMarketData.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pQryDepthMarketData.reserve1 = bytes(reserve1, encoding='ascii')
         pQryDepthMarketData.ExchangeID = bytes(ExchangeID, encoding='ascii')
+        pQryDepthMarketData.InstrumentID = bytes(InstrumentID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQryDepthMarketData(self.api, byref(pQryDepthMarketData), self.nRequestID)
 
@@ -1009,13 +1059,14 @@ class Trade:
         self.nRequestID += 1
         self.h.ReqQryTransferBank(self.api, byref(pQryTransferBank), self.nRequestID)
 
-    def ReqQryInvestorPositionDetail(self, BrokerID: str = '', InvestorID: str = '', InstrumentID: str = '', ExchangeID: str = '', InvestUnitID: str = ''):
+    def ReqQryInvestorPositionDetail(self, BrokerID: str = '', InvestorID: str = '', reserve1: str = '', ExchangeID: str = '', InvestUnitID: str = '', InstrumentID: str = ''):
         pQryInvestorPositionDetail = CThostFtdcQryInvestorPositionDetailField()
         pQryInvestorPositionDetail.BrokerID = bytes(BrokerID, encoding='ascii')
         pQryInvestorPositionDetail.InvestorID = bytes(InvestorID, encoding='ascii')
-        pQryInvestorPositionDetail.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pQryInvestorPositionDetail.reserve1 = bytes(reserve1, encoding='ascii')
         pQryInvestorPositionDetail.ExchangeID = bytes(ExchangeID, encoding='ascii')
         pQryInvestorPositionDetail.InvestUnitID = bytes(InvestUnitID, encoding='ascii')
+        pQryInvestorPositionDetail.InstrumentID = bytes(InstrumentID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQryInvestorPositionDetail(self.api, byref(pQryInvestorPositionDetail), self.nRequestID)
 
@@ -1034,13 +1085,14 @@ class Trade:
         self.nRequestID += 1
         self.h.ReqQrySettlementInfoConfirm(self.api, byref(pQrySettlementInfoConfirm), self.nRequestID)
 
-    def ReqQryInvestorPositionCombineDetail(self, BrokerID: str = '', InvestorID: str = '', CombInstrumentID: str = '', ExchangeID: str = '', InvestUnitID: str = ''):
+    def ReqQryInvestorPositionCombineDetail(self, BrokerID: str = '', InvestorID: str = '', reserve1: str = '', ExchangeID: str = '', InvestUnitID: str = '', CombInstrumentID: str = ''):
         pQryInvestorPositionCombineDetail = CThostFtdcQryInvestorPositionCombineDetailField()
         pQryInvestorPositionCombineDetail.BrokerID = bytes(BrokerID, encoding='ascii')
         pQryInvestorPositionCombineDetail.InvestorID = bytes(InvestorID, encoding='ascii')
-        pQryInvestorPositionCombineDetail.CombInstrumentID = bytes(CombInstrumentID, encoding='ascii')
+        pQryInvestorPositionCombineDetail.reserve1 = bytes(reserve1, encoding='ascii')
         pQryInvestorPositionCombineDetail.ExchangeID = bytes(ExchangeID, encoding='ascii')
         pQryInvestorPositionCombineDetail.InvestUnitID = bytes(InvestUnitID, encoding='ascii')
+        pQryInvestorPositionCombineDetail.CombInstrumentID = bytes(CombInstrumentID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQryInvestorPositionCombineDetail(self.api, byref(pQryInvestorPositionCombineDetail), self.nRequestID)
 
@@ -1051,41 +1103,45 @@ class Trade:
         self.nRequestID += 1
         self.h.ReqQryCFMMCTradingAccountKey(self.api, byref(pQryCFMMCTradingAccountKey), self.nRequestID)
 
-    def ReqQryEWarrantOffset(self, BrokerID: str = '', InvestorID: str = '', ExchangeID: str = '', InstrumentID: str = '', InvestUnitID: str = ''):
+    def ReqQryEWarrantOffset(self, BrokerID: str = '', InvestorID: str = '', ExchangeID: str = '', reserve1: str = '', InvestUnitID: str = '', InstrumentID: str = ''):
         pQryEWarrantOffset = CThostFtdcQryEWarrantOffsetField()
         pQryEWarrantOffset.BrokerID = bytes(BrokerID, encoding='ascii')
         pQryEWarrantOffset.InvestorID = bytes(InvestorID, encoding='ascii')
         pQryEWarrantOffset.ExchangeID = bytes(ExchangeID, encoding='ascii')
-        pQryEWarrantOffset.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pQryEWarrantOffset.reserve1 = bytes(reserve1, encoding='ascii')
         pQryEWarrantOffset.InvestUnitID = bytes(InvestUnitID, encoding='ascii')
+        pQryEWarrantOffset.InstrumentID = bytes(InstrumentID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQryEWarrantOffset(self.api, byref(pQryEWarrantOffset), self.nRequestID)
 
-    def ReqQryInvestorProductGroupMargin(self, BrokerID: str = '', InvestorID: str = '', ProductGroupID: str = '', HedgeFlag: TThostFtdcHedgeFlagType = list(TThostFtdcHedgeFlagType)[0], ExchangeID: str = '', InvestUnitID: str = ''):
+    def ReqQryInvestorProductGroupMargin(self, BrokerID: str = '', InvestorID: str = '', reserve1: str = '', HedgeFlag: TThostFtdcHedgeFlagType = list(TThostFtdcHedgeFlagType)[0], ExchangeID: str = '', InvestUnitID: str = '', ProductGroupID: str = ''):
         pQryInvestorProductGroupMargin = CThostFtdcQryInvestorProductGroupMarginField()
         pQryInvestorProductGroupMargin.BrokerID = bytes(BrokerID, encoding='ascii')
         pQryInvestorProductGroupMargin.InvestorID = bytes(InvestorID, encoding='ascii')
-        pQryInvestorProductGroupMargin.ProductGroupID = bytes(ProductGroupID, encoding='ascii')
+        pQryInvestorProductGroupMargin.reserve1 = bytes(reserve1, encoding='ascii')
         pQryInvestorProductGroupMargin.HedgeFlag = HedgeFlag.value
         pQryInvestorProductGroupMargin.ExchangeID = bytes(ExchangeID, encoding='ascii')
         pQryInvestorProductGroupMargin.InvestUnitID = bytes(InvestUnitID, encoding='ascii')
+        pQryInvestorProductGroupMargin.ProductGroupID = bytes(ProductGroupID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQryInvestorProductGroupMargin(self.api, byref(pQryInvestorProductGroupMargin), self.nRequestID)
 
-    def ReqQryExchangeMarginRate(self, BrokerID: str = '', InstrumentID: str = '', HedgeFlag: TThostFtdcHedgeFlagType = list(TThostFtdcHedgeFlagType)[0], ExchangeID: str = ''):
+    def ReqQryExchangeMarginRate(self, BrokerID: str = '', reserve1: str = '', HedgeFlag: TThostFtdcHedgeFlagType = list(TThostFtdcHedgeFlagType)[0], ExchangeID: str = '', InstrumentID: str = ''):
         pQryExchangeMarginRate = CThostFtdcQryExchangeMarginRateField()
         pQryExchangeMarginRate.BrokerID = bytes(BrokerID, encoding='ascii')
-        pQryExchangeMarginRate.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pQryExchangeMarginRate.reserve1 = bytes(reserve1, encoding='ascii')
         pQryExchangeMarginRate.HedgeFlag = HedgeFlag.value
         pQryExchangeMarginRate.ExchangeID = bytes(ExchangeID, encoding='ascii')
+        pQryExchangeMarginRate.InstrumentID = bytes(InstrumentID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQryExchangeMarginRate(self.api, byref(pQryExchangeMarginRate), self.nRequestID)
 
-    def ReqQryExchangeMarginRateAdjust(self, BrokerID: str = '', InstrumentID: str = '', HedgeFlag: TThostFtdcHedgeFlagType = list(TThostFtdcHedgeFlagType)[0]):
+    def ReqQryExchangeMarginRateAdjust(self, BrokerID: str = '', reserve1: str = '', HedgeFlag: TThostFtdcHedgeFlagType = list(TThostFtdcHedgeFlagType)[0], InstrumentID: str = ''):
         pQryExchangeMarginRateAdjust = CThostFtdcQryExchangeMarginRateAdjustField()
         pQryExchangeMarginRateAdjust.BrokerID = bytes(BrokerID, encoding='ascii')
-        pQryExchangeMarginRateAdjust.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pQryExchangeMarginRateAdjust.reserve1 = bytes(reserve1, encoding='ascii')
         pQryExchangeMarginRateAdjust.HedgeFlag = HedgeFlag.value
+        pQryExchangeMarginRateAdjust.InstrumentID = bytes(InstrumentID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQryExchangeMarginRateAdjust(self.api, byref(pQryExchangeMarginRateAdjust), self.nRequestID)
 
@@ -1106,40 +1162,45 @@ class Trade:
         self.nRequestID += 1
         self.h.ReqQrySecAgentACIDMap(self.api, byref(pQrySecAgentACIDMap), self.nRequestID)
 
-    def ReqQryProductExchRate(self, ProductID: str = '', ExchangeID: str = ''):
+    def ReqQryProductExchRate(self, reserve1: str = '', ExchangeID: str = '', ProductID: str = ''):
         pQryProductExchRate = CThostFtdcQryProductExchRateField()
-        pQryProductExchRate.ProductID = bytes(ProductID, encoding='ascii')
+        pQryProductExchRate.reserve1 = bytes(reserve1, encoding='ascii')
         pQryProductExchRate.ExchangeID = bytes(ExchangeID, encoding='ascii')
+        pQryProductExchRate.ProductID = bytes(ProductID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQryProductExchRate(self.api, byref(pQryProductExchRate), self.nRequestID)
 
-    def ReqQryProductGroup(self, ProductID: str = '', ExchangeID: str = ''):
+    def ReqQryProductGroup(self, reserve1: str = '', ExchangeID: str = '', ProductID: str = ''):
         pQryProductGroup = CThostFtdcQryProductGroupField()
-        pQryProductGroup.ProductID = bytes(ProductID, encoding='ascii')
+        pQryProductGroup.reserve1 = bytes(reserve1, encoding='ascii')
         pQryProductGroup.ExchangeID = bytes(ExchangeID, encoding='ascii')
+        pQryProductGroup.ProductID = bytes(ProductID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQryProductGroup(self.api, byref(pQryProductGroup), self.nRequestID)
 
-    def ReqQryMMInstrumentCommissionRate(self, BrokerID: str = '', InvestorID: str = '', InstrumentID: str = ''):
+    def ReqQryMMInstrumentCommissionRate(self, BrokerID: str = '', InvestorID: str = '', reserve1: str = '', InstrumentID: str = ''):
         pQryMMInstrumentCommissionRate = CThostFtdcQryMMInstrumentCommissionRateField()
         pQryMMInstrumentCommissionRate.BrokerID = bytes(BrokerID, encoding='ascii')
         pQryMMInstrumentCommissionRate.InvestorID = bytes(InvestorID, encoding='ascii')
+        pQryMMInstrumentCommissionRate.reserve1 = bytes(reserve1, encoding='ascii')
         pQryMMInstrumentCommissionRate.InstrumentID = bytes(InstrumentID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQryMMInstrumentCommissionRate(self.api, byref(pQryMMInstrumentCommissionRate), self.nRequestID)
 
-    def ReqQryMMOptionInstrCommRate(self, BrokerID: str = '', InvestorID: str = '', InstrumentID: str = ''):
+    def ReqQryMMOptionInstrCommRate(self, BrokerID: str = '', InvestorID: str = '', reserve1: str = '', InstrumentID: str = ''):
         pQryMMOptionInstrCommRate = CThostFtdcQryMMOptionInstrCommRateField()
         pQryMMOptionInstrCommRate.BrokerID = bytes(BrokerID, encoding='ascii')
         pQryMMOptionInstrCommRate.InvestorID = bytes(InvestorID, encoding='ascii')
+        pQryMMOptionInstrCommRate.reserve1 = bytes(reserve1, encoding='ascii')
         pQryMMOptionInstrCommRate.InstrumentID = bytes(InstrumentID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQryMMOptionInstrCommRate(self.api, byref(pQryMMOptionInstrCommRate), self.nRequestID)
 
-    def ReqQryInstrumentOrderCommRate(self, BrokerID: str = '', InvestorID: str = '', InstrumentID: str = ''):
+    def ReqQryInstrumentOrderCommRate(self, BrokerID: str = '', InvestorID: str = '', reserve1: str = '', InstrumentID: str = ''):
         pQryInstrumentOrderCommRate = CThostFtdcQryInstrumentOrderCommRateField()
         pQryInstrumentOrderCommRate.BrokerID = bytes(BrokerID, encoding='ascii')
         pQryInstrumentOrderCommRate.InvestorID = bytes(InvestorID, encoding='ascii')
+        pQryInstrumentOrderCommRate.reserve1 = bytes(reserve1, encoding='ascii')
         pQryInstrumentOrderCommRate.InstrumentID = bytes(InstrumentID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQryInstrumentOrderCommRate(self.api, byref(pQryInstrumentOrderCommRate), self.nRequestID)
@@ -1168,75 +1229,81 @@ class Trade:
         self.nRequestID += 1
         self.h.ReqQrySecAgentTradeInfo(self.api, byref(pQrySecAgentTradeInfo), self.nRequestID)
 
-    def ReqQryOptionInstrTradeCost(self, BrokerID: str = '', InvestorID: str = '', InstrumentID: str = '', HedgeFlag: TThostFtdcHedgeFlagType = list(TThostFtdcHedgeFlagType)[0], InputPrice: float = .0, UnderlyingPrice: float = .0, ExchangeID: str = '', InvestUnitID: str = ''):
+    def ReqQryOptionInstrTradeCost(self, BrokerID: str = '', InvestorID: str = '', reserve1: str = '', HedgeFlag: TThostFtdcHedgeFlagType = list(TThostFtdcHedgeFlagType)[0], InputPrice: float = .0, UnderlyingPrice: float = .0, ExchangeID: str = '', InvestUnitID: str = '', InstrumentID: str = ''):
         pQryOptionInstrTradeCost = CThostFtdcQryOptionInstrTradeCostField()
         pQryOptionInstrTradeCost.BrokerID = bytes(BrokerID, encoding='ascii')
         pQryOptionInstrTradeCost.InvestorID = bytes(InvestorID, encoding='ascii')
-        pQryOptionInstrTradeCost.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pQryOptionInstrTradeCost.reserve1 = bytes(reserve1, encoding='ascii')
         pQryOptionInstrTradeCost.HedgeFlag = HedgeFlag.value
         pQryOptionInstrTradeCost.InputPrice = InputPrice
         pQryOptionInstrTradeCost.UnderlyingPrice = UnderlyingPrice
         pQryOptionInstrTradeCost.ExchangeID = bytes(ExchangeID, encoding='ascii')
         pQryOptionInstrTradeCost.InvestUnitID = bytes(InvestUnitID, encoding='ascii')
+        pQryOptionInstrTradeCost.InstrumentID = bytes(InstrumentID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQryOptionInstrTradeCost(self.api, byref(pQryOptionInstrTradeCost), self.nRequestID)
 
-    def ReqQryOptionInstrCommRate(self, BrokerID: str = '', InvestorID: str = '', InstrumentID: str = '', ExchangeID: str = '', InvestUnitID: str = ''):
+    def ReqQryOptionInstrCommRate(self, BrokerID: str = '', InvestorID: str = '', reserve1: str = '', ExchangeID: str = '', InvestUnitID: str = '', InstrumentID: str = ''):
         pQryOptionInstrCommRate = CThostFtdcQryOptionInstrCommRateField()
         pQryOptionInstrCommRate.BrokerID = bytes(BrokerID, encoding='ascii')
         pQryOptionInstrCommRate.InvestorID = bytes(InvestorID, encoding='ascii')
-        pQryOptionInstrCommRate.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pQryOptionInstrCommRate.reserve1 = bytes(reserve1, encoding='ascii')
         pQryOptionInstrCommRate.ExchangeID = bytes(ExchangeID, encoding='ascii')
         pQryOptionInstrCommRate.InvestUnitID = bytes(InvestUnitID, encoding='ascii')
+        pQryOptionInstrCommRate.InstrumentID = bytes(InstrumentID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQryOptionInstrCommRate(self.api, byref(pQryOptionInstrCommRate), self.nRequestID)
 
-    def ReqQryExecOrder(self, BrokerID: str = '', InvestorID: str = '', InstrumentID: str = '', ExchangeID: str = '', ExecOrderSysID: str = '', InsertTimeStart: str = '', InsertTimeEnd: str = ''):
+    def ReqQryExecOrder(self, BrokerID: str = '', InvestorID: str = '', reserve1: str = '', ExchangeID: str = '', ExecOrderSysID: str = '', InsertTimeStart: str = '', InsertTimeEnd: str = '', InstrumentID: str = ''):
         pQryExecOrder = CThostFtdcQryExecOrderField()
         pQryExecOrder.BrokerID = bytes(BrokerID, encoding='ascii')
         pQryExecOrder.InvestorID = bytes(InvestorID, encoding='ascii')
-        pQryExecOrder.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pQryExecOrder.reserve1 = bytes(reserve1, encoding='ascii')
         pQryExecOrder.ExchangeID = bytes(ExchangeID, encoding='ascii')
         pQryExecOrder.ExecOrderSysID = bytes(ExecOrderSysID, encoding='ascii')
         pQryExecOrder.InsertTimeStart = bytes(InsertTimeStart, encoding='ascii')
         pQryExecOrder.InsertTimeEnd = bytes(InsertTimeEnd, encoding='ascii')
+        pQryExecOrder.InstrumentID = bytes(InstrumentID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQryExecOrder(self.api, byref(pQryExecOrder), self.nRequestID)
 
-    def ReqQryForQuote(self, BrokerID: str = '', InvestorID: str = '', InstrumentID: str = '', ExchangeID: str = '', InsertTimeStart: str = '', InsertTimeEnd: str = '', InvestUnitID: str = ''):
+    def ReqQryForQuote(self, BrokerID: str = '', InvestorID: str = '', reserve1: str = '', ExchangeID: str = '', InsertTimeStart: str = '', InsertTimeEnd: str = '', InvestUnitID: str = '', InstrumentID: str = ''):
         pQryForQuote = CThostFtdcQryForQuoteField()
         pQryForQuote.BrokerID = bytes(BrokerID, encoding='ascii')
         pQryForQuote.InvestorID = bytes(InvestorID, encoding='ascii')
-        pQryForQuote.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pQryForQuote.reserve1 = bytes(reserve1, encoding='ascii')
         pQryForQuote.ExchangeID = bytes(ExchangeID, encoding='ascii')
         pQryForQuote.InsertTimeStart = bytes(InsertTimeStart, encoding='ascii')
         pQryForQuote.InsertTimeEnd = bytes(InsertTimeEnd, encoding='ascii')
         pQryForQuote.InvestUnitID = bytes(InvestUnitID, encoding='ascii')
+        pQryForQuote.InstrumentID = bytes(InstrumentID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQryForQuote(self.api, byref(pQryForQuote), self.nRequestID)
 
-    def ReqQryQuote(self, BrokerID: str = '', InvestorID: str = '', InstrumentID: str = '', ExchangeID: str = '', QuoteSysID: str = '', InsertTimeStart: str = '', InsertTimeEnd: str = '', InvestUnitID: str = ''):
+    def ReqQryQuote(self, BrokerID: str = '', InvestorID: str = '', reserve1: str = '', ExchangeID: str = '', QuoteSysID: str = '', InsertTimeStart: str = '', InsertTimeEnd: str = '', InvestUnitID: str = '', InstrumentID: str = ''):
         pQryQuote = CThostFtdcQryQuoteField()
         pQryQuote.BrokerID = bytes(BrokerID, encoding='ascii')
         pQryQuote.InvestorID = bytes(InvestorID, encoding='ascii')
-        pQryQuote.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pQryQuote.reserve1 = bytes(reserve1, encoding='ascii')
         pQryQuote.ExchangeID = bytes(ExchangeID, encoding='ascii')
         pQryQuote.QuoteSysID = bytes(QuoteSysID, encoding='ascii')
         pQryQuote.InsertTimeStart = bytes(InsertTimeStart, encoding='ascii')
         pQryQuote.InsertTimeEnd = bytes(InsertTimeEnd, encoding='ascii')
         pQryQuote.InvestUnitID = bytes(InvestUnitID, encoding='ascii')
+        pQryQuote.InstrumentID = bytes(InstrumentID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQryQuote(self.api, byref(pQryQuote), self.nRequestID)
 
-    def ReqQryOptionSelfClose(self, BrokerID: str = '', InvestorID: str = '', InstrumentID: str = '', ExchangeID: str = '', OptionSelfCloseSysID: str = '', InsertTimeStart: str = '', InsertTimeEnd: str = ''):
+    def ReqQryOptionSelfClose(self, BrokerID: str = '', InvestorID: str = '', reserve1: str = '', ExchangeID: str = '', OptionSelfCloseSysID: str = '', InsertTimeStart: str = '', InsertTimeEnd: str = '', InstrumentID: str = ''):
         pQryOptionSelfClose = CThostFtdcQryOptionSelfCloseField()
         pQryOptionSelfClose.BrokerID = bytes(BrokerID, encoding='ascii')
         pQryOptionSelfClose.InvestorID = bytes(InvestorID, encoding='ascii')
-        pQryOptionSelfClose.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pQryOptionSelfClose.reserve1 = bytes(reserve1, encoding='ascii')
         pQryOptionSelfClose.ExchangeID = bytes(ExchangeID, encoding='ascii')
         pQryOptionSelfClose.OptionSelfCloseSysID = bytes(OptionSelfCloseSysID, encoding='ascii')
         pQryOptionSelfClose.InsertTimeStart = bytes(InsertTimeStart, encoding='ascii')
         pQryOptionSelfClose.InsertTimeEnd = bytes(InsertTimeEnd, encoding='ascii')
+        pQryOptionSelfClose.InstrumentID = bytes(InstrumentID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQryOptionSelfClose(self.api, byref(pQryOptionSelfClose), self.nRequestID)
 
@@ -1248,21 +1315,23 @@ class Trade:
         self.nRequestID += 1
         self.h.ReqQryInvestUnit(self.api, byref(pQryInvestUnit), self.nRequestID)
 
-    def ReqQryCombInstrumentGuard(self, BrokerID: str = '', InstrumentID: str = '', ExchangeID: str = ''):
+    def ReqQryCombInstrumentGuard(self, BrokerID: str = '', reserve1: str = '', ExchangeID: str = '', InstrumentID: str = ''):
         pQryCombInstrumentGuard = CThostFtdcQryCombInstrumentGuardField()
         pQryCombInstrumentGuard.BrokerID = bytes(BrokerID, encoding='ascii')
-        pQryCombInstrumentGuard.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pQryCombInstrumentGuard.reserve1 = bytes(reserve1, encoding='ascii')
         pQryCombInstrumentGuard.ExchangeID = bytes(ExchangeID, encoding='ascii')
+        pQryCombInstrumentGuard.InstrumentID = bytes(InstrumentID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQryCombInstrumentGuard(self.api, byref(pQryCombInstrumentGuard), self.nRequestID)
 
-    def ReqQryCombAction(self, BrokerID: str = '', InvestorID: str = '', InstrumentID: str = '', ExchangeID: str = '', InvestUnitID: str = ''):
+    def ReqQryCombAction(self, BrokerID: str = '', InvestorID: str = '', reserve1: str = '', ExchangeID: str = '', InvestUnitID: str = '', InstrumentID: str = ''):
         pQryCombAction = CThostFtdcQryCombActionField()
         pQryCombAction.BrokerID = bytes(BrokerID, encoding='ascii')
         pQryCombAction.InvestorID = bytes(InvestorID, encoding='ascii')
-        pQryCombAction.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pQryCombAction.reserve1 = bytes(reserve1, encoding='ascii')
         pQryCombAction.ExchangeID = bytes(ExchangeID, encoding='ascii')
         pQryCombAction.InvestUnitID = bytes(InvestUnitID, encoding='ascii')
+        pQryCombAction.InstrumentID = bytes(InstrumentID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQryCombAction(self.api, byref(pQryCombAction), self.nRequestID)
 
@@ -1293,23 +1362,25 @@ class Trade:
         self.nRequestID += 1
         self.h.ReqQryContractBank(self.api, byref(pQryContractBank), self.nRequestID)
 
-    def ReqQryParkedOrder(self, BrokerID: str = '', InvestorID: str = '', InstrumentID: str = '', ExchangeID: str = '', InvestUnitID: str = ''):
+    def ReqQryParkedOrder(self, BrokerID: str = '', InvestorID: str = '', reserve1: str = '', ExchangeID: str = '', InvestUnitID: str = '', InstrumentID: str = ''):
         pQryParkedOrder = CThostFtdcQryParkedOrderField()
         pQryParkedOrder.BrokerID = bytes(BrokerID, encoding='ascii')
         pQryParkedOrder.InvestorID = bytes(InvestorID, encoding='ascii')
-        pQryParkedOrder.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pQryParkedOrder.reserve1 = bytes(reserve1, encoding='ascii')
         pQryParkedOrder.ExchangeID = bytes(ExchangeID, encoding='ascii')
         pQryParkedOrder.InvestUnitID = bytes(InvestUnitID, encoding='ascii')
+        pQryParkedOrder.InstrumentID = bytes(InstrumentID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQryParkedOrder(self.api, byref(pQryParkedOrder), self.nRequestID)
 
-    def ReqQryParkedOrderAction(self, BrokerID: str = '', InvestorID: str = '', InstrumentID: str = '', ExchangeID: str = '', InvestUnitID: str = ''):
+    def ReqQryParkedOrderAction(self, BrokerID: str = '', InvestorID: str = '', reserve1: str = '', ExchangeID: str = '', InvestUnitID: str = '', InstrumentID: str = ''):
         pQryParkedOrderAction = CThostFtdcQryParkedOrderActionField()
         pQryParkedOrderAction.BrokerID = bytes(BrokerID, encoding='ascii')
         pQryParkedOrderAction.InvestorID = bytes(InvestorID, encoding='ascii')
-        pQryParkedOrderAction.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pQryParkedOrderAction.reserve1 = bytes(reserve1, encoding='ascii')
         pQryParkedOrderAction.ExchangeID = bytes(ExchangeID, encoding='ascii')
         pQryParkedOrderAction.InvestUnitID = bytes(InvestUnitID, encoding='ascii')
+        pQryParkedOrderAction.InstrumentID = bytes(InstrumentID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQryParkedOrderAction(self.api, byref(pQryParkedOrderAction), self.nRequestID)
 
@@ -1330,10 +1401,11 @@ class Trade:
         self.nRequestID += 1
         self.h.ReqQryBrokerTradingParams(self.api, byref(pQryBrokerTradingParams), self.nRequestID)
 
-    def ReqQryBrokerTradingAlgos(self, BrokerID: str = '', ExchangeID: str = '', InstrumentID: str = ''):
+    def ReqQryBrokerTradingAlgos(self, BrokerID: str = '', ExchangeID: str = '', reserve1: str = '', InstrumentID: str = ''):
         pQryBrokerTradingAlgos = CThostFtdcQryBrokerTradingAlgosField()
         pQryBrokerTradingAlgos.BrokerID = bytes(BrokerID, encoding='ascii')
         pQryBrokerTradingAlgos.ExchangeID = bytes(ExchangeID, encoding='ascii')
+        pQryBrokerTradingAlgos.reserve1 = bytes(reserve1, encoding='ascii')
         pQryBrokerTradingAlgos.InstrumentID = bytes(InstrumentID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqQryBrokerTradingAlgos(self.api, byref(pQryBrokerTradingAlgos), self.nRequestID)
@@ -1486,6 +1558,24 @@ class Trade:
         self.nRequestID += 1
         self.h.ReqQueryBankAccountMoneyByFuture(self.api, byref(pReqQueryAccount), self.nRequestID)
 
+    def ReqQryClassifiedInstrument(self, InstrumentID: str = '', ExchangeID: str = '', ExchangeInstID: str = '', ProductID: str = '', TradingType: TThostFtdcTradingTypeType = list(TThostFtdcTradingTypeType)[0], ClassType: TThostFtdcClassTypeType = list(TThostFtdcClassTypeType)[0]):
+        pQryClassifiedInstrument = CThostFtdcQryClassifiedInstrumentField()
+        # pQryClassifiedInstrument.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        # pQryClassifiedInstrument.ExchangeID = bytes(ExchangeID, encoding='ascii')
+        # pQryClassifiedInstrument.ExchangeInstID = bytes(ExchangeInstID, encoding='ascii')
+        # pQryClassifiedInstrument.ProductID = bytes(ProductID, encoding='ascii')
+        # pQryClassifiedInstrument.TradingType = TradingType.value
+        # pQryClassifiedInstrument.ClassType = ClassType.value
+        self.nRequestID += 1
+        self.h.ReqQryClassifiedInstrument(self.api, byref(pQryClassifiedInstrument), self.nRequestID)
+
+    def ReqQryCombPromotionParam(self, ExchangeID: str = '', InstrumentID: str = ''):
+        pQryCombPromotionParam = CThostFtdcQryCombPromotionParamField()
+        pQryCombPromotionParam.ExchangeID = bytes(ExchangeID, encoding='ascii')
+        pQryCombPromotionParam.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        self.nRequestID += 1
+        self.h.ReqQryCombPromotionParam(self.api, byref(pQryCombPromotionParam), self.nRequestID)
+
     def RegCB(self):
         self.h.SetOnFrontConnected.argtypes = [c_void_p, c_void_p]
         self.h.SetOnFrontConnected.restype = None
@@ -1562,10 +1652,10 @@ class Trade:
         self.evOnRspOrderAction = CFUNCTYPE(None, POINTER(CThostFtdcInputOrderActionField), POINTER(CThostFtdcRspInfoField), c_int32, c_bool)(self.__OnRspOrderAction)
         self.h.SetOnRspOrderAction(self.spi, self.evOnRspOrderAction)
 
-        self.h.SetOnRspQueryMaxOrderVolume.argtypes = [c_void_p, c_void_p]
-        self.h.SetOnRspQueryMaxOrderVolume.restype = None
-        self.evOnRspQueryMaxOrderVolume = CFUNCTYPE(None, POINTER(CThostFtdcQueryMaxOrderVolumeField), POINTER(CThostFtdcRspInfoField), c_int32, c_bool)(self.__OnRspQueryMaxOrderVolume)
-        self.h.SetOnRspQueryMaxOrderVolume(self.spi, self.evOnRspQueryMaxOrderVolume)
+        self.h.SetOnRspQryMaxOrderVolume.argtypes = [c_void_p, c_void_p]
+        self.h.SetOnRspQryMaxOrderVolume.restype = None
+        self.evOnRspQryMaxOrderVolume = CFUNCTYPE(None, POINTER(CThostFtdcQryMaxOrderVolumeField), POINTER(CThostFtdcRspInfoField), c_int32, c_bool)(self.__OnRspQryMaxOrderVolume)
+        self.h.SetOnRspQryMaxOrderVolume(self.spi, self.evOnRspQryMaxOrderVolume)
 
         self.h.SetOnRspSettlementInfoConfirm.argtypes = [c_void_p, c_void_p]
         self.h.SetOnRspSettlementInfoConfirm.restype = None
@@ -2112,6 +2202,16 @@ class Trade:
         self.evOnRtnChangeAccountByBank = CFUNCTYPE(None, POINTER(CThostFtdcChangeAccountField))(self.__OnRtnChangeAccountByBank)
         self.h.SetOnRtnChangeAccountByBank(self.spi, self.evOnRtnChangeAccountByBank)
 
+        self.h.SetOnRspQryClassifiedInstrument.argtypes = [c_void_p, c_void_p]
+        self.h.SetOnRspQryClassifiedInstrument.restype = None
+        self.evOnRspQryClassifiedInstrument = CFUNCTYPE(None, POINTER(CThostFtdcInstrumentField), POINTER(CThostFtdcRspInfoField), c_int32, c_bool)(self.__OnRspQryClassifiedInstrument)
+        self.h.SetOnRspQryClassifiedInstrument(self.spi, self.evOnRspQryClassifiedInstrument)
+
+        self.h.SetOnRspQryCombPromotionParam.argtypes = [c_void_p, c_void_p]
+        self.h.SetOnRspQryCombPromotionParam.restype = None
+        self.evOnRspQryCombPromotionParam = CFUNCTYPE(None, POINTER(CThostFtdcCombPromotionParamField), POINTER(CThostFtdcRspInfoField), c_int32, c_bool)(self.__OnRspQryCombPromotionParam)
+        self.h.SetOnRspQryCombPromotionParam(self.spi, self.evOnRspQryCombPromotionParam)
+
     def __OnFrontConnected(self):
         self.OnFrontConnected()
 
@@ -2157,8 +2257,8 @@ class Trade:
     def __OnRspOrderAction(self, pInputOrderAction, pRspInfo, nRequestID, bIsLast):
         self.OnRspOrderAction(copy.deepcopy(POINTER(CThostFtdcInputOrderActionField).from_param(pInputOrderAction).contents), copy.deepcopy(POINTER(CThostFtdcRspInfoField).from_param(pRspInfo).contents), nRequestID, bIsLast)
 
-    def __OnRspQueryMaxOrderVolume(self, pQueryMaxOrderVolume, pRspInfo, nRequestID, bIsLast):
-        self.OnRspQueryMaxOrderVolume(copy.deepcopy(POINTER(CThostFtdcQueryMaxOrderVolumeField).from_param(pQueryMaxOrderVolume).contents), copy.deepcopy(POINTER(CThostFtdcRspInfoField).from_param(pRspInfo).contents), nRequestID, bIsLast)
+    def __OnRspQryMaxOrderVolume(self, pQryMaxOrderVolume, pRspInfo, nRequestID, bIsLast):
+        self.OnRspQryMaxOrderVolume(copy.deepcopy(POINTER(CThostFtdcQryMaxOrderVolumeField).from_param(pQryMaxOrderVolume).contents), copy.deepcopy(POINTER(CThostFtdcRspInfoField).from_param(pRspInfo).contents), nRequestID, bIsLast)
 
     def __OnRspSettlementInfoConfirm(self, pSettlementInfoConfirm, pRspInfo, nRequestID, bIsLast):
         self.OnRspSettlementInfoConfirm(copy.deepcopy(POINTER(CThostFtdcSettlementInfoConfirmField).from_param(pSettlementInfoConfirm).contents), copy.deepcopy(POINTER(CThostFtdcRspInfoField).from_param(pRspInfo).contents), nRequestID, bIsLast)
@@ -2487,6 +2587,12 @@ class Trade:
     def __OnRtnChangeAccountByBank(self, pChangeAccount):
         self.OnRtnChangeAccountByBank(copy.deepcopy(POINTER(CThostFtdcChangeAccountField).from_param(pChangeAccount).contents))
 
+    def __OnRspQryClassifiedInstrument(self, pInstrument, pRspInfo, nRequestID, bIsLast):
+        self.OnRspQryClassifiedInstrument(copy.deepcopy(POINTER(CThostFtdcInstrumentField).from_param(pInstrument).contents), copy.deepcopy(POINTER(CThostFtdcRspInfoField).from_param(pRspInfo).contents), nRequestID, bIsLast)
+
+    def __OnRspQryCombPromotionParam(self, pCombPromotionParam, pRspInfo, nRequestID, bIsLast):
+        self.OnRspQryCombPromotionParam(copy.deepcopy(POINTER(CThostFtdcCombPromotionParamField).from_param(pCombPromotionParam).contents), copy.deepcopy(POINTER(CThostFtdcRspInfoField).from_param(pRspInfo).contents), nRequestID, bIsLast)
+
     def OnFrontConnected(self, ):
         print('===OnFrontConnected===: ')
 
@@ -2532,8 +2638,8 @@ class Trade:
     def OnRspOrderAction(self, pInputOrderAction: CThostFtdcInputOrderActionField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
         print('===OnRspOrderAction===: pInputOrderAction: CThostFtdcInputOrderActionField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool')
 
-    def OnRspQueryMaxOrderVolume(self, pQueryMaxOrderVolume: CThostFtdcQueryMaxOrderVolumeField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
-        print('===OnRspQueryMaxOrderVolume===: pQueryMaxOrderVolume: CThostFtdcQueryMaxOrderVolumeField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool')
+    def OnRspQryMaxOrderVolume(self, pQryMaxOrderVolume: CThostFtdcQryMaxOrderVolumeField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
+        print('===OnRspQryMaxOrderVolume===: pQryMaxOrderVolume: CThostFtdcQryMaxOrderVolumeField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool')
 
     def OnRspSettlementInfoConfirm(self, pSettlementInfoConfirm: CThostFtdcSettlementInfoConfirmField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
         print('===OnRspSettlementInfoConfirm===: pSettlementInfoConfirm: CThostFtdcSettlementInfoConfirmField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool')
@@ -2861,3 +2967,9 @@ class Trade:
 
     def OnRtnChangeAccountByBank(self, pChangeAccount: CThostFtdcChangeAccountField):
         print('===OnRtnChangeAccountByBank===: pChangeAccount: CThostFtdcChangeAccountField')
+
+    def OnRspQryClassifiedInstrument(self, pInstrument: CThostFtdcInstrumentField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
+        print('===OnRspQryClassifiedInstrument===: pInstrument: CThostFtdcInstrumentField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool')
+
+    def OnRspQryCombPromotionParam(self, pCombPromotionParam: CThostFtdcCombPromotionParamField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
+        print('===OnRspQryCombPromotionParam===: pCombPromotionParam: CThostFtdcCombPromotionParamField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool')

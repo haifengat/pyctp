@@ -39,9 +39,10 @@ class  CThostFtdcReqUserLoginField(Structure):
         ("ProtocolInfo", c_char*11),
         ("MacAddress", c_char*21),
         ("OneTimePassword", c_char*41),
-        ("ClientIPAddress", c_char*16),
+        ("reserve1", c_char*16),
         ("LoginRemark", c_char*36),
         ("ClientIPPort", c_int32),
+        ("ClientIPAddress", c_char*33),
     ]
 
     def getTradingDay(self):
@@ -80,9 +81,9 @@ class  CThostFtdcReqUserLoginField(Structure):
         '''动态密码'''
         return str(self.OneTimePassword, 'GBK')
 
-    def getClientIPAddress(self):
-        '''终端IP地址'''
-        return str(self.ClientIPAddress, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getLoginRemark(self):
         '''登录备注'''
@@ -92,8 +93,12 @@ class  CThostFtdcReqUserLoginField(Structure):
         '''终端IP端口'''
         return self.ClientIPPort
 
+    def getClientIPAddress(self):
+        '''终端IP地址'''
+        return str(self.ClientIPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'TradingDay'={self.getTradingDay()}, 'BrokerID'={self.getBrokerID()}, 'UserID'={self.getUserID()}, 'Password'={self.getPassword()}, 'UserProductInfo'={self.getUserProductInfo()}, 'InterfaceProductInfo'={self.getInterfaceProductInfo()}, 'ProtocolInfo'={self.getProtocolInfo()}, 'MacAddress'={self.getMacAddress()}, 'OneTimePassword'={self.getOneTimePassword()}, 'ClientIPAddress'={self.getClientIPAddress()}, 'LoginRemark'={self.getLoginRemark()}, 'ClientIPPort'={self.getClientIPPort()}"
+        return f"'TradingDay'={self.getTradingDay()}, 'BrokerID'={self.getBrokerID()}, 'UserID'={self.getUserID()}, 'Password'={self.getPassword()}, 'UserProductInfo'={self.getUserProductInfo()}, 'InterfaceProductInfo'={self.getInterfaceProductInfo()}, 'ProtocolInfo'={self.getProtocolInfo()}, 'MacAddress'={self.getMacAddress()}, 'OneTimePassword'={self.getOneTimePassword()}, 'reserve1'={self.getreserve1()}, 'LoginRemark'={self.getLoginRemark()}, 'ClientIPPort'={self.getClientIPPort()}, 'ClientIPAddress'={self.getClientIPAddress()}"
 
 
 class  CThostFtdcRspUserLoginField(Structure):
@@ -286,6 +291,8 @@ class  CThostFtdcAuthenticationInfoField(Structure):
         ("IsResult", c_int32),
         ("AppID", c_char*33),
         ("AppType", c_char),
+        ("reserve1", c_char*16),
+        ("ClientIPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -316,8 +323,16 @@ class  CThostFtdcAuthenticationInfoField(Structure):
         '''App类型'''
         return TThostFtdcAppTypeType(ord(self.AppType)) if ord(self.AppType) in [e.value for e in list(TThostFtdcAppTypeType)] else list(TThostFtdcAppTypeType)[0]
 
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
+
+    def getClientIPAddress(self):
+        '''终端IP地址'''
+        return str(self.ClientIPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'UserID'={self.getUserID()}, 'UserProductInfo'={self.getUserProductInfo()}, 'AuthInfo'={self.getAuthInfo()}, 'IsResult'={self.getIsResult()}, 'AppID'={self.getAppID()}, 'AppType'={self.getAppType()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'UserID'={self.getUserID()}, 'UserProductInfo'={self.getUserProductInfo()}, 'AuthInfo'={self.getAuthInfo()}, 'IsResult'={self.getIsResult()}, 'AppID'={self.getAppID()}, 'AppType'={self.getAppType()}, 'reserve1'={self.getreserve1()}, 'ClientIPAddress'={self.getClientIPAddress()}"
 
 
 class  CThostFtdcRspUserLogin2Field(Structure):
@@ -841,7 +856,7 @@ class  CThostFtdcExchangeField(Structure):
 class  CThostFtdcProductField(Structure):
     """产品"""
     _fields_ = [
-        ("ProductID", c_char*31),
+        ("reserve1", c_char*31),
         ("ProductName", c_char*21),
         ("ExchangeID", c_char*9),
         ("ProductClass", c_char),
@@ -856,13 +871,15 @@ class  CThostFtdcProductField(Structure):
         ("CloseDealType", c_char),
         ("TradeCurrencyID", c_char*4),
         ("MortgageFundUseRange", c_char),
-        ("ExchangeProductID", c_char*31),
+        ("reserve2", c_char*31),
         ("UnderlyingMultiple", c_double),
+        ("ProductID", c_char*81),
+        ("ExchangeProductID", c_char*81),
     ]
 
-    def getProductID(self):
-        '''产品代码'''
-        return str(self.ProductID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getProductName(self):
         '''产品名称'''
@@ -920,26 +937,34 @@ class  CThostFtdcProductField(Structure):
         '''质押资金可用范围'''
         return TThostFtdcMortgageFundUseRangeType(ord(self.MortgageFundUseRange)) if ord(self.MortgageFundUseRange) in [e.value for e in list(TThostFtdcMortgageFundUseRangeType)] else list(TThostFtdcMortgageFundUseRangeType)[0]
 
-    def getExchangeProductID(self):
-        '''交易所产品代码'''
-        return str(self.ExchangeProductID, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getUnderlyingMultiple(self):
         '''合约基础商品乘数'''
         return self.UnderlyingMultiple
 
+    def getProductID(self):
+        '''产品代码'''
+        return str(self.ProductID, 'GBK')
+
+    def getExchangeProductID(self):
+        '''交易所产品代码'''
+        return str(self.ExchangeProductID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'ProductID'={self.getProductID()}, 'ProductName'={self.getProductName()}, 'ExchangeID'={self.getExchangeID()}, 'ProductClass'={self.getProductClass()}, 'VolumeMultiple'={self.getVolumeMultiple()}, 'PriceTick'={self.getPriceTick()}, 'MaxMarketOrderVolume'={self.getMaxMarketOrderVolume()}, 'MinMarketOrderVolume'={self.getMinMarketOrderVolume()}, 'MaxLimitOrderVolume'={self.getMaxLimitOrderVolume()}, 'MinLimitOrderVolume'={self.getMinLimitOrderVolume()}, 'PositionType'={self.getPositionType()}, 'PositionDateType'={self.getPositionDateType()}, 'CloseDealType'={self.getCloseDealType()}, 'TradeCurrencyID'={self.getTradeCurrencyID()}, 'MortgageFundUseRange'={self.getMortgageFundUseRange()}, 'ExchangeProductID'={self.getExchangeProductID()}, 'UnderlyingMultiple'={self.getUnderlyingMultiple()}"
+        return f"'reserve1'={self.getreserve1()}, 'ProductName'={self.getProductName()}, 'ExchangeID'={self.getExchangeID()}, 'ProductClass'={self.getProductClass()}, 'VolumeMultiple'={self.getVolumeMultiple()}, 'PriceTick'={self.getPriceTick()}, 'MaxMarketOrderVolume'={self.getMaxMarketOrderVolume()}, 'MinMarketOrderVolume'={self.getMinMarketOrderVolume()}, 'MaxLimitOrderVolume'={self.getMaxLimitOrderVolume()}, 'MinLimitOrderVolume'={self.getMinLimitOrderVolume()}, 'PositionType'={self.getPositionType()}, 'PositionDateType'={self.getPositionDateType()}, 'CloseDealType'={self.getCloseDealType()}, 'TradeCurrencyID'={self.getTradeCurrencyID()}, 'MortgageFundUseRange'={self.getMortgageFundUseRange()}, 'reserve2'={self.getreserve2()}, 'UnderlyingMultiple'={self.getUnderlyingMultiple()}, 'ProductID'={self.getProductID()}, 'ExchangeProductID'={self.getExchangeProductID()}"
 
 
 class  CThostFtdcInstrumentField(Structure):
     """合约"""
     _fields_ = [
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
         ("InstrumentName", c_char*21),
-        ("ExchangeInstID", c_char*31),
-        ("ProductID", c_char*31),
+        ("reserve2", c_char*31),
+        ("reserve3", c_char*31),
         ("ProductClass", c_char),
         ("DeliveryYear", c_int32),
         ("DeliveryMonth", c_int32),
@@ -961,16 +986,20 @@ class  CThostFtdcInstrumentField(Structure):
         ("LongMarginRatio", c_double),
         ("ShortMarginRatio", c_double),
         ("MaxMarginSideAlgorithm", c_char),
-        ("UnderlyingInstrID", c_char*31),
+        ("reserve4", c_char*31),
         ("StrikePrice", c_double),
         ("OptionsType", c_char),
         ("UnderlyingMultiple", c_double),
         ("CombinationType", c_char),
+        ("InstrumentID", c_char*81),
+        ("ExchangeInstID", c_char*81),
+        ("ProductID", c_char*81),
+        ("UnderlyingInstrID", c_char*81),
     ]
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
@@ -980,13 +1009,13 @@ class  CThostFtdcInstrumentField(Structure):
         '''合约名称'''
         return str(self.InstrumentName, 'GBK')
 
-    def getExchangeInstID(self):
-        '''合约在交易所的代码'''
-        return str(self.ExchangeInstID, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
-    def getProductID(self):
-        '''产品代码'''
-        return str(self.ProductID, 'GBK')
+    def getreserve3(self):
+        '''保留的无效字段'''
+        return str(self.reserve3, 'GBK')
 
     def getProductClass(self):
         '''产品类型'''
@@ -1072,9 +1101,9 @@ class  CThostFtdcInstrumentField(Structure):
         '''是否使用大额单边保证金算法'''
         return TThostFtdcMaxMarginSideAlgorithmType(ord(self.MaxMarginSideAlgorithm)) if ord(self.MaxMarginSideAlgorithm) in [e.value for e in list(TThostFtdcMaxMarginSideAlgorithmType)] else list(TThostFtdcMaxMarginSideAlgorithmType)[0]
 
-    def getUnderlyingInstrID(self):
-        '''基础商品代码'''
-        return str(self.UnderlyingInstrID, 'GBK')
+    def getreserve4(self):
+        '''保留的无效字段'''
+        return str(self.reserve4, 'GBK')
 
     def getStrikePrice(self):
         '''执行价'''
@@ -1092,8 +1121,24 @@ class  CThostFtdcInstrumentField(Structure):
         '''组合类型'''
         return TThostFtdcCombinationTypeType(ord(self.CombinationType)) if ord(self.CombinationType) in [e.value for e in list(TThostFtdcCombinationTypeType)] else list(TThostFtdcCombinationTypeType)[0]
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getExchangeInstID(self):
+        '''合约在交易所的代码'''
+        return str(self.ExchangeInstID, 'GBK')
+
+    def getProductID(self):
+        '''产品代码'''
+        return str(self.ProductID, 'GBK')
+
+    def getUnderlyingInstrID(self):
+        '''基础商品代码'''
+        return str(self.UnderlyingInstrID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'InstrumentID'={self.getInstrumentID()}, 'ExchangeID'={self.getExchangeID()}, 'InstrumentName'={self.getInstrumentName()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'ProductID'={self.getProductID()}, 'ProductClass'={self.getProductClass()}, 'DeliveryYear'={self.getDeliveryYear()}, 'DeliveryMonth'={self.getDeliveryMonth()}, 'MaxMarketOrderVolume'={self.getMaxMarketOrderVolume()}, 'MinMarketOrderVolume'={self.getMinMarketOrderVolume()}, 'MaxLimitOrderVolume'={self.getMaxLimitOrderVolume()}, 'MinLimitOrderVolume'={self.getMinLimitOrderVolume()}, 'VolumeMultiple'={self.getVolumeMultiple()}, 'PriceTick'={self.getPriceTick()}, 'CreateDate'={self.getCreateDate()}, 'OpenDate'={self.getOpenDate()}, 'ExpireDate'={self.getExpireDate()}, 'StartDelivDate'={self.getStartDelivDate()}, 'EndDelivDate'={self.getEndDelivDate()}, 'InstLifePhase'={self.getInstLifePhase()}, 'IsTrading'={self.getIsTrading()}, 'PositionType'={self.getPositionType()}, 'PositionDateType'={self.getPositionDateType()}, 'LongMarginRatio'={self.getLongMarginRatio()}, 'ShortMarginRatio'={self.getShortMarginRatio()}, 'MaxMarginSideAlgorithm'={self.getMaxMarginSideAlgorithm()}, 'UnderlyingInstrID'={self.getUnderlyingInstrID()}, 'StrikePrice'={self.getStrikePrice()}, 'OptionsType'={self.getOptionsType()}, 'UnderlyingMultiple'={self.getUnderlyingMultiple()}, 'CombinationType'={self.getCombinationType()}"
+        return f"'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'InstrumentName'={self.getInstrumentName()}, 'reserve2'={self.getreserve2()}, 'reserve3'={self.getreserve3()}, 'ProductClass'={self.getProductClass()}, 'DeliveryYear'={self.getDeliveryYear()}, 'DeliveryMonth'={self.getDeliveryMonth()}, 'MaxMarketOrderVolume'={self.getMaxMarketOrderVolume()}, 'MinMarketOrderVolume'={self.getMinMarketOrderVolume()}, 'MaxLimitOrderVolume'={self.getMaxLimitOrderVolume()}, 'MinLimitOrderVolume'={self.getMinLimitOrderVolume()}, 'VolumeMultiple'={self.getVolumeMultiple()}, 'PriceTick'={self.getPriceTick()}, 'CreateDate'={self.getCreateDate()}, 'OpenDate'={self.getOpenDate()}, 'ExpireDate'={self.getExpireDate()}, 'StartDelivDate'={self.getStartDelivDate()}, 'EndDelivDate'={self.getEndDelivDate()}, 'InstLifePhase'={self.getInstLifePhase()}, 'IsTrading'={self.getIsTrading()}, 'PositionType'={self.getPositionType()}, 'PositionDateType'={self.getPositionDateType()}, 'LongMarginRatio'={self.getLongMarginRatio()}, 'ShortMarginRatio'={self.getShortMarginRatio()}, 'MaxMarginSideAlgorithm'={self.getMaxMarginSideAlgorithm()}, 'reserve4'={self.getreserve4()}, 'StrikePrice'={self.getStrikePrice()}, 'OptionsType'={self.getOptionsType()}, 'UnderlyingMultiple'={self.getUnderlyingMultiple()}, 'CombinationType'={self.getCombinationType()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'ProductID'={self.getProductID()}, 'UnderlyingInstrID'={self.getUnderlyingInstrID()}"
 
 
 class  CThostFtdcBrokerField(Structure):
@@ -1650,7 +1695,7 @@ class  CThostFtdcTradingAccountField(Structure):
 class  CThostFtdcInvestorPositionField(Structure):
     """投资者持仓"""
     _fields_ = [
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
         ("PosiDirection", c_char),
@@ -1697,11 +1742,14 @@ class  CThostFtdcInvestorPositionField(Structure):
         ("YdStrikeFrozen", c_int32),
         ("InvestUnitID", c_char*17),
         ("PositionCostOffset", c_double),
+        ("TasPosition", c_int32),
+        ("TasPositionCost", c_double),
+        ("InstrumentID", c_char*81),
     ]
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getBrokerID(self):
         '''经纪公司代码'''
@@ -1887,14 +1935,26 @@ class  CThostFtdcInvestorPositionField(Structure):
         '''大商所持仓成本差值，只有大商所使用'''
         return self.PositionCostOffset
 
+    def getTasPosition(self):
+        '''tas持仓手数'''
+        return self.TasPosition
+
+    def getTasPositionCost(self):
+        '''tas持仓成本'''
+        return self.TasPositionCost
+
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'InstrumentID'={self.getInstrumentID()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'PosiDirection'={self.getPosiDirection()}, 'HedgeFlag'={self.getHedgeFlag()}, 'PositionDate'={self.getPositionDate()}, 'YdPosition'={self.getYdPosition()}, 'Position'={self.getPosition()}, 'LongFrozen'={self.getLongFrozen()}, 'ShortFrozen'={self.getShortFrozen()}, 'LongFrozenAmount'={self.getLongFrozenAmount()}, 'ShortFrozenAmount'={self.getShortFrozenAmount()}, 'OpenVolume'={self.getOpenVolume()}, 'CloseVolume'={self.getCloseVolume()}, 'OpenAmount'={self.getOpenAmount()}, 'CloseAmount'={self.getCloseAmount()}, 'PositionCost'={self.getPositionCost()}, 'PreMargin'={self.getPreMargin()}, 'UseMargin'={self.getUseMargin()}, 'FrozenMargin'={self.getFrozenMargin()}, 'FrozenCash'={self.getFrozenCash()}, 'FrozenCommission'={self.getFrozenCommission()}, 'CashIn'={self.getCashIn()}, 'Commission'={self.getCommission()}, 'CloseProfit'={self.getCloseProfit()}, 'PositionProfit'={self.getPositionProfit()}, 'PreSettlementPrice'={self.getPreSettlementPrice()}, 'SettlementPrice'={self.getSettlementPrice()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'OpenCost'={self.getOpenCost()}, 'ExchangeMargin'={self.getExchangeMargin()}, 'CombPosition'={self.getCombPosition()}, 'CombLongFrozen'={self.getCombLongFrozen()}, 'CombShortFrozen'={self.getCombShortFrozen()}, 'CloseProfitByDate'={self.getCloseProfitByDate()}, 'CloseProfitByTrade'={self.getCloseProfitByTrade()}, 'TodayPosition'={self.getTodayPosition()}, 'MarginRateByMoney'={self.getMarginRateByMoney()}, 'MarginRateByVolume'={self.getMarginRateByVolume()}, 'StrikeFrozen'={self.getStrikeFrozen()}, 'StrikeFrozenAmount'={self.getStrikeFrozenAmount()}, 'AbandonFrozen'={self.getAbandonFrozen()}, 'ExchangeID'={self.getExchangeID()}, 'YdStrikeFrozen'={self.getYdStrikeFrozen()}, 'InvestUnitID'={self.getInvestUnitID()}, 'PositionCostOffset'={self.getPositionCostOffset()}"
+        return f"'reserve1'={self.getreserve1()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'PosiDirection'={self.getPosiDirection()}, 'HedgeFlag'={self.getHedgeFlag()}, 'PositionDate'={self.getPositionDate()}, 'YdPosition'={self.getYdPosition()}, 'Position'={self.getPosition()}, 'LongFrozen'={self.getLongFrozen()}, 'ShortFrozen'={self.getShortFrozen()}, 'LongFrozenAmount'={self.getLongFrozenAmount()}, 'ShortFrozenAmount'={self.getShortFrozenAmount()}, 'OpenVolume'={self.getOpenVolume()}, 'CloseVolume'={self.getCloseVolume()}, 'OpenAmount'={self.getOpenAmount()}, 'CloseAmount'={self.getCloseAmount()}, 'PositionCost'={self.getPositionCost()}, 'PreMargin'={self.getPreMargin()}, 'UseMargin'={self.getUseMargin()}, 'FrozenMargin'={self.getFrozenMargin()}, 'FrozenCash'={self.getFrozenCash()}, 'FrozenCommission'={self.getFrozenCommission()}, 'CashIn'={self.getCashIn()}, 'Commission'={self.getCommission()}, 'CloseProfit'={self.getCloseProfit()}, 'PositionProfit'={self.getPositionProfit()}, 'PreSettlementPrice'={self.getPreSettlementPrice()}, 'SettlementPrice'={self.getSettlementPrice()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'OpenCost'={self.getOpenCost()}, 'ExchangeMargin'={self.getExchangeMargin()}, 'CombPosition'={self.getCombPosition()}, 'CombLongFrozen'={self.getCombLongFrozen()}, 'CombShortFrozen'={self.getCombShortFrozen()}, 'CloseProfitByDate'={self.getCloseProfitByDate()}, 'CloseProfitByTrade'={self.getCloseProfitByTrade()}, 'TodayPosition'={self.getTodayPosition()}, 'MarginRateByMoney'={self.getMarginRateByMoney()}, 'MarginRateByVolume'={self.getMarginRateByVolume()}, 'StrikeFrozen'={self.getStrikeFrozen()}, 'StrikeFrozenAmount'={self.getStrikeFrozenAmount()}, 'AbandonFrozen'={self.getAbandonFrozen()}, 'ExchangeID'={self.getExchangeID()}, 'YdStrikeFrozen'={self.getYdStrikeFrozen()}, 'InvestUnitID'={self.getInvestUnitID()}, 'PositionCostOffset'={self.getPositionCostOffset()}, 'TasPosition'={self.getTasPosition()}, 'TasPositionCost'={self.getTasPositionCost()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcInstrumentMarginRateField(Structure):
     """合约保证金率"""
     _fields_ = [
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("InvestorRange", c_char),
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
@@ -1906,11 +1966,12 @@ class  CThostFtdcInstrumentMarginRateField(Structure):
         ("IsRelative", c_int32),
         ("ExchangeID", c_char*9),
         ("InvestUnitID", c_char*17),
+        ("InstrumentID", c_char*81),
     ]
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getInvestorRange(self):
         '''投资者范围'''
@@ -1956,14 +2017,18 @@ class  CThostFtdcInstrumentMarginRateField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'InstrumentID'={self.getInstrumentID()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'HedgeFlag'={self.getHedgeFlag()}, 'LongMarginRatioByMoney'={self.getLongMarginRatioByMoney()}, 'LongMarginRatioByVolume'={self.getLongMarginRatioByVolume()}, 'ShortMarginRatioByMoney'={self.getShortMarginRatioByMoney()}, 'ShortMarginRatioByVolume'={self.getShortMarginRatioByVolume()}, 'IsRelative'={self.getIsRelative()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}"
+        return f"'reserve1'={self.getreserve1()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'HedgeFlag'={self.getHedgeFlag()}, 'LongMarginRatioByMoney'={self.getLongMarginRatioByMoney()}, 'LongMarginRatioByVolume'={self.getLongMarginRatioByVolume()}, 'ShortMarginRatioByMoney'={self.getShortMarginRatioByMoney()}, 'ShortMarginRatioByVolume'={self.getShortMarginRatioByVolume()}, 'IsRelative'={self.getIsRelative()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcInstrumentCommissionRateField(Structure):
     """合约手续费率"""
     _fields_ = [
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("InvestorRange", c_char),
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
@@ -1976,11 +2041,12 @@ class  CThostFtdcInstrumentCommissionRateField(Structure):
         ("ExchangeID", c_char*9),
         ("BizType", c_char),
         ("InvestUnitID", c_char*17),
+        ("InstrumentID", c_char*81),
     ]
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getInvestorRange(self):
         '''投资者范围'''
@@ -2030,17 +2096,21 @@ class  CThostFtdcInstrumentCommissionRateField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'InstrumentID'={self.getInstrumentID()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'OpenRatioByMoney'={self.getOpenRatioByMoney()}, 'OpenRatioByVolume'={self.getOpenRatioByVolume()}, 'CloseRatioByMoney'={self.getCloseRatioByMoney()}, 'CloseRatioByVolume'={self.getCloseRatioByVolume()}, 'CloseTodayRatioByMoney'={self.getCloseTodayRatioByMoney()}, 'CloseTodayRatioByVolume'={self.getCloseTodayRatioByVolume()}, 'ExchangeID'={self.getExchangeID()}, 'BizType'={self.getBizType()}, 'InvestUnitID'={self.getInvestUnitID()}"
+        return f"'reserve1'={self.getreserve1()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'OpenRatioByMoney'={self.getOpenRatioByMoney()}, 'OpenRatioByVolume'={self.getOpenRatioByVolume()}, 'CloseRatioByMoney'={self.getCloseRatioByMoney()}, 'CloseRatioByVolume'={self.getCloseRatioByVolume()}, 'CloseTodayRatioByMoney'={self.getCloseTodayRatioByMoney()}, 'CloseTodayRatioByVolume'={self.getCloseTodayRatioByVolume()}, 'ExchangeID'={self.getExchangeID()}, 'BizType'={self.getBizType()}, 'InvestUnitID'={self.getInvestUnitID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcDepthMarketDataField(Structure):
     """深度行情"""
     _fields_ = [
         ("TradingDay", c_char*9),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
-        ("ExchangeInstID", c_char*31),
+        ("reserve2", c_char*31),
         ("LastPrice", c_double),
         ("PreSettlementPrice", c_double),
         ("PreClosePrice", c_double),
@@ -2081,23 +2151,25 @@ class  CThostFtdcDepthMarketDataField(Structure):
         ("AskVolume5", c_int32),
         ("AveragePrice", c_double),
         ("ActionDay", c_char*9),
+        ("InstrumentID", c_char*81),
+        ("ExchangeInstID", c_char*81),
     ]
 
     def getTradingDay(self):
         '''交易日'''
         return str(self.TradingDay, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
         return str(self.ExchangeID, 'GBK')
 
-    def getExchangeInstID(self):
-        '''合约在交易所的代码'''
-        return str(self.ExchangeInstID, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getLastPrice(self):
         '''最新价'''
@@ -2259,23 +2331,32 @@ class  CThostFtdcDepthMarketDataField(Structure):
         '''业务日期'''
         return str(self.ActionDay, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getExchangeInstID(self):
+        '''合约在交易所的代码'''
+        return str(self.ExchangeInstID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'TradingDay'={self.getTradingDay()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeID'={self.getExchangeID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'LastPrice'={self.getLastPrice()}, 'PreSettlementPrice'={self.getPreSettlementPrice()}, 'PreClosePrice'={self.getPreClosePrice()}, 'PreOpenInterest'={self.getPreOpenInterest()}, 'OpenPrice'={self.getOpenPrice()}, 'HighestPrice'={self.getHighestPrice()}, 'LowestPrice'={self.getLowestPrice()}, 'Volume'={self.getVolume()}, 'Turnover'={self.getTurnover()}, 'OpenInterest'={self.getOpenInterest()}, 'ClosePrice'={self.getClosePrice()}, 'SettlementPrice'={self.getSettlementPrice()}, 'UpperLimitPrice'={self.getUpperLimitPrice()}, 'LowerLimitPrice'={self.getLowerLimitPrice()}, 'PreDelta'={self.getPreDelta()}, 'CurrDelta'={self.getCurrDelta()}, 'UpdateTime'={self.getUpdateTime()}, 'UpdateMillisec'={self.getUpdateMillisec()}, 'BidPrice1'={self.getBidPrice1()}, 'BidVolume1'={self.getBidVolume1()}, 'AskPrice1'={self.getAskPrice1()}, 'AskVolume1'={self.getAskVolume1()}, 'BidPrice2'={self.getBidPrice2()}, 'BidVolume2'={self.getBidVolume2()}, 'AskPrice2'={self.getAskPrice2()}, 'AskVolume2'={self.getAskVolume2()}, 'BidPrice3'={self.getBidPrice3()}, 'BidVolume3'={self.getBidVolume3()}, 'AskPrice3'={self.getAskPrice3()}, 'AskVolume3'={self.getAskVolume3()}, 'BidPrice4'={self.getBidPrice4()}, 'BidVolume4'={self.getBidVolume4()}, 'AskPrice4'={self.getAskPrice4()}, 'AskVolume4'={self.getAskVolume4()}, 'BidPrice5'={self.getBidPrice5()}, 'BidVolume5'={self.getBidVolume5()}, 'AskPrice5'={self.getAskPrice5()}, 'AskVolume5'={self.getAskVolume5()}, 'AveragePrice'={self.getAveragePrice()}, 'ActionDay'={self.getActionDay()}"
+        return f"'TradingDay'={self.getTradingDay()}, 'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'reserve2'={self.getreserve2()}, 'LastPrice'={self.getLastPrice()}, 'PreSettlementPrice'={self.getPreSettlementPrice()}, 'PreClosePrice'={self.getPreClosePrice()}, 'PreOpenInterest'={self.getPreOpenInterest()}, 'OpenPrice'={self.getOpenPrice()}, 'HighestPrice'={self.getHighestPrice()}, 'LowestPrice'={self.getLowestPrice()}, 'Volume'={self.getVolume()}, 'Turnover'={self.getTurnover()}, 'OpenInterest'={self.getOpenInterest()}, 'ClosePrice'={self.getClosePrice()}, 'SettlementPrice'={self.getSettlementPrice()}, 'UpperLimitPrice'={self.getUpperLimitPrice()}, 'LowerLimitPrice'={self.getLowerLimitPrice()}, 'PreDelta'={self.getPreDelta()}, 'CurrDelta'={self.getCurrDelta()}, 'UpdateTime'={self.getUpdateTime()}, 'UpdateMillisec'={self.getUpdateMillisec()}, 'BidPrice1'={self.getBidPrice1()}, 'BidVolume1'={self.getBidVolume1()}, 'AskPrice1'={self.getAskPrice1()}, 'AskVolume1'={self.getAskVolume1()}, 'BidPrice2'={self.getBidPrice2()}, 'BidVolume2'={self.getBidVolume2()}, 'AskPrice2'={self.getAskPrice2()}, 'AskVolume2'={self.getAskVolume2()}, 'BidPrice3'={self.getBidPrice3()}, 'BidVolume3'={self.getBidVolume3()}, 'AskPrice3'={self.getAskPrice3()}, 'AskVolume3'={self.getAskVolume3()}, 'BidPrice4'={self.getBidPrice4()}, 'BidVolume4'={self.getBidVolume4()}, 'AskPrice4'={self.getAskPrice4()}, 'AskVolume4'={self.getAskVolume4()}, 'BidPrice5'={self.getBidPrice5()}, 'BidVolume5'={self.getBidVolume5()}, 'AskPrice5'={self.getAskPrice5()}, 'AskVolume5'={self.getAskVolume5()}, 'AveragePrice'={self.getAveragePrice()}, 'ActionDay'={self.getActionDay()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeInstID'={self.getExchangeInstID()}"
 
 
 class  CThostFtdcInstrumentTradingRightField(Structure):
     """投资者合约交易权限"""
     _fields_ = [
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("InvestorRange", c_char),
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
         ("TradingRight", c_char),
+        ("InstrumentID", c_char*81),
     ]
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getInvestorRange(self):
         '''投资者范围'''
@@ -2293,8 +2374,12 @@ class  CThostFtdcInstrumentTradingRightField(Structure):
         '''交易权限'''
         return TThostFtdcTradingRightType(ord(self.TradingRight)) if ord(self.TradingRight) in [e.value for e in list(TThostFtdcTradingRightType)] else list(TThostFtdcTradingRightType)[0]
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'InstrumentID'={self.getInstrumentID()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'TradingRight'={self.getTradingRight()}"
+        return f"'reserve1'={self.getreserve1()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'TradingRight'={self.getTradingRight()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcBrokerUserField(Structure):
@@ -2565,7 +2650,7 @@ class  CThostFtdcSettlementInfoField(Structure):
 class  CThostFtdcInstrumentMarginRateAdjustField(Structure):
     """合约保证金率调整"""
     _fields_ = [
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("InvestorRange", c_char),
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
@@ -2575,11 +2660,12 @@ class  CThostFtdcInstrumentMarginRateAdjustField(Structure):
         ("ShortMarginRatioByMoney", c_double),
         ("ShortMarginRatioByVolume", c_double),
         ("IsRelative", c_int32),
+        ("InstrumentID", c_char*81),
     ]
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getInvestorRange(self):
         '''投资者范围'''
@@ -2617,30 +2703,35 @@ class  CThostFtdcInstrumentMarginRateAdjustField(Structure):
         '''是否相对交易所收取'''
         return self.IsRelative
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'InstrumentID'={self.getInstrumentID()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'HedgeFlag'={self.getHedgeFlag()}, 'LongMarginRatioByMoney'={self.getLongMarginRatioByMoney()}, 'LongMarginRatioByVolume'={self.getLongMarginRatioByVolume()}, 'ShortMarginRatioByMoney'={self.getShortMarginRatioByMoney()}, 'ShortMarginRatioByVolume'={self.getShortMarginRatioByVolume()}, 'IsRelative'={self.getIsRelative()}"
+        return f"'reserve1'={self.getreserve1()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'HedgeFlag'={self.getHedgeFlag()}, 'LongMarginRatioByMoney'={self.getLongMarginRatioByMoney()}, 'LongMarginRatioByVolume'={self.getLongMarginRatioByVolume()}, 'ShortMarginRatioByMoney'={self.getShortMarginRatioByMoney()}, 'ShortMarginRatioByVolume'={self.getShortMarginRatioByVolume()}, 'IsRelative'={self.getIsRelative()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcExchangeMarginRateField(Structure):
     """交易所保证金率"""
     _fields_ = [
         ("BrokerID", c_char*11),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("HedgeFlag", c_char),
         ("LongMarginRatioByMoney", c_double),
         ("LongMarginRatioByVolume", c_double),
         ("ShortMarginRatioByMoney", c_double),
         ("ShortMarginRatioByVolume", c_double),
         ("ExchangeID", c_char*9),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
         '''经纪公司代码'''
         return str(self.BrokerID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getHedgeFlag(self):
         '''投机套保标志'''
@@ -2666,15 +2757,19 @@ class  CThostFtdcExchangeMarginRateField(Structure):
         '''交易所代码'''
         return str(self.ExchangeID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InstrumentID'={self.getInstrumentID()}, 'HedgeFlag'={self.getHedgeFlag()}, 'LongMarginRatioByMoney'={self.getLongMarginRatioByMoney()}, 'LongMarginRatioByVolume'={self.getLongMarginRatioByVolume()}, 'ShortMarginRatioByMoney'={self.getShortMarginRatioByMoney()}, 'ShortMarginRatioByVolume'={self.getShortMarginRatioByVolume()}, 'ExchangeID'={self.getExchangeID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'reserve1'={self.getreserve1()}, 'HedgeFlag'={self.getHedgeFlag()}, 'LongMarginRatioByMoney'={self.getLongMarginRatioByMoney()}, 'LongMarginRatioByVolume'={self.getLongMarginRatioByVolume()}, 'ShortMarginRatioByMoney'={self.getShortMarginRatioByMoney()}, 'ShortMarginRatioByVolume'={self.getShortMarginRatioByVolume()}, 'ExchangeID'={self.getExchangeID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcExchangeMarginRateAdjustField(Structure):
     """交易所保证金率调整"""
     _fields_ = [
         ("BrokerID", c_char*11),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("HedgeFlag", c_char),
         ("LongMarginRatioByMoney", c_double),
         ("LongMarginRatioByVolume", c_double),
@@ -2688,15 +2783,16 @@ class  CThostFtdcExchangeMarginRateAdjustField(Structure):
         ("NoLongMarginRatioByVolume", c_double),
         ("NoShortMarginRatioByMoney", c_double),
         ("NoShortMarginRatioByVolume", c_double),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
         '''经纪公司代码'''
         return str(self.BrokerID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getHedgeFlag(self):
         '''投机套保标志'''
@@ -2750,8 +2846,12 @@ class  CThostFtdcExchangeMarginRateAdjustField(Structure):
         '''不跟随交易所投资者空头保证金费'''
         return self.NoShortMarginRatioByVolume
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InstrumentID'={self.getInstrumentID()}, 'HedgeFlag'={self.getHedgeFlag()}, 'LongMarginRatioByMoney'={self.getLongMarginRatioByMoney()}, 'LongMarginRatioByVolume'={self.getLongMarginRatioByVolume()}, 'ShortMarginRatioByMoney'={self.getShortMarginRatioByMoney()}, 'ShortMarginRatioByVolume'={self.getShortMarginRatioByVolume()}, 'ExchLongMarginRatioByMoney'={self.getExchLongMarginRatioByMoney()}, 'ExchLongMarginRatioByVolume'={self.getExchLongMarginRatioByVolume()}, 'ExchShortMarginRatioByMoney'={self.getExchShortMarginRatioByMoney()}, 'ExchShortMarginRatioByVolume'={self.getExchShortMarginRatioByVolume()}, 'NoLongMarginRatioByMoney'={self.getNoLongMarginRatioByMoney()}, 'NoLongMarginRatioByVolume'={self.getNoLongMarginRatioByVolume()}, 'NoShortMarginRatioByMoney'={self.getNoShortMarginRatioByMoney()}, 'NoShortMarginRatioByVolume'={self.getNoShortMarginRatioByVolume()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'reserve1'={self.getreserve1()}, 'HedgeFlag'={self.getHedgeFlag()}, 'LongMarginRatioByMoney'={self.getLongMarginRatioByMoney()}, 'LongMarginRatioByVolume'={self.getLongMarginRatioByVolume()}, 'ShortMarginRatioByMoney'={self.getShortMarginRatioByMoney()}, 'ShortMarginRatioByVolume'={self.getShortMarginRatioByVolume()}, 'ExchLongMarginRatioByMoney'={self.getExchLongMarginRatioByMoney()}, 'ExchLongMarginRatioByVolume'={self.getExchLongMarginRatioByVolume()}, 'ExchShortMarginRatioByMoney'={self.getExchShortMarginRatioByMoney()}, 'ExchShortMarginRatioByVolume'={self.getExchShortMarginRatioByVolume()}, 'NoLongMarginRatioByMoney'={self.getNoLongMarginRatioByMoney()}, 'NoLongMarginRatioByVolume'={self.getNoLongMarginRatioByVolume()}, 'NoShortMarginRatioByMoney'={self.getNoShortMarginRatioByMoney()}, 'NoShortMarginRatioByVolume'={self.getNoShortMarginRatioByVolume()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcExchangeRateField(Structure):
@@ -2869,7 +2969,7 @@ class  CThostFtdcLoginInfoField(Structure):
         ("UserID", c_char*16),
         ("LoginDate", c_char*9),
         ("LoginTime", c_char*9),
-        ("IPAddress", c_char*16),
+        ("reserve1", c_char*16),
         ("UserProductInfo", c_char*11),
         ("InterfaceProductInfo", c_char*11),
         ("ProtocolInfo", c_char*11),
@@ -2886,6 +2986,7 @@ class  CThostFtdcLoginInfoField(Structure):
         ("IsQryControl", c_int32),
         ("LoginRemark", c_char*36),
         ("Password", c_char*41),
+        ("IPAddress", c_char*33),
     ]
 
     def getFrontID(self):
@@ -2912,9 +3013,9 @@ class  CThostFtdcLoginInfoField(Structure):
         '''登录时间'''
         return str(self.LoginTime, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getUserProductInfo(self):
         '''用户端产品信息'''
@@ -2980,8 +3081,12 @@ class  CThostFtdcLoginInfoField(Structure):
         '''密码'''
         return str(self.Password, 'GBK')
 
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'BrokerID'={self.getBrokerID()}, 'UserID'={self.getUserID()}, 'LoginDate'={self.getLoginDate()}, 'LoginTime'={self.getLoginTime()}, 'IPAddress'={self.getIPAddress()}, 'UserProductInfo'={self.getUserProductInfo()}, 'InterfaceProductInfo'={self.getInterfaceProductInfo()}, 'ProtocolInfo'={self.getProtocolInfo()}, 'SystemName'={self.getSystemName()}, 'PasswordDeprecated'={self.getPasswordDeprecated()}, 'MaxOrderRef'={self.getMaxOrderRef()}, 'SHFETime'={self.getSHFETime()}, 'DCETime'={self.getDCETime()}, 'CZCETime'={self.getCZCETime()}, 'FFEXTime'={self.getFFEXTime()}, 'MacAddress'={self.getMacAddress()}, 'OneTimePassword'={self.getOneTimePassword()}, 'INETime'={self.getINETime()}, 'IsQryControl'={self.getIsQryControl()}, 'LoginRemark'={self.getLoginRemark()}, 'Password'={self.getPassword()}"
+        return f"'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'BrokerID'={self.getBrokerID()}, 'UserID'={self.getUserID()}, 'LoginDate'={self.getLoginDate()}, 'LoginTime'={self.getLoginTime()}, 'reserve1'={self.getreserve1()}, 'UserProductInfo'={self.getUserProductInfo()}, 'InterfaceProductInfo'={self.getInterfaceProductInfo()}, 'ProtocolInfo'={self.getProtocolInfo()}, 'SystemName'={self.getSystemName()}, 'PasswordDeprecated'={self.getPasswordDeprecated()}, 'MaxOrderRef'={self.getMaxOrderRef()}, 'SHFETime'={self.getSHFETime()}, 'DCETime'={self.getDCETime()}, 'CZCETime'={self.getCZCETime()}, 'FFEXTime'={self.getFFEXTime()}, 'MacAddress'={self.getMacAddress()}, 'OneTimePassword'={self.getOneTimePassword()}, 'INETime'={self.getINETime()}, 'IsQryControl'={self.getIsQryControl()}, 'LoginRemark'={self.getLoginRemark()}, 'Password'={self.getPassword()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcLogoutAllField(Structure):
@@ -3071,7 +3176,7 @@ class  CThostFtdcInputOrderField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("OrderRef", c_char*13),
         ("UserID", c_char*16),
         ("OrderPriceType", c_char),
@@ -3097,8 +3202,10 @@ class  CThostFtdcInputOrderField(Structure):
         ("AccountID", c_char*13),
         ("CurrencyID", c_char*4),
         ("ClientID", c_char*11),
-        ("IPAddress", c_char*16),
+        ("reserve2", c_char*16),
         ("MacAddress", c_char*21),
+        ("InstrumentID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -3109,9 +3216,9 @@ class  CThostFtdcInputOrderField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getOrderRef(self):
         '''报单引用'''
@@ -3213,16 +3320,24 @@ class  CThostFtdcInputOrderField(Structure):
         '''交易编码'''
         return str(self.ClientID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'OrderRef'={self.getOrderRef()}, 'UserID'={self.getUserID()}, 'OrderPriceType'={self.getOrderPriceType()}, 'Direction'={self.getDirection()}, 'CombOffsetFlag'={self.getCombOffsetFlag()}, 'CombHedgeFlag'={self.getCombHedgeFlag()}, 'LimitPrice'={self.getLimitPrice()}, 'VolumeTotalOriginal'={self.getVolumeTotalOriginal()}, 'TimeCondition'={self.getTimeCondition()}, 'GTDDate'={self.getGTDDate()}, 'VolumeCondition'={self.getVolumeCondition()}, 'MinVolume'={self.getMinVolume()}, 'ContingentCondition'={self.getContingentCondition()}, 'StopPrice'={self.getStopPrice()}, 'ForceCloseReason'={self.getForceCloseReason()}, 'IsAutoSuspend'={self.getIsAutoSuspend()}, 'BusinessUnit'={self.getBusinessUnit()}, 'RequestID'={self.getRequestID()}, 'UserForceClose'={self.getUserForceClose()}, 'IsSwapOrder'={self.getIsSwapOrder()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'AccountID'={self.getAccountID()}, 'CurrencyID'={self.getCurrencyID()}, 'ClientID'={self.getClientID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'OrderRef'={self.getOrderRef()}, 'UserID'={self.getUserID()}, 'OrderPriceType'={self.getOrderPriceType()}, 'Direction'={self.getDirection()}, 'CombOffsetFlag'={self.getCombOffsetFlag()}, 'CombHedgeFlag'={self.getCombHedgeFlag()}, 'LimitPrice'={self.getLimitPrice()}, 'VolumeTotalOriginal'={self.getVolumeTotalOriginal()}, 'TimeCondition'={self.getTimeCondition()}, 'GTDDate'={self.getGTDDate()}, 'VolumeCondition'={self.getVolumeCondition()}, 'MinVolume'={self.getMinVolume()}, 'ContingentCondition'={self.getContingentCondition()}, 'StopPrice'={self.getStopPrice()}, 'ForceCloseReason'={self.getForceCloseReason()}, 'IsAutoSuspend'={self.getIsAutoSuspend()}, 'BusinessUnit'={self.getBusinessUnit()}, 'RequestID'={self.getRequestID()}, 'UserForceClose'={self.getUserForceClose()}, 'IsSwapOrder'={self.getIsSwapOrder()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'AccountID'={self.getAccountID()}, 'CurrencyID'={self.getCurrencyID()}, 'ClientID'={self.getClientID()}, 'reserve2'={self.getreserve2()}, 'MacAddress'={self.getMacAddress()}, 'InstrumentID'={self.getInstrumentID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcOrderField(Structure):
@@ -3230,7 +3345,7 @@ class  CThostFtdcOrderField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("OrderRef", c_char*13),
         ("UserID", c_char*16),
         ("OrderPriceType", c_char),
@@ -3253,7 +3368,7 @@ class  CThostFtdcOrderField(Structure):
         ("ExchangeID", c_char*9),
         ("ParticipantID", c_char*11),
         ("ClientID", c_char*11),
-        ("ExchangeInstID", c_char*31),
+        ("reserve2", c_char*31),
         ("TraderID", c_char*21),
         ("InstallID", c_int32),
         ("OrderSubmitStatus", c_char),
@@ -3289,8 +3404,11 @@ class  CThostFtdcOrderField(Structure):
         ("InvestUnitID", c_char*17),
         ("AccountID", c_char*13),
         ("CurrencyID", c_char*4),
-        ("IPAddress", c_char*16),
+        ("reserve3", c_char*16),
         ("MacAddress", c_char*21),
+        ("InstrumentID", c_char*81),
+        ("ExchangeInstID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -3301,9 +3419,9 @@ class  CThostFtdcOrderField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getOrderRef(self):
         '''报单引用'''
@@ -3393,9 +3511,9 @@ class  CThostFtdcOrderField(Structure):
         '''客户代码'''
         return str(self.ClientID, 'GBK')
 
-    def getExchangeInstID(self):
-        '''合约在交易所的代码'''
-        return str(self.ExchangeInstID, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getTraderID(self):
         '''交易所交易员代码'''
@@ -3537,16 +3655,28 @@ class  CThostFtdcOrderField(Structure):
         '''币种代码'''
         return str(self.CurrencyID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve3(self):
+        '''保留的无效字段'''
+        return str(self.reserve3, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getExchangeInstID(self):
+        '''合约在交易所的代码'''
+        return str(self.ExchangeInstID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'OrderRef'={self.getOrderRef()}, 'UserID'={self.getUserID()}, 'OrderPriceType'={self.getOrderPriceType()}, 'Direction'={self.getDirection()}, 'CombOffsetFlag'={self.getCombOffsetFlag()}, 'CombHedgeFlag'={self.getCombHedgeFlag()}, 'LimitPrice'={self.getLimitPrice()}, 'VolumeTotalOriginal'={self.getVolumeTotalOriginal()}, 'TimeCondition'={self.getTimeCondition()}, 'GTDDate'={self.getGTDDate()}, 'VolumeCondition'={self.getVolumeCondition()}, 'MinVolume'={self.getMinVolume()}, 'ContingentCondition'={self.getContingentCondition()}, 'StopPrice'={self.getStopPrice()}, 'ForceCloseReason'={self.getForceCloseReason()}, 'IsAutoSuspend'={self.getIsAutoSuspend()}, 'BusinessUnit'={self.getBusinessUnit()}, 'RequestID'={self.getRequestID()}, 'OrderLocalID'={self.getOrderLocalID()}, 'ExchangeID'={self.getExchangeID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'OrderSubmitStatus'={self.getOrderSubmitStatus()}, 'NotifySequence'={self.getNotifySequence()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'OrderSysID'={self.getOrderSysID()}, 'OrderSource'={self.getOrderSource()}, 'OrderStatus'={self.getOrderStatus()}, 'OrderType'={self.getOrderType()}, 'VolumeTraded'={self.getVolumeTraded()}, 'VolumeTotal'={self.getVolumeTotal()}, 'InsertDate'={self.getInsertDate()}, 'InsertTime'={self.getInsertTime()}, 'ActiveTime'={self.getActiveTime()}, 'SuspendTime'={self.getSuspendTime()}, 'UpdateTime'={self.getUpdateTime()}, 'CancelTime'={self.getCancelTime()}, 'ActiveTraderID'={self.getActiveTraderID()}, 'ClearingPartID'={self.getClearingPartID()}, 'SequenceNo'={self.getSequenceNo()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'UserProductInfo'={self.getUserProductInfo()}, 'StatusMsg'={self.getStatusMsg()}, 'UserForceClose'={self.getUserForceClose()}, 'ActiveUserID'={self.getActiveUserID()}, 'BrokerOrderSeq'={self.getBrokerOrderSeq()}, 'RelativeOrderSysID'={self.getRelativeOrderSysID()}, 'ZCETotalTradedVolume'={self.getZCETotalTradedVolume()}, 'IsSwapOrder'={self.getIsSwapOrder()}, 'BranchID'={self.getBranchID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'AccountID'={self.getAccountID()}, 'CurrencyID'={self.getCurrencyID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'OrderRef'={self.getOrderRef()}, 'UserID'={self.getUserID()}, 'OrderPriceType'={self.getOrderPriceType()}, 'Direction'={self.getDirection()}, 'CombOffsetFlag'={self.getCombOffsetFlag()}, 'CombHedgeFlag'={self.getCombHedgeFlag()}, 'LimitPrice'={self.getLimitPrice()}, 'VolumeTotalOriginal'={self.getVolumeTotalOriginal()}, 'TimeCondition'={self.getTimeCondition()}, 'GTDDate'={self.getGTDDate()}, 'VolumeCondition'={self.getVolumeCondition()}, 'MinVolume'={self.getMinVolume()}, 'ContingentCondition'={self.getContingentCondition()}, 'StopPrice'={self.getStopPrice()}, 'ForceCloseReason'={self.getForceCloseReason()}, 'IsAutoSuspend'={self.getIsAutoSuspend()}, 'BusinessUnit'={self.getBusinessUnit()}, 'RequestID'={self.getRequestID()}, 'OrderLocalID'={self.getOrderLocalID()}, 'ExchangeID'={self.getExchangeID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'reserve2'={self.getreserve2()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'OrderSubmitStatus'={self.getOrderSubmitStatus()}, 'NotifySequence'={self.getNotifySequence()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'OrderSysID'={self.getOrderSysID()}, 'OrderSource'={self.getOrderSource()}, 'OrderStatus'={self.getOrderStatus()}, 'OrderType'={self.getOrderType()}, 'VolumeTraded'={self.getVolumeTraded()}, 'VolumeTotal'={self.getVolumeTotal()}, 'InsertDate'={self.getInsertDate()}, 'InsertTime'={self.getInsertTime()}, 'ActiveTime'={self.getActiveTime()}, 'SuspendTime'={self.getSuspendTime()}, 'UpdateTime'={self.getUpdateTime()}, 'CancelTime'={self.getCancelTime()}, 'ActiveTraderID'={self.getActiveTraderID()}, 'ClearingPartID'={self.getClearingPartID()}, 'SequenceNo'={self.getSequenceNo()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'UserProductInfo'={self.getUserProductInfo()}, 'StatusMsg'={self.getStatusMsg()}, 'UserForceClose'={self.getUserForceClose()}, 'ActiveUserID'={self.getActiveUserID()}, 'BrokerOrderSeq'={self.getBrokerOrderSeq()}, 'RelativeOrderSysID'={self.getRelativeOrderSysID()}, 'ZCETotalTradedVolume'={self.getZCETotalTradedVolume()}, 'IsSwapOrder'={self.getIsSwapOrder()}, 'BranchID'={self.getBranchID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'AccountID'={self.getAccountID()}, 'CurrencyID'={self.getCurrencyID()}, 'reserve3'={self.getreserve3()}, 'MacAddress'={self.getMacAddress()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcExchangeOrderField(Structure):
@@ -3572,7 +3702,7 @@ class  CThostFtdcExchangeOrderField(Structure):
         ("ExchangeID", c_char*9),
         ("ParticipantID", c_char*11),
         ("ClientID", c_char*11),
-        ("ExchangeInstID", c_char*31),
+        ("reserve1", c_char*31),
         ("TraderID", c_char*21),
         ("InstallID", c_int32),
         ("OrderSubmitStatus", c_char),
@@ -3595,8 +3725,10 @@ class  CThostFtdcExchangeOrderField(Structure):
         ("ClearingPartID", c_char*11),
         ("SequenceNo", c_int32),
         ("BranchID", c_char*9),
-        ("IPAddress", c_char*16),
+        ("reserve2", c_char*16),
         ("MacAddress", c_char*21),
+        ("ExchangeInstID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getOrderPriceType(self):
@@ -3679,9 +3811,9 @@ class  CThostFtdcExchangeOrderField(Structure):
         '''客户代码'''
         return str(self.ClientID, 'GBK')
 
-    def getExchangeInstID(self):
-        '''合约在交易所的代码'''
-        return str(self.ExchangeInstID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getTraderID(self):
         '''交易所交易员代码'''
@@ -3771,16 +3903,24 @@ class  CThostFtdcExchangeOrderField(Structure):
         '''营业部编号'''
         return str(self.BranchID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getExchangeInstID(self):
+        '''合约在交易所的代码'''
+        return str(self.ExchangeInstID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'OrderPriceType'={self.getOrderPriceType()}, 'Direction'={self.getDirection()}, 'CombOffsetFlag'={self.getCombOffsetFlag()}, 'CombHedgeFlag'={self.getCombHedgeFlag()}, 'LimitPrice'={self.getLimitPrice()}, 'VolumeTotalOriginal'={self.getVolumeTotalOriginal()}, 'TimeCondition'={self.getTimeCondition()}, 'GTDDate'={self.getGTDDate()}, 'VolumeCondition'={self.getVolumeCondition()}, 'MinVolume'={self.getMinVolume()}, 'ContingentCondition'={self.getContingentCondition()}, 'StopPrice'={self.getStopPrice()}, 'ForceCloseReason'={self.getForceCloseReason()}, 'IsAutoSuspend'={self.getIsAutoSuspend()}, 'BusinessUnit'={self.getBusinessUnit()}, 'RequestID'={self.getRequestID()}, 'OrderLocalID'={self.getOrderLocalID()}, 'ExchangeID'={self.getExchangeID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'OrderSubmitStatus'={self.getOrderSubmitStatus()}, 'NotifySequence'={self.getNotifySequence()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'OrderSysID'={self.getOrderSysID()}, 'OrderSource'={self.getOrderSource()}, 'OrderStatus'={self.getOrderStatus()}, 'OrderType'={self.getOrderType()}, 'VolumeTraded'={self.getVolumeTraded()}, 'VolumeTotal'={self.getVolumeTotal()}, 'InsertDate'={self.getInsertDate()}, 'InsertTime'={self.getInsertTime()}, 'ActiveTime'={self.getActiveTime()}, 'SuspendTime'={self.getSuspendTime()}, 'UpdateTime'={self.getUpdateTime()}, 'CancelTime'={self.getCancelTime()}, 'ActiveTraderID'={self.getActiveTraderID()}, 'ClearingPartID'={self.getClearingPartID()}, 'SequenceNo'={self.getSequenceNo()}, 'BranchID'={self.getBranchID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'OrderPriceType'={self.getOrderPriceType()}, 'Direction'={self.getDirection()}, 'CombOffsetFlag'={self.getCombOffsetFlag()}, 'CombHedgeFlag'={self.getCombHedgeFlag()}, 'LimitPrice'={self.getLimitPrice()}, 'VolumeTotalOriginal'={self.getVolumeTotalOriginal()}, 'TimeCondition'={self.getTimeCondition()}, 'GTDDate'={self.getGTDDate()}, 'VolumeCondition'={self.getVolumeCondition()}, 'MinVolume'={self.getMinVolume()}, 'ContingentCondition'={self.getContingentCondition()}, 'StopPrice'={self.getStopPrice()}, 'ForceCloseReason'={self.getForceCloseReason()}, 'IsAutoSuspend'={self.getIsAutoSuspend()}, 'BusinessUnit'={self.getBusinessUnit()}, 'RequestID'={self.getRequestID()}, 'OrderLocalID'={self.getOrderLocalID()}, 'ExchangeID'={self.getExchangeID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'reserve1'={self.getreserve1()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'OrderSubmitStatus'={self.getOrderSubmitStatus()}, 'NotifySequence'={self.getNotifySequence()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'OrderSysID'={self.getOrderSysID()}, 'OrderSource'={self.getOrderSource()}, 'OrderStatus'={self.getOrderStatus()}, 'OrderType'={self.getOrderType()}, 'VolumeTraded'={self.getVolumeTraded()}, 'VolumeTotal'={self.getVolumeTotal()}, 'InsertDate'={self.getInsertDate()}, 'InsertTime'={self.getInsertTime()}, 'ActiveTime'={self.getActiveTime()}, 'SuspendTime'={self.getSuspendTime()}, 'UpdateTime'={self.getUpdateTime()}, 'CancelTime'={self.getCancelTime()}, 'ActiveTraderID'={self.getActiveTraderID()}, 'ClearingPartID'={self.getClearingPartID()}, 'SequenceNo'={self.getSequenceNo()}, 'BranchID'={self.getBranchID()}, 'reserve2'={self.getreserve2()}, 'MacAddress'={self.getMacAddress()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcExchangeOrderInsertErrorField(Structure):
@@ -3843,10 +3983,12 @@ class  CThostFtdcInputOrderActionField(Structure):
         ("LimitPrice", c_double),
         ("VolumeChange", c_int32),
         ("UserID", c_char*16),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("InvestUnitID", c_char*17),
-        ("IPAddress", c_char*16),
+        ("reserve2", c_char*16),
         ("MacAddress", c_char*21),
+        ("InstrumentID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -3901,24 +4043,32 @@ class  CThostFtdcInputOrderActionField(Structure):
         '''用户代码'''
         return str(self.UserID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getInvestUnitID(self):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'OrderActionRef'={self.getOrderActionRef()}, 'OrderRef'={self.getOrderRef()}, 'RequestID'={self.getRequestID()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'ExchangeID'={self.getExchangeID()}, 'OrderSysID'={self.getOrderSysID()}, 'ActionFlag'={self.getActionFlag()}, 'LimitPrice'={self.getLimitPrice()}, 'VolumeChange'={self.getVolumeChange()}, 'UserID'={self.getUserID()}, 'InstrumentID'={self.getInstrumentID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'OrderActionRef'={self.getOrderActionRef()}, 'OrderRef'={self.getOrderRef()}, 'RequestID'={self.getRequestID()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'ExchangeID'={self.getExchangeID()}, 'OrderSysID'={self.getOrderSysID()}, 'ActionFlag'={self.getActionFlag()}, 'LimitPrice'={self.getLimitPrice()}, 'VolumeChange'={self.getVolumeChange()}, 'UserID'={self.getUserID()}, 'reserve1'={self.getreserve1()}, 'InvestUnitID'={self.getInvestUnitID()}, 'reserve2'={self.getreserve2()}, 'MacAddress'={self.getMacAddress()}, 'InstrumentID'={self.getInstrumentID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcOrderActionField(Structure):
@@ -3948,11 +4098,13 @@ class  CThostFtdcOrderActionField(Structure):
         ("OrderActionStatus", c_char),
         ("UserID", c_char*16),
         ("StatusMsg", c_char*81),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("BranchID", c_char*9),
         ("InvestUnitID", c_char*17),
-        ("IPAddress", c_char*16),
+        ("reserve2", c_char*16),
         ("MacAddress", c_char*21),
+        ("InstrumentID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -4051,9 +4203,9 @@ class  CThostFtdcOrderActionField(Structure):
         '''状态信息'''
         return str(self.StatusMsg, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getBranchID(self):
         '''营业部编号'''
@@ -4063,16 +4215,24 @@ class  CThostFtdcOrderActionField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'OrderActionRef'={self.getOrderActionRef()}, 'OrderRef'={self.getOrderRef()}, 'RequestID'={self.getRequestID()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'ExchangeID'={self.getExchangeID()}, 'OrderSysID'={self.getOrderSysID()}, 'ActionFlag'={self.getActionFlag()}, 'LimitPrice'={self.getLimitPrice()}, 'VolumeChange'={self.getVolumeChange()}, 'ActionDate'={self.getActionDate()}, 'ActionTime'={self.getActionTime()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'OrderLocalID'={self.getOrderLocalID()}, 'ActionLocalID'={self.getActionLocalID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'OrderActionStatus'={self.getOrderActionStatus()}, 'UserID'={self.getUserID()}, 'StatusMsg'={self.getStatusMsg()}, 'InstrumentID'={self.getInstrumentID()}, 'BranchID'={self.getBranchID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'OrderActionRef'={self.getOrderActionRef()}, 'OrderRef'={self.getOrderRef()}, 'RequestID'={self.getRequestID()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'ExchangeID'={self.getExchangeID()}, 'OrderSysID'={self.getOrderSysID()}, 'ActionFlag'={self.getActionFlag()}, 'LimitPrice'={self.getLimitPrice()}, 'VolumeChange'={self.getVolumeChange()}, 'ActionDate'={self.getActionDate()}, 'ActionTime'={self.getActionTime()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'OrderLocalID'={self.getOrderLocalID()}, 'ActionLocalID'={self.getActionLocalID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'OrderActionStatus'={self.getOrderActionStatus()}, 'UserID'={self.getUserID()}, 'StatusMsg'={self.getStatusMsg()}, 'reserve1'={self.getreserve1()}, 'BranchID'={self.getBranchID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'reserve2'={self.getreserve2()}, 'MacAddress'={self.getMacAddress()}, 'InstrumentID'={self.getInstrumentID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcExchangeOrderActionField(Structure):
@@ -4095,8 +4255,9 @@ class  CThostFtdcExchangeOrderActionField(Structure):
         ("OrderActionStatus", c_char),
         ("UserID", c_char*16),
         ("BranchID", c_char*9),
-        ("IPAddress", c_char*16),
+        ("reserve1", c_char*16),
         ("MacAddress", c_char*21),
+        ("IPAddress", c_char*33),
     ]
 
     def getExchangeID(self):
@@ -4167,16 +4328,20 @@ class  CThostFtdcExchangeOrderActionField(Structure):
         '''营业部编号'''
         return str(self.BranchID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'ExchangeID'={self.getExchangeID()}, 'OrderSysID'={self.getOrderSysID()}, 'ActionFlag'={self.getActionFlag()}, 'LimitPrice'={self.getLimitPrice()}, 'VolumeChange'={self.getVolumeChange()}, 'ActionDate'={self.getActionDate()}, 'ActionTime'={self.getActionTime()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'OrderLocalID'={self.getOrderLocalID()}, 'ActionLocalID'={self.getActionLocalID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'OrderActionStatus'={self.getOrderActionStatus()}, 'UserID'={self.getUserID()}, 'BranchID'={self.getBranchID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'ExchangeID'={self.getExchangeID()}, 'OrderSysID'={self.getOrderSysID()}, 'ActionFlag'={self.getActionFlag()}, 'LimitPrice'={self.getLimitPrice()}, 'VolumeChange'={self.getVolumeChange()}, 'ActionDate'={self.getActionDate()}, 'ActionTime'={self.getActionTime()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'OrderLocalID'={self.getOrderLocalID()}, 'ActionLocalID'={self.getActionLocalID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'OrderActionStatus'={self.getOrderActionStatus()}, 'UserID'={self.getUserID()}, 'BranchID'={self.getBranchID()}, 'reserve1'={self.getreserve1()}, 'MacAddress'={self.getMacAddress()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcExchangeOrderActionErrorField(Structure):
@@ -4238,7 +4403,7 @@ class  CThostFtdcExchangeTradeField(Structure):
         ("ParticipantID", c_char*11),
         ("ClientID", c_char*11),
         ("TradingRole", c_char),
-        ("ExchangeInstID", c_char*31),
+        ("reserve1", c_char*31),
         ("OffsetFlag", c_char),
         ("HedgeFlag", c_char),
         ("Price", c_double),
@@ -4253,6 +4418,7 @@ class  CThostFtdcExchangeTradeField(Structure):
         ("BusinessUnit", c_char*21),
         ("SequenceNo", c_int32),
         ("TradeSource", c_char),
+        ("ExchangeInstID", c_char*81),
     ]
 
     def getExchangeID(self):
@@ -4283,9 +4449,9 @@ class  CThostFtdcExchangeTradeField(Structure):
         '''交易角色'''
         return TThostFtdcTradingRoleType(ord(self.TradingRole)) if ord(self.TradingRole) in [e.value for e in list(TThostFtdcTradingRoleType)] else list(TThostFtdcTradingRoleType)[0]
 
-    def getExchangeInstID(self):
-        '''合约在交易所的代码'''
-        return str(self.ExchangeInstID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getOffsetFlag(self):
         '''开平标志'''
@@ -4343,8 +4509,12 @@ class  CThostFtdcExchangeTradeField(Structure):
         '''成交来源'''
         return TThostFtdcTradeSourceType(ord(self.TradeSource)) if ord(self.TradeSource) in [e.value for e in list(TThostFtdcTradeSourceType)] else list(TThostFtdcTradeSourceType)[0]
 
+    def getExchangeInstID(self):
+        '''合约在交易所的代码'''
+        return str(self.ExchangeInstID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'ExchangeID'={self.getExchangeID()}, 'TradeID'={self.getTradeID()}, 'Direction'={self.getDirection()}, 'OrderSysID'={self.getOrderSysID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'TradingRole'={self.getTradingRole()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'OffsetFlag'={self.getOffsetFlag()}, 'HedgeFlag'={self.getHedgeFlag()}, 'Price'={self.getPrice()}, 'Volume'={self.getVolume()}, 'TradeDate'={self.getTradeDate()}, 'TradeTime'={self.getTradeTime()}, 'TradeType'={self.getTradeType()}, 'PriceSource'={self.getPriceSource()}, 'TraderID'={self.getTraderID()}, 'OrderLocalID'={self.getOrderLocalID()}, 'ClearingPartID'={self.getClearingPartID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'SequenceNo'={self.getSequenceNo()}, 'TradeSource'={self.getTradeSource()}"
+        return f"'ExchangeID'={self.getExchangeID()}, 'TradeID'={self.getTradeID()}, 'Direction'={self.getDirection()}, 'OrderSysID'={self.getOrderSysID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'TradingRole'={self.getTradingRole()}, 'reserve1'={self.getreserve1()}, 'OffsetFlag'={self.getOffsetFlag()}, 'HedgeFlag'={self.getHedgeFlag()}, 'Price'={self.getPrice()}, 'Volume'={self.getVolume()}, 'TradeDate'={self.getTradeDate()}, 'TradeTime'={self.getTradeTime()}, 'TradeType'={self.getTradeType()}, 'PriceSource'={self.getPriceSource()}, 'TraderID'={self.getTraderID()}, 'OrderLocalID'={self.getOrderLocalID()}, 'ClearingPartID'={self.getClearingPartID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'SequenceNo'={self.getSequenceNo()}, 'TradeSource'={self.getTradeSource()}, 'ExchangeInstID'={self.getExchangeInstID()}"
 
 
 class  CThostFtdcTradeField(Structure):
@@ -4352,7 +4522,7 @@ class  CThostFtdcTradeField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("OrderRef", c_char*13),
         ("UserID", c_char*16),
         ("ExchangeID", c_char*9),
@@ -4362,7 +4532,7 @@ class  CThostFtdcTradeField(Structure):
         ("ParticipantID", c_char*11),
         ("ClientID", c_char*11),
         ("TradingRole", c_char),
-        ("ExchangeInstID", c_char*31),
+        ("reserve2", c_char*31),
         ("OffsetFlag", c_char),
         ("HedgeFlag", c_char),
         ("Price", c_double),
@@ -4381,6 +4551,8 @@ class  CThostFtdcTradeField(Structure):
         ("BrokerOrderSeq", c_int32),
         ("TradeSource", c_char),
         ("InvestUnitID", c_char*17),
+        ("InstrumentID", c_char*81),
+        ("ExchangeInstID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -4391,9 +4563,9 @@ class  CThostFtdcTradeField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getOrderRef(self):
         '''报单引用'''
@@ -4431,9 +4603,9 @@ class  CThostFtdcTradeField(Structure):
         '''交易角色'''
         return TThostFtdcTradingRoleType(ord(self.TradingRole)) if ord(self.TradingRole) in [e.value for e in list(TThostFtdcTradingRoleType)] else list(TThostFtdcTradingRoleType)[0]
 
-    def getExchangeInstID(self):
-        '''合约在交易所的代码'''
-        return str(self.ExchangeInstID, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getOffsetFlag(self):
         '''开平标志'''
@@ -4507,8 +4679,16 @@ class  CThostFtdcTradeField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getExchangeInstID(self):
+        '''合约在交易所的代码'''
+        return str(self.ExchangeInstID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'OrderRef'={self.getOrderRef()}, 'UserID'={self.getUserID()}, 'ExchangeID'={self.getExchangeID()}, 'TradeID'={self.getTradeID()}, 'Direction'={self.getDirection()}, 'OrderSysID'={self.getOrderSysID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'TradingRole'={self.getTradingRole()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'OffsetFlag'={self.getOffsetFlag()}, 'HedgeFlag'={self.getHedgeFlag()}, 'Price'={self.getPrice()}, 'Volume'={self.getVolume()}, 'TradeDate'={self.getTradeDate()}, 'TradeTime'={self.getTradeTime()}, 'TradeType'={self.getTradeType()}, 'PriceSource'={self.getPriceSource()}, 'TraderID'={self.getTraderID()}, 'OrderLocalID'={self.getOrderLocalID()}, 'ClearingPartID'={self.getClearingPartID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'SequenceNo'={self.getSequenceNo()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'BrokerOrderSeq'={self.getBrokerOrderSeq()}, 'TradeSource'={self.getTradeSource()}, 'InvestUnitID'={self.getInvestUnitID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'OrderRef'={self.getOrderRef()}, 'UserID'={self.getUserID()}, 'ExchangeID'={self.getExchangeID()}, 'TradeID'={self.getTradeID()}, 'Direction'={self.getDirection()}, 'OrderSysID'={self.getOrderSysID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'TradingRole'={self.getTradingRole()}, 'reserve2'={self.getreserve2()}, 'OffsetFlag'={self.getOffsetFlag()}, 'HedgeFlag'={self.getHedgeFlag()}, 'Price'={self.getPrice()}, 'Volume'={self.getVolume()}, 'TradeDate'={self.getTradeDate()}, 'TradeTime'={self.getTradeTime()}, 'TradeType'={self.getTradeType()}, 'PriceSource'={self.getPriceSource()}, 'TraderID'={self.getTraderID()}, 'OrderLocalID'={self.getOrderLocalID()}, 'ClearingPartID'={self.getClearingPartID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'SequenceNo'={self.getSequenceNo()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'BrokerOrderSeq'={self.getBrokerOrderSeq()}, 'TradeSource'={self.getTradeSource()}, 'InvestUnitID'={self.getInvestUnitID()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeInstID'={self.getExchangeInstID()}"
 
 
 class  CThostFtdcUserSessionField(Structure):
@@ -4520,12 +4700,13 @@ class  CThostFtdcUserSessionField(Structure):
         ("UserID", c_char*16),
         ("LoginDate", c_char*9),
         ("LoginTime", c_char*9),
-        ("IPAddress", c_char*16),
+        ("reserve1", c_char*16),
         ("UserProductInfo", c_char*11),
         ("InterfaceProductInfo", c_char*11),
         ("ProtocolInfo", c_char*11),
         ("MacAddress", c_char*21),
         ("LoginRemark", c_char*36),
+        ("IPAddress", c_char*33),
     ]
 
     def getFrontID(self):
@@ -4552,9 +4733,9 @@ class  CThostFtdcUserSessionField(Structure):
         '''登录时间'''
         return str(self.LoginTime, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getUserProductInfo(self):
         '''用户端产品信息'''
@@ -4576,22 +4757,27 @@ class  CThostFtdcUserSessionField(Structure):
         '''登录备注'''
         return str(self.LoginRemark, 'GBK')
 
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'BrokerID'={self.getBrokerID()}, 'UserID'={self.getUserID()}, 'LoginDate'={self.getLoginDate()}, 'LoginTime'={self.getLoginTime()}, 'IPAddress'={self.getIPAddress()}, 'UserProductInfo'={self.getUserProductInfo()}, 'InterfaceProductInfo'={self.getInterfaceProductInfo()}, 'ProtocolInfo'={self.getProtocolInfo()}, 'MacAddress'={self.getMacAddress()}, 'LoginRemark'={self.getLoginRemark()}"
+        return f"'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'BrokerID'={self.getBrokerID()}, 'UserID'={self.getUserID()}, 'LoginDate'={self.getLoginDate()}, 'LoginTime'={self.getLoginTime()}, 'reserve1'={self.getreserve1()}, 'UserProductInfo'={self.getUserProductInfo()}, 'InterfaceProductInfo'={self.getInterfaceProductInfo()}, 'ProtocolInfo'={self.getProtocolInfo()}, 'MacAddress'={self.getMacAddress()}, 'LoginRemark'={self.getLoginRemark()}, 'IPAddress'={self.getIPAddress()}"
 
 
-class  CThostFtdcQueryMaxOrderVolumeField(Structure):
+class  CThostFtdcQryMaxOrderVolumeField(Structure):
     """查询最大报单数量"""
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("Direction", c_char),
         ("OffsetFlag", c_char),
         ("HedgeFlag", c_char),
         ("MaxVolume", c_int32),
         ("ExchangeID", c_char*9),
         ("InvestUnitID", c_char*17),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -4602,9 +4788,9 @@ class  CThostFtdcQueryMaxOrderVolumeField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getDirection(self):
         '''买卖方向'''
@@ -4630,8 +4816,12 @@ class  CThostFtdcQueryMaxOrderVolumeField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'Direction'={self.getDirection()}, 'OffsetFlag'={self.getOffsetFlag()}, 'HedgeFlag'={self.getHedgeFlag()}, 'MaxVolume'={self.getMaxVolume()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'Direction'={self.getDirection()}, 'OffsetFlag'={self.getOffsetFlag()}, 'HedgeFlag'={self.getHedgeFlag()}, 'MaxVolume'={self.getMaxVolume()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcSettlementInfoConfirmField(Structure):
@@ -5159,7 +5349,7 @@ class  CThostFtdcSyncingTradingAccountField(Structure):
 class  CThostFtdcSyncingInvestorPositionField(Structure):
     """正在同步中的投资者持仓"""
     _fields_ = [
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
         ("PosiDirection", c_char),
@@ -5206,11 +5396,14 @@ class  CThostFtdcSyncingInvestorPositionField(Structure):
         ("YdStrikeFrozen", c_int32),
         ("InvestUnitID", c_char*17),
         ("PositionCostOffset", c_double),
+        ("TasPosition", c_int32),
+        ("TasPositionCost", c_double),
+        ("InstrumentID", c_char*81),
     ]
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getBrokerID(self):
         '''经纪公司代码'''
@@ -5396,14 +5589,26 @@ class  CThostFtdcSyncingInvestorPositionField(Structure):
         '''大商所持仓成本差值，只有大商所使用'''
         return self.PositionCostOffset
 
+    def getTasPosition(self):
+        '''tas持仓手数'''
+        return self.TasPosition
+
+    def getTasPositionCost(self):
+        '''tas持仓成本'''
+        return self.TasPositionCost
+
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'InstrumentID'={self.getInstrumentID()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'PosiDirection'={self.getPosiDirection()}, 'HedgeFlag'={self.getHedgeFlag()}, 'PositionDate'={self.getPositionDate()}, 'YdPosition'={self.getYdPosition()}, 'Position'={self.getPosition()}, 'LongFrozen'={self.getLongFrozen()}, 'ShortFrozen'={self.getShortFrozen()}, 'LongFrozenAmount'={self.getLongFrozenAmount()}, 'ShortFrozenAmount'={self.getShortFrozenAmount()}, 'OpenVolume'={self.getOpenVolume()}, 'CloseVolume'={self.getCloseVolume()}, 'OpenAmount'={self.getOpenAmount()}, 'CloseAmount'={self.getCloseAmount()}, 'PositionCost'={self.getPositionCost()}, 'PreMargin'={self.getPreMargin()}, 'UseMargin'={self.getUseMargin()}, 'FrozenMargin'={self.getFrozenMargin()}, 'FrozenCash'={self.getFrozenCash()}, 'FrozenCommission'={self.getFrozenCommission()}, 'CashIn'={self.getCashIn()}, 'Commission'={self.getCommission()}, 'CloseProfit'={self.getCloseProfit()}, 'PositionProfit'={self.getPositionProfit()}, 'PreSettlementPrice'={self.getPreSettlementPrice()}, 'SettlementPrice'={self.getSettlementPrice()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'OpenCost'={self.getOpenCost()}, 'ExchangeMargin'={self.getExchangeMargin()}, 'CombPosition'={self.getCombPosition()}, 'CombLongFrozen'={self.getCombLongFrozen()}, 'CombShortFrozen'={self.getCombShortFrozen()}, 'CloseProfitByDate'={self.getCloseProfitByDate()}, 'CloseProfitByTrade'={self.getCloseProfitByTrade()}, 'TodayPosition'={self.getTodayPosition()}, 'MarginRateByMoney'={self.getMarginRateByMoney()}, 'MarginRateByVolume'={self.getMarginRateByVolume()}, 'StrikeFrozen'={self.getStrikeFrozen()}, 'StrikeFrozenAmount'={self.getStrikeFrozenAmount()}, 'AbandonFrozen'={self.getAbandonFrozen()}, 'ExchangeID'={self.getExchangeID()}, 'YdStrikeFrozen'={self.getYdStrikeFrozen()}, 'InvestUnitID'={self.getInvestUnitID()}, 'PositionCostOffset'={self.getPositionCostOffset()}"
+        return f"'reserve1'={self.getreserve1()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'PosiDirection'={self.getPosiDirection()}, 'HedgeFlag'={self.getHedgeFlag()}, 'PositionDate'={self.getPositionDate()}, 'YdPosition'={self.getYdPosition()}, 'Position'={self.getPosition()}, 'LongFrozen'={self.getLongFrozen()}, 'ShortFrozen'={self.getShortFrozen()}, 'LongFrozenAmount'={self.getLongFrozenAmount()}, 'ShortFrozenAmount'={self.getShortFrozenAmount()}, 'OpenVolume'={self.getOpenVolume()}, 'CloseVolume'={self.getCloseVolume()}, 'OpenAmount'={self.getOpenAmount()}, 'CloseAmount'={self.getCloseAmount()}, 'PositionCost'={self.getPositionCost()}, 'PreMargin'={self.getPreMargin()}, 'UseMargin'={self.getUseMargin()}, 'FrozenMargin'={self.getFrozenMargin()}, 'FrozenCash'={self.getFrozenCash()}, 'FrozenCommission'={self.getFrozenCommission()}, 'CashIn'={self.getCashIn()}, 'Commission'={self.getCommission()}, 'CloseProfit'={self.getCloseProfit()}, 'PositionProfit'={self.getPositionProfit()}, 'PreSettlementPrice'={self.getPreSettlementPrice()}, 'SettlementPrice'={self.getSettlementPrice()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'OpenCost'={self.getOpenCost()}, 'ExchangeMargin'={self.getExchangeMargin()}, 'CombPosition'={self.getCombPosition()}, 'CombLongFrozen'={self.getCombLongFrozen()}, 'CombShortFrozen'={self.getCombShortFrozen()}, 'CloseProfitByDate'={self.getCloseProfitByDate()}, 'CloseProfitByTrade'={self.getCloseProfitByTrade()}, 'TodayPosition'={self.getTodayPosition()}, 'MarginRateByMoney'={self.getMarginRateByMoney()}, 'MarginRateByVolume'={self.getMarginRateByVolume()}, 'StrikeFrozen'={self.getStrikeFrozen()}, 'StrikeFrozenAmount'={self.getStrikeFrozenAmount()}, 'AbandonFrozen'={self.getAbandonFrozen()}, 'ExchangeID'={self.getExchangeID()}, 'YdStrikeFrozen'={self.getYdStrikeFrozen()}, 'InvestUnitID'={self.getInvestUnitID()}, 'PositionCostOffset'={self.getPositionCostOffset()}, 'TasPosition'={self.getTasPosition()}, 'TasPositionCost'={self.getTasPositionCost()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcSyncingInstrumentMarginRateField(Structure):
     """正在同步中的合约保证金率"""
     _fields_ = [
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("InvestorRange", c_char),
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
@@ -5413,11 +5618,12 @@ class  CThostFtdcSyncingInstrumentMarginRateField(Structure):
         ("ShortMarginRatioByMoney", c_double),
         ("ShortMarginRatioByVolume", c_double),
         ("IsRelative", c_int32),
+        ("InstrumentID", c_char*81),
     ]
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getInvestorRange(self):
         '''投资者范围'''
@@ -5455,14 +5661,18 @@ class  CThostFtdcSyncingInstrumentMarginRateField(Structure):
         '''是否相对交易所收取'''
         return self.IsRelative
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'InstrumentID'={self.getInstrumentID()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'HedgeFlag'={self.getHedgeFlag()}, 'LongMarginRatioByMoney'={self.getLongMarginRatioByMoney()}, 'LongMarginRatioByVolume'={self.getLongMarginRatioByVolume()}, 'ShortMarginRatioByMoney'={self.getShortMarginRatioByMoney()}, 'ShortMarginRatioByVolume'={self.getShortMarginRatioByVolume()}, 'IsRelative'={self.getIsRelative()}"
+        return f"'reserve1'={self.getreserve1()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'HedgeFlag'={self.getHedgeFlag()}, 'LongMarginRatioByMoney'={self.getLongMarginRatioByMoney()}, 'LongMarginRatioByVolume'={self.getLongMarginRatioByVolume()}, 'ShortMarginRatioByMoney'={self.getShortMarginRatioByMoney()}, 'ShortMarginRatioByVolume'={self.getShortMarginRatioByVolume()}, 'IsRelative'={self.getIsRelative()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcSyncingInstrumentCommissionRateField(Structure):
     """正在同步中的合约手续费率"""
     _fields_ = [
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("InvestorRange", c_char),
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
@@ -5472,11 +5682,12 @@ class  CThostFtdcSyncingInstrumentCommissionRateField(Structure):
         ("CloseRatioByVolume", c_double),
         ("CloseTodayRatioByMoney", c_double),
         ("CloseTodayRatioByVolume", c_double),
+        ("InstrumentID", c_char*81),
     ]
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getInvestorRange(self):
         '''投资者范围'''
@@ -5514,23 +5725,28 @@ class  CThostFtdcSyncingInstrumentCommissionRateField(Structure):
         '''平今手续费'''
         return self.CloseTodayRatioByVolume
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'InstrumentID'={self.getInstrumentID()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'OpenRatioByMoney'={self.getOpenRatioByMoney()}, 'OpenRatioByVolume'={self.getOpenRatioByVolume()}, 'CloseRatioByMoney'={self.getCloseRatioByMoney()}, 'CloseRatioByVolume'={self.getCloseRatioByVolume()}, 'CloseTodayRatioByMoney'={self.getCloseTodayRatioByMoney()}, 'CloseTodayRatioByVolume'={self.getCloseTodayRatioByVolume()}"
+        return f"'reserve1'={self.getreserve1()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'OpenRatioByMoney'={self.getOpenRatioByMoney()}, 'OpenRatioByVolume'={self.getOpenRatioByVolume()}, 'CloseRatioByMoney'={self.getCloseRatioByMoney()}, 'CloseRatioByVolume'={self.getCloseRatioByVolume()}, 'CloseTodayRatioByMoney'={self.getCloseTodayRatioByMoney()}, 'CloseTodayRatioByVolume'={self.getCloseTodayRatioByVolume()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcSyncingInstrumentTradingRightField(Structure):
     """正在同步中的合约交易权限"""
     _fields_ = [
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("InvestorRange", c_char),
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
         ("TradingRight", c_char),
+        ("InstrumentID", c_char*81),
     ]
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getInvestorRange(self):
         '''投资者范围'''
@@ -5548,8 +5764,12 @@ class  CThostFtdcSyncingInstrumentTradingRightField(Structure):
         '''交易权限'''
         return TThostFtdcTradingRightType(ord(self.TradingRight)) if ord(self.TradingRight) in [e.value for e in list(TThostFtdcTradingRightType)] else list(TThostFtdcTradingRightType)[0]
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'InstrumentID'={self.getInstrumentID()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'TradingRight'={self.getTradingRight()}"
+        return f"'reserve1'={self.getreserve1()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'TradingRight'={self.getTradingRight()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcQryOrderField(Structure):
@@ -5557,12 +5777,13 @@ class  CThostFtdcQryOrderField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
         ("OrderSysID", c_char*21),
         ("InsertTimeStart", c_char*9),
         ("InsertTimeEnd", c_char*9),
         ("InvestUnitID", c_char*17),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -5573,9 +5794,9 @@ class  CThostFtdcQryOrderField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
@@ -5597,8 +5818,12 @@ class  CThostFtdcQryOrderField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeID'={self.getExchangeID()}, 'OrderSysID'={self.getOrderSysID()}, 'InsertTimeStart'={self.getInsertTimeStart()}, 'InsertTimeEnd'={self.getInsertTimeEnd()}, 'InvestUnitID'={self.getInvestUnitID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'OrderSysID'={self.getOrderSysID()}, 'InsertTimeStart'={self.getInsertTimeStart()}, 'InsertTimeEnd'={self.getInsertTimeEnd()}, 'InvestUnitID'={self.getInvestUnitID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcQryTradeField(Structure):
@@ -5606,12 +5831,13 @@ class  CThostFtdcQryTradeField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
         ("TradeID", c_char*21),
         ("TradeTimeStart", c_char*9),
         ("TradeTimeEnd", c_char*9),
         ("InvestUnitID", c_char*17),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -5622,9 +5848,9 @@ class  CThostFtdcQryTradeField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
@@ -5646,8 +5872,12 @@ class  CThostFtdcQryTradeField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeID'={self.getExchangeID()}, 'TradeID'={self.getTradeID()}, 'TradeTimeStart'={self.getTradeTimeStart()}, 'TradeTimeEnd'={self.getTradeTimeEnd()}, 'InvestUnitID'={self.getInvestUnitID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'TradeID'={self.getTradeID()}, 'TradeTimeStart'={self.getTradeTimeStart()}, 'TradeTimeEnd'={self.getTradeTimeEnd()}, 'InvestUnitID'={self.getInvestUnitID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcQryInvestorPositionField(Structure):
@@ -5655,9 +5885,10 @@ class  CThostFtdcQryInvestorPositionField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
         ("InvestUnitID", c_char*17),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -5668,9 +5899,9 @@ class  CThostFtdcQryInvestorPositionField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
@@ -5680,8 +5911,12 @@ class  CThostFtdcQryInvestorPositionField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcQryTradingAccountField(Structure):
@@ -5795,10 +6030,11 @@ class  CThostFtdcQryInstrumentMarginRateField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("HedgeFlag", c_char),
         ("ExchangeID", c_char*9),
         ("InvestUnitID", c_char*17),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -5809,9 +6045,9 @@ class  CThostFtdcQryInstrumentMarginRateField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getHedgeFlag(self):
         '''投机套保标志'''
@@ -5825,8 +6061,12 @@ class  CThostFtdcQryInstrumentMarginRateField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'HedgeFlag'={self.getHedgeFlag()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'HedgeFlag'={self.getHedgeFlag()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcQryInstrumentCommissionRateField(Structure):
@@ -5834,9 +6074,10 @@ class  CThostFtdcQryInstrumentCommissionRateField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
         ("InvestUnitID", c_char*17),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -5847,9 +6088,9 @@ class  CThostFtdcQryInstrumentCommissionRateField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
@@ -5859,8 +6100,12 @@ class  CThostFtdcQryInstrumentCommissionRateField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcQryInstrumentTradingRightField(Structure):
@@ -5868,7 +6113,8 @@ class  CThostFtdcQryInstrumentTradingRightField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -5879,12 +6125,16 @@ class  CThostFtdcQryInstrumentTradingRightField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
+
     def getInstrumentID(self):
         '''合约代码'''
         return str(self.InstrumentID, 'GBK')
 
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcQryBrokerField(Structure):
@@ -6011,9 +6261,10 @@ class  CThostFtdcQryExchangeOrderField(Structure):
     _fields_ = [
         ("ParticipantID", c_char*11),
         ("ClientID", c_char*11),
-        ("ExchangeInstID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
         ("TraderID", c_char*21),
+        ("ExchangeInstID", c_char*81),
     ]
 
     def getParticipantID(self):
@@ -6024,9 +6275,9 @@ class  CThostFtdcQryExchangeOrderField(Structure):
         '''客户代码'''
         return str(self.ClientID, 'GBK')
 
-    def getExchangeInstID(self):
-        '''合约在交易所的代码'''
-        return str(self.ExchangeInstID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
@@ -6036,8 +6287,12 @@ class  CThostFtdcQryExchangeOrderField(Structure):
         '''交易所交易员代码'''
         return str(self.TraderID, 'GBK')
 
+    def getExchangeInstID(self):
+        '''合约在交易所的代码'''
+        return str(self.ExchangeInstID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'ExchangeID'={self.getExchangeID()}, 'TraderID'={self.getTraderID()}"
+        return f"'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'TraderID'={self.getTraderID()}, 'ExchangeInstID'={self.getExchangeInstID()}"
 
 
 class  CThostFtdcQryOrderActionField(Structure):
@@ -6124,14 +6379,15 @@ class  CThostFtdcQryExchangeField(Structure):
 class  CThostFtdcQryProductField(Structure):
     """查询产品"""
     _fields_ = [
-        ("ProductID", c_char*31),
+        ("reserve1", c_char*31),
         ("ProductClass", c_char),
         ("ExchangeID", c_char*9),
+        ("ProductID", c_char*81),
     ]
 
-    def getProductID(self):
-        '''产品代码'''
-        return str(self.ProductID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getProductClass(self):
         '''产品类型'''
@@ -6141,26 +6397,45 @@ class  CThostFtdcQryProductField(Structure):
         '''交易所代码'''
         return str(self.ExchangeID, 'GBK')
 
+    def getProductID(self):
+        '''产品代码'''
+        return str(self.ProductID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'ProductID'={self.getProductID()}, 'ProductClass'={self.getProductClass()}, 'ExchangeID'={self.getExchangeID()}"
+        return f"'reserve1'={self.getreserve1()}, 'ProductClass'={self.getProductClass()}, 'ExchangeID'={self.getExchangeID()}, 'ProductID'={self.getProductID()}"
 
 
 class  CThostFtdcQryInstrumentField(Structure):
     """查询合约"""
     _fields_ = [
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
-        ("ExchangeInstID", c_char*31),
-        ("ProductID", c_char*31),
+        ("reserve2", c_char*31),
+        ("reserve3", c_char*31),
+        ("InstrumentID", c_char*81),
+        ("ExchangeInstID", c_char*81),
+        ("ProductID", c_char*81),
     ]
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
         return str(self.ExchangeID, 'GBK')
+
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
+
+    def getreserve3(self):
+        '''保留的无效字段'''
+        return str(self.reserve3, 'GBK')
+
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
 
     def getExchangeInstID(self):
         '''合约在交易所的代码'''
@@ -6171,26 +6446,31 @@ class  CThostFtdcQryInstrumentField(Structure):
         return str(self.ProductID, 'GBK')
 
     def __str__(self): # 可以直接print
-        return f"'InstrumentID'={self.getInstrumentID()}, 'ExchangeID'={self.getExchangeID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'ProductID'={self.getProductID()}"
+        return f"'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'reserve2'={self.getreserve2()}, 'reserve3'={self.getreserve3()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'ProductID'={self.getProductID()}"
 
 
 class  CThostFtdcQryDepthMarketDataField(Structure):
     """查询行情"""
     _fields_ = [
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
+        ("InstrumentID", c_char*81),
     ]
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
         return str(self.ExchangeID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'InstrumentID'={self.getInstrumentID()}, 'ExchangeID'={self.getExchangeID()}"
+        return f"'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcQryBrokerUserField(Structure):
@@ -6312,18 +6592,19 @@ class  CThostFtdcQryExchangeMarginRateField(Structure):
     """查询交易所保证金率"""
     _fields_ = [
         ("BrokerID", c_char*11),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("HedgeFlag", c_char),
         ("ExchangeID", c_char*9),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
         '''经纪公司代码'''
         return str(self.BrokerID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getHedgeFlag(self):
         '''投机套保标志'''
@@ -6333,32 +6614,41 @@ class  CThostFtdcQryExchangeMarginRateField(Structure):
         '''交易所代码'''
         return str(self.ExchangeID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InstrumentID'={self.getInstrumentID()}, 'HedgeFlag'={self.getHedgeFlag()}, 'ExchangeID'={self.getExchangeID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'reserve1'={self.getreserve1()}, 'HedgeFlag'={self.getHedgeFlag()}, 'ExchangeID'={self.getExchangeID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcQryExchangeMarginRateAdjustField(Structure):
     """查询交易所调整保证金率"""
     _fields_ = [
         ("BrokerID", c_char*11),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("HedgeFlag", c_char),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
         '''经纪公司代码'''
         return str(self.BrokerID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getHedgeFlag(self):
         '''投机套保标志'''
         return TThostFtdcHedgeFlagType(ord(self.HedgeFlag)) if ord(self.HedgeFlag) in [e.value for e in list(TThostFtdcHedgeFlagType)] else list(TThostFtdcHedgeFlagType)[0]
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InstrumentID'={self.getInstrumentID()}, 'HedgeFlag'={self.getHedgeFlag()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'reserve1'={self.getreserve1()}, 'HedgeFlag'={self.getHedgeFlag()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcQryExchangeRateField(Structure):
@@ -6409,13 +6699,14 @@ class  CThostFtdcQryHisOrderField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
         ("OrderSysID", c_char*21),
         ("InsertTimeStart", c_char*9),
         ("InsertTimeEnd", c_char*9),
         ("TradingDay", c_char*9),
         ("SettlementID", c_int32),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -6426,9 +6717,9 @@ class  CThostFtdcQryHisOrderField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
@@ -6454,25 +6745,30 @@ class  CThostFtdcQryHisOrderField(Structure):
         '''结算编号'''
         return self.SettlementID
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeID'={self.getExchangeID()}, 'OrderSysID'={self.getOrderSysID()}, 'InsertTimeStart'={self.getInsertTimeStart()}, 'InsertTimeEnd'={self.getInsertTimeEnd()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'OrderSysID'={self.getOrderSysID()}, 'InsertTimeStart'={self.getInsertTimeStart()}, 'InsertTimeEnd'={self.getInsertTimeEnd()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcOptionInstrMiniMarginField(Structure):
     """当前期权合约最小保证金"""
     _fields_ = [
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("InvestorRange", c_char),
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
         ("MinMargin", c_double),
         ("ValueMethod", c_char),
         ("IsRelative", c_int32),
+        ("InstrumentID", c_char*81),
     ]
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getInvestorRange(self):
         '''投资者范围'''
@@ -6498,14 +6794,18 @@ class  CThostFtdcOptionInstrMiniMarginField(Structure):
         '''是否跟随交易所收取'''
         return self.IsRelative
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'InstrumentID'={self.getInstrumentID()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'MinMargin'={self.getMinMargin()}, 'ValueMethod'={self.getValueMethod()}, 'IsRelative'={self.getIsRelative()}"
+        return f"'reserve1'={self.getreserve1()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'MinMargin'={self.getMinMargin()}, 'ValueMethod'={self.getValueMethod()}, 'IsRelative'={self.getIsRelative()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcOptionInstrMarginAdjustField(Structure):
     """当前期权合约保证金调整系数"""
     _fields_ = [
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("InvestorRange", c_char),
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
@@ -6518,11 +6818,12 @@ class  CThostFtdcOptionInstrMarginAdjustField(Structure):
         ("IsRelative", c_int32),
         ("MShortMarginRatioByMoney", c_double),
         ("MShortMarginRatioByVolume", c_double),
+        ("InstrumentID", c_char*81),
     ]
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getInvestorRange(self):
         '''投资者范围'''
@@ -6572,14 +6873,18 @@ class  CThostFtdcOptionInstrMarginAdjustField(Structure):
         '''做市商空头保证金调整系数'''
         return self.MShortMarginRatioByVolume
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'InstrumentID'={self.getInstrumentID()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'SShortMarginRatioByMoney'={self.getSShortMarginRatioByMoney()}, 'SShortMarginRatioByVolume'={self.getSShortMarginRatioByVolume()}, 'HShortMarginRatioByMoney'={self.getHShortMarginRatioByMoney()}, 'HShortMarginRatioByVolume'={self.getHShortMarginRatioByVolume()}, 'AShortMarginRatioByMoney'={self.getAShortMarginRatioByMoney()}, 'AShortMarginRatioByVolume'={self.getAShortMarginRatioByVolume()}, 'IsRelative'={self.getIsRelative()}, 'MShortMarginRatioByMoney'={self.getMShortMarginRatioByMoney()}, 'MShortMarginRatioByVolume'={self.getMShortMarginRatioByVolume()}"
+        return f"'reserve1'={self.getreserve1()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'SShortMarginRatioByMoney'={self.getSShortMarginRatioByMoney()}, 'SShortMarginRatioByVolume'={self.getSShortMarginRatioByVolume()}, 'HShortMarginRatioByMoney'={self.getHShortMarginRatioByMoney()}, 'HShortMarginRatioByVolume'={self.getHShortMarginRatioByVolume()}, 'AShortMarginRatioByMoney'={self.getAShortMarginRatioByMoney()}, 'AShortMarginRatioByVolume'={self.getAShortMarginRatioByVolume()}, 'IsRelative'={self.getIsRelative()}, 'MShortMarginRatioByMoney'={self.getMShortMarginRatioByMoney()}, 'MShortMarginRatioByVolume'={self.getMShortMarginRatioByVolume()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcOptionInstrCommRateField(Structure):
     """当前期权合约手续费的详细内容"""
     _fields_ = [
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("InvestorRange", c_char),
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
@@ -6593,11 +6898,12 @@ class  CThostFtdcOptionInstrCommRateField(Structure):
         ("StrikeRatioByVolume", c_double),
         ("ExchangeID", c_char*9),
         ("InvestUnitID", c_char*17),
+        ("InstrumentID", c_char*81),
     ]
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getInvestorRange(self):
         '''投资者范围'''
@@ -6651,8 +6957,12 @@ class  CThostFtdcOptionInstrCommRateField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'InstrumentID'={self.getInstrumentID()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'OpenRatioByMoney'={self.getOpenRatioByMoney()}, 'OpenRatioByVolume'={self.getOpenRatioByVolume()}, 'CloseRatioByMoney'={self.getCloseRatioByMoney()}, 'CloseRatioByVolume'={self.getCloseRatioByVolume()}, 'CloseTodayRatioByMoney'={self.getCloseTodayRatioByMoney()}, 'CloseTodayRatioByVolume'={self.getCloseTodayRatioByVolume()}, 'StrikeRatioByMoney'={self.getStrikeRatioByMoney()}, 'StrikeRatioByVolume'={self.getStrikeRatioByVolume()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}"
+        return f"'reserve1'={self.getreserve1()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'OpenRatioByMoney'={self.getOpenRatioByMoney()}, 'OpenRatioByVolume'={self.getOpenRatioByVolume()}, 'CloseRatioByMoney'={self.getCloseRatioByMoney()}, 'CloseRatioByVolume'={self.getCloseRatioByVolume()}, 'CloseTodayRatioByMoney'={self.getCloseTodayRatioByMoney()}, 'CloseTodayRatioByVolume'={self.getCloseTodayRatioByVolume()}, 'StrikeRatioByMoney'={self.getStrikeRatioByMoney()}, 'StrikeRatioByVolume'={self.getStrikeRatioByVolume()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcOptionInstrTradeCostField(Structure):
@@ -6660,7 +6970,7 @@ class  CThostFtdcOptionInstrTradeCostField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("HedgeFlag", c_char),
         ("FixedMargin", c_double),
         ("MiniMargin", c_double),
@@ -6669,6 +6979,7 @@ class  CThostFtdcOptionInstrTradeCostField(Structure):
         ("ExchMiniMargin", c_double),
         ("ExchangeID", c_char*9),
         ("InvestUnitID", c_char*17),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -6679,9 +6990,9 @@ class  CThostFtdcOptionInstrTradeCostField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getHedgeFlag(self):
         '''投机套保标志'''
@@ -6715,8 +7026,12 @@ class  CThostFtdcOptionInstrTradeCostField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'HedgeFlag'={self.getHedgeFlag()}, 'FixedMargin'={self.getFixedMargin()}, 'MiniMargin'={self.getMiniMargin()}, 'Royalty'={self.getRoyalty()}, 'ExchFixedMargin'={self.getExchFixedMargin()}, 'ExchMiniMargin'={self.getExchMiniMargin()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'HedgeFlag'={self.getHedgeFlag()}, 'FixedMargin'={self.getFixedMargin()}, 'MiniMargin'={self.getMiniMargin()}, 'Royalty'={self.getRoyalty()}, 'ExchFixedMargin'={self.getExchFixedMargin()}, 'ExchMiniMargin'={self.getExchMiniMargin()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcQryOptionInstrTradeCostField(Structure):
@@ -6724,12 +7039,13 @@ class  CThostFtdcQryOptionInstrTradeCostField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("HedgeFlag", c_char),
         ("InputPrice", c_double),
         ("UnderlyingPrice", c_double),
         ("ExchangeID", c_char*9),
         ("InvestUnitID", c_char*17),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -6740,9 +7056,9 @@ class  CThostFtdcQryOptionInstrTradeCostField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getHedgeFlag(self):
         '''投机套保标志'''
@@ -6764,8 +7080,12 @@ class  CThostFtdcQryOptionInstrTradeCostField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'HedgeFlag'={self.getHedgeFlag()}, 'InputPrice'={self.getInputPrice()}, 'UnderlyingPrice'={self.getUnderlyingPrice()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'HedgeFlag'={self.getHedgeFlag()}, 'InputPrice'={self.getInputPrice()}, 'UnderlyingPrice'={self.getUnderlyingPrice()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcQryOptionInstrCommRateField(Structure):
@@ -6773,9 +7093,10 @@ class  CThostFtdcQryOptionInstrCommRateField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
         ("InvestUnitID", c_char*17),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -6786,9 +7107,9 @@ class  CThostFtdcQryOptionInstrCommRateField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
@@ -6798,32 +7119,41 @@ class  CThostFtdcQryOptionInstrCommRateField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcIndexPriceField(Structure):
     """股指现货指数"""
     _fields_ = [
         ("BrokerID", c_char*11),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ClosePrice", c_double),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
         '''经纪公司代码'''
         return str(self.BrokerID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getClosePrice(self):
         '''指数现货收盘价'''
         return self.ClosePrice
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InstrumentID'={self.getInstrumentID()}, 'ClosePrice'={self.getClosePrice()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'reserve1'={self.getreserve1()}, 'ClosePrice'={self.getClosePrice()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcInputExecOrderField(Structure):
@@ -6831,7 +7161,7 @@ class  CThostFtdcInputExecOrderField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExecOrderRef", c_char*13),
         ("UserID", c_char*16),
         ("Volume", c_int32),
@@ -6848,8 +7178,10 @@ class  CThostFtdcInputExecOrderField(Structure):
         ("AccountID", c_char*13),
         ("CurrencyID", c_char*4),
         ("ClientID", c_char*11),
-        ("IPAddress", c_char*16),
+        ("reserve2", c_char*16),
         ("MacAddress", c_char*21),
+        ("InstrumentID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -6860,9 +7192,9 @@ class  CThostFtdcInputExecOrderField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExecOrderRef(self):
         '''执行宣告引用'''
@@ -6928,16 +7260,24 @@ class  CThostFtdcInputExecOrderField(Structure):
         '''交易编码'''
         return str(self.ClientID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'ExecOrderRef'={self.getExecOrderRef()}, 'UserID'={self.getUserID()}, 'Volume'={self.getVolume()}, 'RequestID'={self.getRequestID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'OffsetFlag'={self.getOffsetFlag()}, 'HedgeFlag'={self.getHedgeFlag()}, 'ActionType'={self.getActionType()}, 'PosiDirection'={self.getPosiDirection()}, 'ReservePositionFlag'={self.getReservePositionFlag()}, 'CloseFlag'={self.getCloseFlag()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'AccountID'={self.getAccountID()}, 'CurrencyID'={self.getCurrencyID()}, 'ClientID'={self.getClientID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'ExecOrderRef'={self.getExecOrderRef()}, 'UserID'={self.getUserID()}, 'Volume'={self.getVolume()}, 'RequestID'={self.getRequestID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'OffsetFlag'={self.getOffsetFlag()}, 'HedgeFlag'={self.getHedgeFlag()}, 'ActionType'={self.getActionType()}, 'PosiDirection'={self.getPosiDirection()}, 'ReservePositionFlag'={self.getReservePositionFlag()}, 'CloseFlag'={self.getCloseFlag()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'AccountID'={self.getAccountID()}, 'CurrencyID'={self.getCurrencyID()}, 'ClientID'={self.getClientID()}, 'reserve2'={self.getreserve2()}, 'MacAddress'={self.getMacAddress()}, 'InstrumentID'={self.getInstrumentID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcInputExecOrderActionField(Structure):
@@ -6954,10 +7294,12 @@ class  CThostFtdcInputExecOrderActionField(Structure):
         ("ExecOrderSysID", c_char*21),
         ("ActionFlag", c_char),
         ("UserID", c_char*16),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("InvestUnitID", c_char*17),
-        ("IPAddress", c_char*16),
+        ("reserve2", c_char*16),
         ("MacAddress", c_char*21),
+        ("InstrumentID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -7004,24 +7346,32 @@ class  CThostFtdcInputExecOrderActionField(Structure):
         '''用户代码'''
         return str(self.UserID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getInvestUnitID(self):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'ExecOrderActionRef'={self.getExecOrderActionRef()}, 'ExecOrderRef'={self.getExecOrderRef()}, 'RequestID'={self.getRequestID()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'ExchangeID'={self.getExchangeID()}, 'ExecOrderSysID'={self.getExecOrderSysID()}, 'ActionFlag'={self.getActionFlag()}, 'UserID'={self.getUserID()}, 'InstrumentID'={self.getInstrumentID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'ExecOrderActionRef'={self.getExecOrderActionRef()}, 'ExecOrderRef'={self.getExecOrderRef()}, 'RequestID'={self.getRequestID()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'ExchangeID'={self.getExchangeID()}, 'ExecOrderSysID'={self.getExecOrderSysID()}, 'ActionFlag'={self.getActionFlag()}, 'UserID'={self.getUserID()}, 'reserve1'={self.getreserve1()}, 'InvestUnitID'={self.getInvestUnitID()}, 'reserve2'={self.getreserve2()}, 'MacAddress'={self.getMacAddress()}, 'InstrumentID'={self.getInstrumentID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcExecOrderField(Structure):
@@ -7029,7 +7379,7 @@ class  CThostFtdcExecOrderField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExecOrderRef", c_char*13),
         ("UserID", c_char*16),
         ("Volume", c_int32),
@@ -7045,7 +7395,7 @@ class  CThostFtdcExecOrderField(Structure):
         ("ExchangeID", c_char*9),
         ("ParticipantID", c_char*11),
         ("ClientID", c_char*11),
-        ("ExchangeInstID", c_char*31),
+        ("reserve2", c_char*31),
         ("TraderID", c_char*21),
         ("InstallID", c_int32),
         ("OrderSubmitStatus", c_char),
@@ -7069,8 +7419,11 @@ class  CThostFtdcExecOrderField(Structure):
         ("InvestUnitID", c_char*17),
         ("AccountID", c_char*13),
         ("CurrencyID", c_char*4),
-        ("IPAddress", c_char*16),
+        ("reserve3", c_char*16),
         ("MacAddress", c_char*21),
+        ("InstrumentID", c_char*81),
+        ("ExchangeInstID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -7081,9 +7434,9 @@ class  CThostFtdcExecOrderField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExecOrderRef(self):
         '''执行宣告引用'''
@@ -7145,9 +7498,9 @@ class  CThostFtdcExecOrderField(Structure):
         '''客户代码'''
         return str(self.ClientID, 'GBK')
 
-    def getExchangeInstID(self):
-        '''合约在交易所的代码'''
-        return str(self.ExchangeInstID, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getTraderID(self):
         '''交易所交易员代码'''
@@ -7241,16 +7594,28 @@ class  CThostFtdcExecOrderField(Structure):
         '''币种代码'''
         return str(self.CurrencyID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve3(self):
+        '''保留的无效字段'''
+        return str(self.reserve3, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getExchangeInstID(self):
+        '''合约在交易所的代码'''
+        return str(self.ExchangeInstID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'ExecOrderRef'={self.getExecOrderRef()}, 'UserID'={self.getUserID()}, 'Volume'={self.getVolume()}, 'RequestID'={self.getRequestID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'OffsetFlag'={self.getOffsetFlag()}, 'HedgeFlag'={self.getHedgeFlag()}, 'ActionType'={self.getActionType()}, 'PosiDirection'={self.getPosiDirection()}, 'ReservePositionFlag'={self.getReservePositionFlag()}, 'CloseFlag'={self.getCloseFlag()}, 'ExecOrderLocalID'={self.getExecOrderLocalID()}, 'ExchangeID'={self.getExchangeID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'OrderSubmitStatus'={self.getOrderSubmitStatus()}, 'NotifySequence'={self.getNotifySequence()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'ExecOrderSysID'={self.getExecOrderSysID()}, 'InsertDate'={self.getInsertDate()}, 'InsertTime'={self.getInsertTime()}, 'CancelTime'={self.getCancelTime()}, 'ExecResult'={self.getExecResult()}, 'ClearingPartID'={self.getClearingPartID()}, 'SequenceNo'={self.getSequenceNo()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'UserProductInfo'={self.getUserProductInfo()}, 'StatusMsg'={self.getStatusMsg()}, 'ActiveUserID'={self.getActiveUserID()}, 'BrokerExecOrderSeq'={self.getBrokerExecOrderSeq()}, 'BranchID'={self.getBranchID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'AccountID'={self.getAccountID()}, 'CurrencyID'={self.getCurrencyID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'ExecOrderRef'={self.getExecOrderRef()}, 'UserID'={self.getUserID()}, 'Volume'={self.getVolume()}, 'RequestID'={self.getRequestID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'OffsetFlag'={self.getOffsetFlag()}, 'HedgeFlag'={self.getHedgeFlag()}, 'ActionType'={self.getActionType()}, 'PosiDirection'={self.getPosiDirection()}, 'ReservePositionFlag'={self.getReservePositionFlag()}, 'CloseFlag'={self.getCloseFlag()}, 'ExecOrderLocalID'={self.getExecOrderLocalID()}, 'ExchangeID'={self.getExchangeID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'reserve2'={self.getreserve2()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'OrderSubmitStatus'={self.getOrderSubmitStatus()}, 'NotifySequence'={self.getNotifySequence()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'ExecOrderSysID'={self.getExecOrderSysID()}, 'InsertDate'={self.getInsertDate()}, 'InsertTime'={self.getInsertTime()}, 'CancelTime'={self.getCancelTime()}, 'ExecResult'={self.getExecResult()}, 'ClearingPartID'={self.getClearingPartID()}, 'SequenceNo'={self.getSequenceNo()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'UserProductInfo'={self.getUserProductInfo()}, 'StatusMsg'={self.getStatusMsg()}, 'ActiveUserID'={self.getActiveUserID()}, 'BrokerExecOrderSeq'={self.getBrokerExecOrderSeq()}, 'BranchID'={self.getBranchID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'AccountID'={self.getAccountID()}, 'CurrencyID'={self.getCurrencyID()}, 'reserve3'={self.getreserve3()}, 'MacAddress'={self.getMacAddress()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcExecOrderActionField(Structure):
@@ -7279,11 +7644,13 @@ class  CThostFtdcExecOrderActionField(Structure):
         ("UserID", c_char*16),
         ("ActionType", c_char),
         ("StatusMsg", c_char*81),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("BranchID", c_char*9),
         ("InvestUnitID", c_char*17),
-        ("IPAddress", c_char*16),
+        ("reserve2", c_char*16),
         ("MacAddress", c_char*21),
+        ("InstrumentID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -7378,9 +7745,9 @@ class  CThostFtdcExecOrderActionField(Structure):
         '''状态信息'''
         return str(self.StatusMsg, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getBranchID(self):
         '''营业部编号'''
@@ -7390,16 +7757,24 @@ class  CThostFtdcExecOrderActionField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'ExecOrderActionRef'={self.getExecOrderActionRef()}, 'ExecOrderRef'={self.getExecOrderRef()}, 'RequestID'={self.getRequestID()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'ExchangeID'={self.getExchangeID()}, 'ExecOrderSysID'={self.getExecOrderSysID()}, 'ActionFlag'={self.getActionFlag()}, 'ActionDate'={self.getActionDate()}, 'ActionTime'={self.getActionTime()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'ExecOrderLocalID'={self.getExecOrderLocalID()}, 'ActionLocalID'={self.getActionLocalID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'OrderActionStatus'={self.getOrderActionStatus()}, 'UserID'={self.getUserID()}, 'ActionType'={self.getActionType()}, 'StatusMsg'={self.getStatusMsg()}, 'InstrumentID'={self.getInstrumentID()}, 'BranchID'={self.getBranchID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'ExecOrderActionRef'={self.getExecOrderActionRef()}, 'ExecOrderRef'={self.getExecOrderRef()}, 'RequestID'={self.getRequestID()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'ExchangeID'={self.getExchangeID()}, 'ExecOrderSysID'={self.getExecOrderSysID()}, 'ActionFlag'={self.getActionFlag()}, 'ActionDate'={self.getActionDate()}, 'ActionTime'={self.getActionTime()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'ExecOrderLocalID'={self.getExecOrderLocalID()}, 'ActionLocalID'={self.getActionLocalID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'OrderActionStatus'={self.getOrderActionStatus()}, 'UserID'={self.getUserID()}, 'ActionType'={self.getActionType()}, 'StatusMsg'={self.getStatusMsg()}, 'reserve1'={self.getreserve1()}, 'BranchID'={self.getBranchID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'reserve2'={self.getreserve2()}, 'MacAddress'={self.getMacAddress()}, 'InstrumentID'={self.getInstrumentID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcQryExecOrderField(Structure):
@@ -7407,11 +7782,12 @@ class  CThostFtdcQryExecOrderField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
         ("ExecOrderSysID", c_char*21),
         ("InsertTimeStart", c_char*9),
         ("InsertTimeEnd", c_char*9),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -7422,9 +7798,9 @@ class  CThostFtdcQryExecOrderField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
@@ -7442,8 +7818,12 @@ class  CThostFtdcQryExecOrderField(Structure):
         '''结束时间'''
         return str(self.InsertTimeEnd, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeID'={self.getExchangeID()}, 'ExecOrderSysID'={self.getExecOrderSysID()}, 'InsertTimeStart'={self.getInsertTimeStart()}, 'InsertTimeEnd'={self.getInsertTimeEnd()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'ExecOrderSysID'={self.getExecOrderSysID()}, 'InsertTimeStart'={self.getInsertTimeStart()}, 'InsertTimeEnd'={self.getInsertTimeEnd()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcExchangeExecOrderField(Structure):
@@ -7462,7 +7842,7 @@ class  CThostFtdcExchangeExecOrderField(Structure):
         ("ExchangeID", c_char*9),
         ("ParticipantID", c_char*11),
         ("ClientID", c_char*11),
-        ("ExchangeInstID", c_char*31),
+        ("reserve1", c_char*31),
         ("TraderID", c_char*21),
         ("InstallID", c_int32),
         ("OrderSubmitStatus", c_char),
@@ -7477,8 +7857,10 @@ class  CThostFtdcExchangeExecOrderField(Structure):
         ("ClearingPartID", c_char*11),
         ("SequenceNo", c_int32),
         ("BranchID", c_char*9),
-        ("IPAddress", c_char*16),
+        ("reserve2", c_char*16),
         ("MacAddress", c_char*21),
+        ("ExchangeInstID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getVolume(self):
@@ -7533,9 +7915,9 @@ class  CThostFtdcExchangeExecOrderField(Structure):
         '''客户代码'''
         return str(self.ClientID, 'GBK')
 
-    def getExchangeInstID(self):
-        '''合约在交易所的代码'''
-        return str(self.ExchangeInstID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getTraderID(self):
         '''交易所交易员代码'''
@@ -7593,16 +7975,24 @@ class  CThostFtdcExchangeExecOrderField(Structure):
         '''营业部编号'''
         return str(self.BranchID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getExchangeInstID(self):
+        '''合约在交易所的代码'''
+        return str(self.ExchangeInstID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'Volume'={self.getVolume()}, 'RequestID'={self.getRequestID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'OffsetFlag'={self.getOffsetFlag()}, 'HedgeFlag'={self.getHedgeFlag()}, 'ActionType'={self.getActionType()}, 'PosiDirection'={self.getPosiDirection()}, 'ReservePositionFlag'={self.getReservePositionFlag()}, 'CloseFlag'={self.getCloseFlag()}, 'ExecOrderLocalID'={self.getExecOrderLocalID()}, 'ExchangeID'={self.getExchangeID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'OrderSubmitStatus'={self.getOrderSubmitStatus()}, 'NotifySequence'={self.getNotifySequence()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'ExecOrderSysID'={self.getExecOrderSysID()}, 'InsertDate'={self.getInsertDate()}, 'InsertTime'={self.getInsertTime()}, 'CancelTime'={self.getCancelTime()}, 'ExecResult'={self.getExecResult()}, 'ClearingPartID'={self.getClearingPartID()}, 'SequenceNo'={self.getSequenceNo()}, 'BranchID'={self.getBranchID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'Volume'={self.getVolume()}, 'RequestID'={self.getRequestID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'OffsetFlag'={self.getOffsetFlag()}, 'HedgeFlag'={self.getHedgeFlag()}, 'ActionType'={self.getActionType()}, 'PosiDirection'={self.getPosiDirection()}, 'ReservePositionFlag'={self.getReservePositionFlag()}, 'CloseFlag'={self.getCloseFlag()}, 'ExecOrderLocalID'={self.getExecOrderLocalID()}, 'ExchangeID'={self.getExchangeID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'reserve1'={self.getreserve1()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'OrderSubmitStatus'={self.getOrderSubmitStatus()}, 'NotifySequence'={self.getNotifySequence()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'ExecOrderSysID'={self.getExecOrderSysID()}, 'InsertDate'={self.getInsertDate()}, 'InsertTime'={self.getInsertTime()}, 'CancelTime'={self.getCancelTime()}, 'ExecResult'={self.getExecResult()}, 'ClearingPartID'={self.getClearingPartID()}, 'SequenceNo'={self.getSequenceNo()}, 'BranchID'={self.getBranchID()}, 'reserve2'={self.getreserve2()}, 'MacAddress'={self.getMacAddress()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcQryExchangeExecOrderField(Structure):
@@ -7610,9 +8000,10 @@ class  CThostFtdcQryExchangeExecOrderField(Structure):
     _fields_ = [
         ("ParticipantID", c_char*11),
         ("ClientID", c_char*11),
-        ("ExchangeInstID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
         ("TraderID", c_char*21),
+        ("ExchangeInstID", c_char*81),
     ]
 
     def getParticipantID(self):
@@ -7623,9 +8014,9 @@ class  CThostFtdcQryExchangeExecOrderField(Structure):
         '''客户代码'''
         return str(self.ClientID, 'GBK')
 
-    def getExchangeInstID(self):
-        '''合约在交易所的代码'''
-        return str(self.ExchangeInstID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
@@ -7635,8 +8026,12 @@ class  CThostFtdcQryExchangeExecOrderField(Structure):
         '''交易所交易员代码'''
         return str(self.TraderID, 'GBK')
 
+    def getExchangeInstID(self):
+        '''合约在交易所的代码'''
+        return str(self.ExchangeInstID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'ExchangeID'={self.getExchangeID()}, 'TraderID'={self.getTraderID()}"
+        return f"'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'TraderID'={self.getTraderID()}, 'ExchangeInstID'={self.getExchangeInstID()}"
 
 
 class  CThostFtdcQryExecOrderActionField(Structure):
@@ -7682,10 +8077,12 @@ class  CThostFtdcExchangeExecOrderActionField(Structure):
         ("UserID", c_char*16),
         ("ActionType", c_char),
         ("BranchID", c_char*9),
-        ("IPAddress", c_char*16),
+        ("reserve1", c_char*16),
         ("MacAddress", c_char*21),
-        ("ExchangeInstID", c_char*31),
+        ("reserve2", c_char*31),
         ("Volume", c_int32),
+        ("IPAddress", c_char*33),
+        ("ExchangeInstID", c_char*81),
     ]
 
     def getExchangeID(self):
@@ -7752,24 +8149,32 @@ class  CThostFtdcExchangeExecOrderActionField(Structure):
         '''营业部编号'''
         return str(self.BranchID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
-    def getExchangeInstID(self):
-        '''合约在交易所的代码'''
-        return str(self.ExchangeInstID, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getVolume(self):
         '''数量'''
         return self.Volume
 
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
+    def getExchangeInstID(self):
+        '''合约在交易所的代码'''
+        return str(self.ExchangeInstID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'ExchangeID'={self.getExchangeID()}, 'ExecOrderSysID'={self.getExecOrderSysID()}, 'ActionFlag'={self.getActionFlag()}, 'ActionDate'={self.getActionDate()}, 'ActionTime'={self.getActionTime()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'ExecOrderLocalID'={self.getExecOrderLocalID()}, 'ActionLocalID'={self.getActionLocalID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'OrderActionStatus'={self.getOrderActionStatus()}, 'UserID'={self.getUserID()}, 'ActionType'={self.getActionType()}, 'BranchID'={self.getBranchID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'Volume'={self.getVolume()}"
+        return f"'ExchangeID'={self.getExchangeID()}, 'ExecOrderSysID'={self.getExecOrderSysID()}, 'ActionFlag'={self.getActionFlag()}, 'ActionDate'={self.getActionDate()}, 'ActionTime'={self.getActionTime()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'ExecOrderLocalID'={self.getExecOrderLocalID()}, 'ActionLocalID'={self.getActionLocalID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'OrderActionStatus'={self.getOrderActionStatus()}, 'UserID'={self.getUserID()}, 'ActionType'={self.getActionType()}, 'BranchID'={self.getBranchID()}, 'reserve1'={self.getreserve1()}, 'MacAddress'={self.getMacAddress()}, 'reserve2'={self.getreserve2()}, 'Volume'={self.getVolume()}, 'IPAddress'={self.getIPAddress()}, 'ExchangeInstID'={self.getExchangeInstID()}"
 
 
 class  CThostFtdcQryExchangeExecOrderActionField(Structure):
@@ -7806,7 +8211,7 @@ class  CThostFtdcErrExecOrderField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExecOrderRef", c_char*13),
         ("UserID", c_char*16),
         ("Volume", c_int32),
@@ -7823,10 +8228,12 @@ class  CThostFtdcErrExecOrderField(Structure):
         ("AccountID", c_char*13),
         ("CurrencyID", c_char*4),
         ("ClientID", c_char*11),
-        ("IPAddress", c_char*16),
+        ("reserve2", c_char*16),
         ("MacAddress", c_char*21),
         ("ErrorID", c_int32),
         ("ErrorMsg", c_char*81),
+        ("InstrumentID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -7837,9 +8244,9 @@ class  CThostFtdcErrExecOrderField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExecOrderRef(self):
         '''执行宣告引用'''
@@ -7905,9 +8312,9 @@ class  CThostFtdcErrExecOrderField(Structure):
         '''交易编码'''
         return str(self.ClientID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
@@ -7921,8 +8328,16 @@ class  CThostFtdcErrExecOrderField(Structure):
         '''错误信息'''
         return str(self.ErrorMsg, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'ExecOrderRef'={self.getExecOrderRef()}, 'UserID'={self.getUserID()}, 'Volume'={self.getVolume()}, 'RequestID'={self.getRequestID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'OffsetFlag'={self.getOffsetFlag()}, 'HedgeFlag'={self.getHedgeFlag()}, 'ActionType'={self.getActionType()}, 'PosiDirection'={self.getPosiDirection()}, 'ReservePositionFlag'={self.getReservePositionFlag()}, 'CloseFlag'={self.getCloseFlag()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'AccountID'={self.getAccountID()}, 'CurrencyID'={self.getCurrencyID()}, 'ClientID'={self.getClientID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}, 'ErrorID'={self.getErrorID()}, 'ErrorMsg'={self.getErrorMsg()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'ExecOrderRef'={self.getExecOrderRef()}, 'UserID'={self.getUserID()}, 'Volume'={self.getVolume()}, 'RequestID'={self.getRequestID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'OffsetFlag'={self.getOffsetFlag()}, 'HedgeFlag'={self.getHedgeFlag()}, 'ActionType'={self.getActionType()}, 'PosiDirection'={self.getPosiDirection()}, 'ReservePositionFlag'={self.getReservePositionFlag()}, 'CloseFlag'={self.getCloseFlag()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'AccountID'={self.getAccountID()}, 'CurrencyID'={self.getCurrencyID()}, 'ClientID'={self.getClientID()}, 'reserve2'={self.getreserve2()}, 'MacAddress'={self.getMacAddress()}, 'ErrorID'={self.getErrorID()}, 'ErrorMsg'={self.getErrorMsg()}, 'InstrumentID'={self.getInstrumentID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcQryErrExecOrderField(Structure):
@@ -7958,12 +8373,14 @@ class  CThostFtdcErrExecOrderActionField(Structure):
         ("ExecOrderSysID", c_char*21),
         ("ActionFlag", c_char),
         ("UserID", c_char*16),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("InvestUnitID", c_char*17),
-        ("IPAddress", c_char*16),
+        ("reserve2", c_char*16),
         ("MacAddress", c_char*21),
         ("ErrorID", c_int32),
         ("ErrorMsg", c_char*81),
+        ("InstrumentID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -8010,17 +8427,17 @@ class  CThostFtdcErrExecOrderActionField(Structure):
         '''用户代码'''
         return str(self.UserID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getInvestUnitID(self):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
@@ -8034,8 +8451,16 @@ class  CThostFtdcErrExecOrderActionField(Structure):
         '''错误信息'''
         return str(self.ErrorMsg, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'ExecOrderActionRef'={self.getExecOrderActionRef()}, 'ExecOrderRef'={self.getExecOrderRef()}, 'RequestID'={self.getRequestID()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'ExchangeID'={self.getExchangeID()}, 'ExecOrderSysID'={self.getExecOrderSysID()}, 'ActionFlag'={self.getActionFlag()}, 'UserID'={self.getUserID()}, 'InstrumentID'={self.getInstrumentID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}, 'ErrorID'={self.getErrorID()}, 'ErrorMsg'={self.getErrorMsg()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'ExecOrderActionRef'={self.getExecOrderActionRef()}, 'ExecOrderRef'={self.getExecOrderRef()}, 'RequestID'={self.getRequestID()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'ExchangeID'={self.getExchangeID()}, 'ExecOrderSysID'={self.getExecOrderSysID()}, 'ActionFlag'={self.getActionFlag()}, 'UserID'={self.getUserID()}, 'reserve1'={self.getreserve1()}, 'InvestUnitID'={self.getInvestUnitID()}, 'reserve2'={self.getreserve2()}, 'MacAddress'={self.getMacAddress()}, 'ErrorID'={self.getErrorID()}, 'ErrorMsg'={self.getErrorMsg()}, 'InstrumentID'={self.getInstrumentID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcQryErrExecOrderActionField(Structure):
@@ -8060,17 +8485,18 @@ class  CThostFtdcQryErrExecOrderActionField(Structure):
 class  CThostFtdcOptionInstrTradingRightField(Structure):
     """投资者期权合约交易权限"""
     _fields_ = [
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("InvestorRange", c_char),
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
         ("Direction", c_char),
         ("TradingRight", c_char),
+        ("InstrumentID", c_char*81),
     ]
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getInvestorRange(self):
         '''投资者范围'''
@@ -8092,8 +8518,12 @@ class  CThostFtdcOptionInstrTradingRightField(Structure):
         '''交易权限'''
         return TThostFtdcTradingRightType(ord(self.TradingRight)) if ord(self.TradingRight) in [e.value for e in list(TThostFtdcTradingRightType)] else list(TThostFtdcTradingRightType)[0]
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'InstrumentID'={self.getInstrumentID()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'Direction'={self.getDirection()}, 'TradingRight'={self.getTradingRight()}"
+        return f"'reserve1'={self.getreserve1()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'Direction'={self.getDirection()}, 'TradingRight'={self.getTradingRight()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcQryOptionInstrTradingRightField(Structure):
@@ -8101,8 +8531,9 @@ class  CThostFtdcQryOptionInstrTradingRightField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("Direction", c_char),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -8113,16 +8544,20 @@ class  CThostFtdcQryOptionInstrTradingRightField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getDirection(self):
         '''买卖方向'''
         return TThostFtdcDirectionType(ord(self.Direction)) if ord(self.Direction) in [e.value for e in list(TThostFtdcDirectionType)] else list(TThostFtdcDirectionType)[0]
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'Direction'={self.getDirection()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'Direction'={self.getDirection()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcInputForQuoteField(Structure):
@@ -8130,13 +8565,15 @@ class  CThostFtdcInputForQuoteField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ForQuoteRef", c_char*13),
         ("UserID", c_char*16),
         ("ExchangeID", c_char*9),
         ("InvestUnitID", c_char*17),
-        ("IPAddress", c_char*16),
+        ("reserve2", c_char*16),
         ("MacAddress", c_char*21),
+        ("InstrumentID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -8147,9 +8584,9 @@ class  CThostFtdcInputForQuoteField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getForQuoteRef(self):
         '''询价引用'''
@@ -8167,16 +8604,24 @@ class  CThostFtdcInputForQuoteField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'ForQuoteRef'={self.getForQuoteRef()}, 'UserID'={self.getUserID()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'ForQuoteRef'={self.getForQuoteRef()}, 'UserID'={self.getUserID()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'reserve2'={self.getreserve2()}, 'MacAddress'={self.getMacAddress()}, 'InstrumentID'={self.getInstrumentID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcForQuoteField(Structure):
@@ -8184,14 +8629,14 @@ class  CThostFtdcForQuoteField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ForQuoteRef", c_char*13),
         ("UserID", c_char*16),
         ("ForQuoteLocalID", c_char*13),
         ("ExchangeID", c_char*9),
         ("ParticipantID", c_char*11),
         ("ClientID", c_char*11),
-        ("ExchangeInstID", c_char*31),
+        ("reserve2", c_char*31),
         ("TraderID", c_char*21),
         ("InstallID", c_int32),
         ("InsertDate", c_char*9),
@@ -8203,8 +8648,11 @@ class  CThostFtdcForQuoteField(Structure):
         ("ActiveUserID", c_char*16),
         ("BrokerForQutoSeq", c_int32),
         ("InvestUnitID", c_char*17),
-        ("IPAddress", c_char*16),
+        ("reserve3", c_char*16),
         ("MacAddress", c_char*21),
+        ("InstrumentID", c_char*81),
+        ("ExchangeInstID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -8215,9 +8663,9 @@ class  CThostFtdcForQuoteField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getForQuoteRef(self):
         '''询价引用'''
@@ -8243,9 +8691,9 @@ class  CThostFtdcForQuoteField(Structure):
         '''客户代码'''
         return str(self.ClientID, 'GBK')
 
-    def getExchangeInstID(self):
-        '''合约在交易所的代码'''
-        return str(self.ExchangeInstID, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getTraderID(self):
         '''交易所交易员代码'''
@@ -8291,16 +8739,28 @@ class  CThostFtdcForQuoteField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve3(self):
+        '''保留的无效字段'''
+        return str(self.reserve3, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getExchangeInstID(self):
+        '''合约在交易所的代码'''
+        return str(self.ExchangeInstID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'ForQuoteRef'={self.getForQuoteRef()}, 'UserID'={self.getUserID()}, 'ForQuoteLocalID'={self.getForQuoteLocalID()}, 'ExchangeID'={self.getExchangeID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'InsertDate'={self.getInsertDate()}, 'InsertTime'={self.getInsertTime()}, 'ForQuoteStatus'={self.getForQuoteStatus()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'StatusMsg'={self.getStatusMsg()}, 'ActiveUserID'={self.getActiveUserID()}, 'BrokerForQutoSeq'={self.getBrokerForQutoSeq()}, 'InvestUnitID'={self.getInvestUnitID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'ForQuoteRef'={self.getForQuoteRef()}, 'UserID'={self.getUserID()}, 'ForQuoteLocalID'={self.getForQuoteLocalID()}, 'ExchangeID'={self.getExchangeID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'reserve2'={self.getreserve2()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'InsertDate'={self.getInsertDate()}, 'InsertTime'={self.getInsertTime()}, 'ForQuoteStatus'={self.getForQuoteStatus()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'StatusMsg'={self.getStatusMsg()}, 'ActiveUserID'={self.getActiveUserID()}, 'BrokerForQutoSeq'={self.getBrokerForQutoSeq()}, 'InvestUnitID'={self.getInvestUnitID()}, 'reserve3'={self.getreserve3()}, 'MacAddress'={self.getMacAddress()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcQryForQuoteField(Structure):
@@ -8308,11 +8768,12 @@ class  CThostFtdcQryForQuoteField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
         ("InsertTimeStart", c_char*9),
         ("InsertTimeEnd", c_char*9),
         ("InvestUnitID", c_char*17),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -8323,9 +8784,9 @@ class  CThostFtdcQryForQuoteField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
@@ -8343,8 +8804,12 @@ class  CThostFtdcQryForQuoteField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeID'={self.getExchangeID()}, 'InsertTimeStart'={self.getInsertTimeStart()}, 'InsertTimeEnd'={self.getInsertTimeEnd()}, 'InvestUnitID'={self.getInvestUnitID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'InsertTimeStart'={self.getInsertTimeStart()}, 'InsertTimeEnd'={self.getInsertTimeEnd()}, 'InvestUnitID'={self.getInvestUnitID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcExchangeForQuoteField(Structure):
@@ -8354,14 +8819,16 @@ class  CThostFtdcExchangeForQuoteField(Structure):
         ("ExchangeID", c_char*9),
         ("ParticipantID", c_char*11),
         ("ClientID", c_char*11),
-        ("ExchangeInstID", c_char*31),
+        ("reserve1", c_char*31),
         ("TraderID", c_char*21),
         ("InstallID", c_int32),
         ("InsertDate", c_char*9),
         ("InsertTime", c_char*9),
         ("ForQuoteStatus", c_char),
-        ("IPAddress", c_char*16),
+        ("reserve2", c_char*16),
         ("MacAddress", c_char*21),
+        ("ExchangeInstID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getForQuoteLocalID(self):
@@ -8380,9 +8847,9 @@ class  CThostFtdcExchangeForQuoteField(Structure):
         '''客户代码'''
         return str(self.ClientID, 'GBK')
 
-    def getExchangeInstID(self):
-        '''合约在交易所的代码'''
-        return str(self.ExchangeInstID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getTraderID(self):
         '''交易所交易员代码'''
@@ -8404,16 +8871,24 @@ class  CThostFtdcExchangeForQuoteField(Structure):
         '''询价状态'''
         return TThostFtdcForQuoteStatusType(ord(self.ForQuoteStatus)) if ord(self.ForQuoteStatus) in [e.value for e in list(TThostFtdcForQuoteStatusType)] else list(TThostFtdcForQuoteStatusType)[0]
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getExchangeInstID(self):
+        '''合约在交易所的代码'''
+        return str(self.ExchangeInstID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'ForQuoteLocalID'={self.getForQuoteLocalID()}, 'ExchangeID'={self.getExchangeID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'InsertDate'={self.getInsertDate()}, 'InsertTime'={self.getInsertTime()}, 'ForQuoteStatus'={self.getForQuoteStatus()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'ForQuoteLocalID'={self.getForQuoteLocalID()}, 'ExchangeID'={self.getExchangeID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'reserve1'={self.getreserve1()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'InsertDate'={self.getInsertDate()}, 'InsertTime'={self.getInsertTime()}, 'ForQuoteStatus'={self.getForQuoteStatus()}, 'reserve2'={self.getreserve2()}, 'MacAddress'={self.getMacAddress()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcQryExchangeForQuoteField(Structure):
@@ -8421,9 +8896,10 @@ class  CThostFtdcQryExchangeForQuoteField(Structure):
     _fields_ = [
         ("ParticipantID", c_char*11),
         ("ClientID", c_char*11),
-        ("ExchangeInstID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
         ("TraderID", c_char*21),
+        ("ExchangeInstID", c_char*81),
     ]
 
     def getParticipantID(self):
@@ -8434,9 +8910,9 @@ class  CThostFtdcQryExchangeForQuoteField(Structure):
         '''客户代码'''
         return str(self.ClientID, 'GBK')
 
-    def getExchangeInstID(self):
-        '''合约在交易所的代码'''
-        return str(self.ExchangeInstID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
@@ -8446,8 +8922,12 @@ class  CThostFtdcQryExchangeForQuoteField(Structure):
         '''交易所交易员代码'''
         return str(self.TraderID, 'GBK')
 
+    def getExchangeInstID(self):
+        '''合约在交易所的代码'''
+        return str(self.ExchangeInstID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'ExchangeID'={self.getExchangeID()}, 'TraderID'={self.getTraderID()}"
+        return f"'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'TraderID'={self.getTraderID()}, 'ExchangeInstID'={self.getExchangeInstID()}"
 
 
 class  CThostFtdcInputQuoteField(Structure):
@@ -8455,7 +8935,7 @@ class  CThostFtdcInputQuoteField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("QuoteRef", c_char*13),
         ("UserID", c_char*16),
         ("AskPrice", c_double),
@@ -8474,8 +8954,10 @@ class  CThostFtdcInputQuoteField(Structure):
         ("ExchangeID", c_char*9),
         ("InvestUnitID", c_char*17),
         ("ClientID", c_char*11),
-        ("IPAddress", c_char*16),
+        ("reserve2", c_char*16),
         ("MacAddress", c_char*21),
+        ("InstrumentID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -8486,9 +8968,9 @@ class  CThostFtdcInputQuoteField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getQuoteRef(self):
         '''报价引用'''
@@ -8562,16 +9044,24 @@ class  CThostFtdcInputQuoteField(Structure):
         '''交易编码'''
         return str(self.ClientID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'QuoteRef'={self.getQuoteRef()}, 'UserID'={self.getUserID()}, 'AskPrice'={self.getAskPrice()}, 'BidPrice'={self.getBidPrice()}, 'AskVolume'={self.getAskVolume()}, 'BidVolume'={self.getBidVolume()}, 'RequestID'={self.getRequestID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'AskOffsetFlag'={self.getAskOffsetFlag()}, 'BidOffsetFlag'={self.getBidOffsetFlag()}, 'AskHedgeFlag'={self.getAskHedgeFlag()}, 'BidHedgeFlag'={self.getBidHedgeFlag()}, 'AskOrderRef'={self.getAskOrderRef()}, 'BidOrderRef'={self.getBidOrderRef()}, 'ForQuoteSysID'={self.getForQuoteSysID()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'ClientID'={self.getClientID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'QuoteRef'={self.getQuoteRef()}, 'UserID'={self.getUserID()}, 'AskPrice'={self.getAskPrice()}, 'BidPrice'={self.getBidPrice()}, 'AskVolume'={self.getAskVolume()}, 'BidVolume'={self.getBidVolume()}, 'RequestID'={self.getRequestID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'AskOffsetFlag'={self.getAskOffsetFlag()}, 'BidOffsetFlag'={self.getBidOffsetFlag()}, 'AskHedgeFlag'={self.getAskHedgeFlag()}, 'BidHedgeFlag'={self.getBidHedgeFlag()}, 'AskOrderRef'={self.getAskOrderRef()}, 'BidOrderRef'={self.getBidOrderRef()}, 'ForQuoteSysID'={self.getForQuoteSysID()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'ClientID'={self.getClientID()}, 'reserve2'={self.getreserve2()}, 'MacAddress'={self.getMacAddress()}, 'InstrumentID'={self.getInstrumentID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcInputQuoteActionField(Structure):
@@ -8588,11 +9078,13 @@ class  CThostFtdcInputQuoteActionField(Structure):
         ("QuoteSysID", c_char*21),
         ("ActionFlag", c_char),
         ("UserID", c_char*16),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("InvestUnitID", c_char*17),
         ("ClientID", c_char*11),
-        ("IPAddress", c_char*16),
+        ("reserve2", c_char*16),
         ("MacAddress", c_char*21),
+        ("InstrumentID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -8639,9 +9131,9 @@ class  CThostFtdcInputQuoteActionField(Structure):
         '''用户代码'''
         return str(self.UserID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getInvestUnitID(self):
         '''投资单元代码'''
@@ -8651,16 +9143,24 @@ class  CThostFtdcInputQuoteActionField(Structure):
         '''交易编码'''
         return str(self.ClientID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'QuoteActionRef'={self.getQuoteActionRef()}, 'QuoteRef'={self.getQuoteRef()}, 'RequestID'={self.getRequestID()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'ExchangeID'={self.getExchangeID()}, 'QuoteSysID'={self.getQuoteSysID()}, 'ActionFlag'={self.getActionFlag()}, 'UserID'={self.getUserID()}, 'InstrumentID'={self.getInstrumentID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'ClientID'={self.getClientID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'QuoteActionRef'={self.getQuoteActionRef()}, 'QuoteRef'={self.getQuoteRef()}, 'RequestID'={self.getRequestID()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'ExchangeID'={self.getExchangeID()}, 'QuoteSysID'={self.getQuoteSysID()}, 'ActionFlag'={self.getActionFlag()}, 'UserID'={self.getUserID()}, 'reserve1'={self.getreserve1()}, 'InvestUnitID'={self.getInvestUnitID()}, 'ClientID'={self.getClientID()}, 'reserve2'={self.getreserve2()}, 'MacAddress'={self.getMacAddress()}, 'InstrumentID'={self.getInstrumentID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcQuoteField(Structure):
@@ -8668,7 +9168,7 @@ class  CThostFtdcQuoteField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("QuoteRef", c_char*13),
         ("UserID", c_char*16),
         ("AskPrice", c_double),
@@ -8685,7 +9185,7 @@ class  CThostFtdcQuoteField(Structure):
         ("ExchangeID", c_char*9),
         ("ParticipantID", c_char*11),
         ("ClientID", c_char*11),
-        ("ExchangeInstID", c_char*31),
+        ("reserve2", c_char*31),
         ("TraderID", c_char*21),
         ("InstallID", c_int32),
         ("NotifySequence", c_int32),
@@ -8714,8 +9214,11 @@ class  CThostFtdcQuoteField(Structure):
         ("InvestUnitID", c_char*17),
         ("AccountID", c_char*13),
         ("CurrencyID", c_char*4),
-        ("IPAddress", c_char*16),
+        ("reserve3", c_char*16),
         ("MacAddress", c_char*21),
+        ("InstrumentID", c_char*81),
+        ("ExchangeInstID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -8726,9 +9229,9 @@ class  CThostFtdcQuoteField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getQuoteRef(self):
         '''报价引用'''
@@ -8794,9 +9297,9 @@ class  CThostFtdcQuoteField(Structure):
         '''客户代码'''
         return str(self.ClientID, 'GBK')
 
-    def getExchangeInstID(self):
-        '''合约在交易所的代码'''
-        return str(self.ExchangeInstID, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getTraderID(self):
         '''交易所交易员代码'''
@@ -8910,16 +9413,28 @@ class  CThostFtdcQuoteField(Structure):
         '''币种代码'''
         return str(self.CurrencyID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve3(self):
+        '''保留的无效字段'''
+        return str(self.reserve3, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getExchangeInstID(self):
+        '''合约在交易所的代码'''
+        return str(self.ExchangeInstID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'QuoteRef'={self.getQuoteRef()}, 'UserID'={self.getUserID()}, 'AskPrice'={self.getAskPrice()}, 'BidPrice'={self.getBidPrice()}, 'AskVolume'={self.getAskVolume()}, 'BidVolume'={self.getBidVolume()}, 'RequestID'={self.getRequestID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'AskOffsetFlag'={self.getAskOffsetFlag()}, 'BidOffsetFlag'={self.getBidOffsetFlag()}, 'AskHedgeFlag'={self.getAskHedgeFlag()}, 'BidHedgeFlag'={self.getBidHedgeFlag()}, 'QuoteLocalID'={self.getQuoteLocalID()}, 'ExchangeID'={self.getExchangeID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'NotifySequence'={self.getNotifySequence()}, 'OrderSubmitStatus'={self.getOrderSubmitStatus()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'QuoteSysID'={self.getQuoteSysID()}, 'InsertDate'={self.getInsertDate()}, 'InsertTime'={self.getInsertTime()}, 'CancelTime'={self.getCancelTime()}, 'QuoteStatus'={self.getQuoteStatus()}, 'ClearingPartID'={self.getClearingPartID()}, 'SequenceNo'={self.getSequenceNo()}, 'AskOrderSysID'={self.getAskOrderSysID()}, 'BidOrderSysID'={self.getBidOrderSysID()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'UserProductInfo'={self.getUserProductInfo()}, 'StatusMsg'={self.getStatusMsg()}, 'ActiveUserID'={self.getActiveUserID()}, 'BrokerQuoteSeq'={self.getBrokerQuoteSeq()}, 'AskOrderRef'={self.getAskOrderRef()}, 'BidOrderRef'={self.getBidOrderRef()}, 'ForQuoteSysID'={self.getForQuoteSysID()}, 'BranchID'={self.getBranchID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'AccountID'={self.getAccountID()}, 'CurrencyID'={self.getCurrencyID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'QuoteRef'={self.getQuoteRef()}, 'UserID'={self.getUserID()}, 'AskPrice'={self.getAskPrice()}, 'BidPrice'={self.getBidPrice()}, 'AskVolume'={self.getAskVolume()}, 'BidVolume'={self.getBidVolume()}, 'RequestID'={self.getRequestID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'AskOffsetFlag'={self.getAskOffsetFlag()}, 'BidOffsetFlag'={self.getBidOffsetFlag()}, 'AskHedgeFlag'={self.getAskHedgeFlag()}, 'BidHedgeFlag'={self.getBidHedgeFlag()}, 'QuoteLocalID'={self.getQuoteLocalID()}, 'ExchangeID'={self.getExchangeID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'reserve2'={self.getreserve2()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'NotifySequence'={self.getNotifySequence()}, 'OrderSubmitStatus'={self.getOrderSubmitStatus()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'QuoteSysID'={self.getQuoteSysID()}, 'InsertDate'={self.getInsertDate()}, 'InsertTime'={self.getInsertTime()}, 'CancelTime'={self.getCancelTime()}, 'QuoteStatus'={self.getQuoteStatus()}, 'ClearingPartID'={self.getClearingPartID()}, 'SequenceNo'={self.getSequenceNo()}, 'AskOrderSysID'={self.getAskOrderSysID()}, 'BidOrderSysID'={self.getBidOrderSysID()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'UserProductInfo'={self.getUserProductInfo()}, 'StatusMsg'={self.getStatusMsg()}, 'ActiveUserID'={self.getActiveUserID()}, 'BrokerQuoteSeq'={self.getBrokerQuoteSeq()}, 'AskOrderRef'={self.getAskOrderRef()}, 'BidOrderRef'={self.getBidOrderRef()}, 'ForQuoteSysID'={self.getForQuoteSysID()}, 'BranchID'={self.getBranchID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'AccountID'={self.getAccountID()}, 'CurrencyID'={self.getCurrencyID()}, 'reserve3'={self.getreserve3()}, 'MacAddress'={self.getMacAddress()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcQuoteActionField(Structure):
@@ -8947,11 +9462,13 @@ class  CThostFtdcQuoteActionField(Structure):
         ("OrderActionStatus", c_char),
         ("UserID", c_char*16),
         ("StatusMsg", c_char*81),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("BranchID", c_char*9),
         ("InvestUnitID", c_char*17),
-        ("IPAddress", c_char*16),
+        ("reserve2", c_char*16),
         ("MacAddress", c_char*21),
+        ("InstrumentID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -9042,9 +9559,9 @@ class  CThostFtdcQuoteActionField(Structure):
         '''状态信息'''
         return str(self.StatusMsg, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getBranchID(self):
         '''营业部编号'''
@@ -9054,16 +9571,24 @@ class  CThostFtdcQuoteActionField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'QuoteActionRef'={self.getQuoteActionRef()}, 'QuoteRef'={self.getQuoteRef()}, 'RequestID'={self.getRequestID()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'ExchangeID'={self.getExchangeID()}, 'QuoteSysID'={self.getQuoteSysID()}, 'ActionFlag'={self.getActionFlag()}, 'ActionDate'={self.getActionDate()}, 'ActionTime'={self.getActionTime()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'QuoteLocalID'={self.getQuoteLocalID()}, 'ActionLocalID'={self.getActionLocalID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'OrderActionStatus'={self.getOrderActionStatus()}, 'UserID'={self.getUserID()}, 'StatusMsg'={self.getStatusMsg()}, 'InstrumentID'={self.getInstrumentID()}, 'BranchID'={self.getBranchID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'QuoteActionRef'={self.getQuoteActionRef()}, 'QuoteRef'={self.getQuoteRef()}, 'RequestID'={self.getRequestID()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'ExchangeID'={self.getExchangeID()}, 'QuoteSysID'={self.getQuoteSysID()}, 'ActionFlag'={self.getActionFlag()}, 'ActionDate'={self.getActionDate()}, 'ActionTime'={self.getActionTime()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'QuoteLocalID'={self.getQuoteLocalID()}, 'ActionLocalID'={self.getActionLocalID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'OrderActionStatus'={self.getOrderActionStatus()}, 'UserID'={self.getUserID()}, 'StatusMsg'={self.getStatusMsg()}, 'reserve1'={self.getreserve1()}, 'BranchID'={self.getBranchID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'reserve2'={self.getreserve2()}, 'MacAddress'={self.getMacAddress()}, 'InstrumentID'={self.getInstrumentID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcQryQuoteField(Structure):
@@ -9071,12 +9596,13 @@ class  CThostFtdcQryQuoteField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
         ("QuoteSysID", c_char*21),
         ("InsertTimeStart", c_char*9),
         ("InsertTimeEnd", c_char*9),
         ("InvestUnitID", c_char*17),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -9087,9 +9613,9 @@ class  CThostFtdcQryQuoteField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
@@ -9111,8 +9637,12 @@ class  CThostFtdcQryQuoteField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeID'={self.getExchangeID()}, 'QuoteSysID'={self.getQuoteSysID()}, 'InsertTimeStart'={self.getInsertTimeStart()}, 'InsertTimeEnd'={self.getInsertTimeEnd()}, 'InvestUnitID'={self.getInvestUnitID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'QuoteSysID'={self.getQuoteSysID()}, 'InsertTimeStart'={self.getInsertTimeStart()}, 'InsertTimeEnd'={self.getInsertTimeEnd()}, 'InvestUnitID'={self.getInvestUnitID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcExchangeQuoteField(Structure):
@@ -9132,7 +9662,7 @@ class  CThostFtdcExchangeQuoteField(Structure):
         ("ExchangeID", c_char*9),
         ("ParticipantID", c_char*11),
         ("ClientID", c_char*11),
-        ("ExchangeInstID", c_char*31),
+        ("reserve1", c_char*31),
         ("TraderID", c_char*21),
         ("InstallID", c_int32),
         ("NotifySequence", c_int32),
@@ -9150,8 +9680,10 @@ class  CThostFtdcExchangeQuoteField(Structure):
         ("BidOrderSysID", c_char*21),
         ("ForQuoteSysID", c_char*21),
         ("BranchID", c_char*9),
-        ("IPAddress", c_char*16),
+        ("reserve2", c_char*16),
         ("MacAddress", c_char*21),
+        ("ExchangeInstID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getAskPrice(self):
@@ -9210,9 +9742,9 @@ class  CThostFtdcExchangeQuoteField(Structure):
         '''客户代码'''
         return str(self.ClientID, 'GBK')
 
-    def getExchangeInstID(self):
-        '''合约在交易所的代码'''
-        return str(self.ExchangeInstID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getTraderID(self):
         '''交易所交易员代码'''
@@ -9282,16 +9814,24 @@ class  CThostFtdcExchangeQuoteField(Structure):
         '''营业部编号'''
         return str(self.BranchID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getExchangeInstID(self):
+        '''合约在交易所的代码'''
+        return str(self.ExchangeInstID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'AskPrice'={self.getAskPrice()}, 'BidPrice'={self.getBidPrice()}, 'AskVolume'={self.getAskVolume()}, 'BidVolume'={self.getBidVolume()}, 'RequestID'={self.getRequestID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'AskOffsetFlag'={self.getAskOffsetFlag()}, 'BidOffsetFlag'={self.getBidOffsetFlag()}, 'AskHedgeFlag'={self.getAskHedgeFlag()}, 'BidHedgeFlag'={self.getBidHedgeFlag()}, 'QuoteLocalID'={self.getQuoteLocalID()}, 'ExchangeID'={self.getExchangeID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'NotifySequence'={self.getNotifySequence()}, 'OrderSubmitStatus'={self.getOrderSubmitStatus()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'QuoteSysID'={self.getQuoteSysID()}, 'InsertDate'={self.getInsertDate()}, 'InsertTime'={self.getInsertTime()}, 'CancelTime'={self.getCancelTime()}, 'QuoteStatus'={self.getQuoteStatus()}, 'ClearingPartID'={self.getClearingPartID()}, 'SequenceNo'={self.getSequenceNo()}, 'AskOrderSysID'={self.getAskOrderSysID()}, 'BidOrderSysID'={self.getBidOrderSysID()}, 'ForQuoteSysID'={self.getForQuoteSysID()}, 'BranchID'={self.getBranchID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'AskPrice'={self.getAskPrice()}, 'BidPrice'={self.getBidPrice()}, 'AskVolume'={self.getAskVolume()}, 'BidVolume'={self.getBidVolume()}, 'RequestID'={self.getRequestID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'AskOffsetFlag'={self.getAskOffsetFlag()}, 'BidOffsetFlag'={self.getBidOffsetFlag()}, 'AskHedgeFlag'={self.getAskHedgeFlag()}, 'BidHedgeFlag'={self.getBidHedgeFlag()}, 'QuoteLocalID'={self.getQuoteLocalID()}, 'ExchangeID'={self.getExchangeID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'reserve1'={self.getreserve1()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'NotifySequence'={self.getNotifySequence()}, 'OrderSubmitStatus'={self.getOrderSubmitStatus()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'QuoteSysID'={self.getQuoteSysID()}, 'InsertDate'={self.getInsertDate()}, 'InsertTime'={self.getInsertTime()}, 'CancelTime'={self.getCancelTime()}, 'QuoteStatus'={self.getQuoteStatus()}, 'ClearingPartID'={self.getClearingPartID()}, 'SequenceNo'={self.getSequenceNo()}, 'AskOrderSysID'={self.getAskOrderSysID()}, 'BidOrderSysID'={self.getBidOrderSysID()}, 'ForQuoteSysID'={self.getForQuoteSysID()}, 'BranchID'={self.getBranchID()}, 'reserve2'={self.getreserve2()}, 'MacAddress'={self.getMacAddress()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcQryExchangeQuoteField(Structure):
@@ -9299,9 +9839,10 @@ class  CThostFtdcQryExchangeQuoteField(Structure):
     _fields_ = [
         ("ParticipantID", c_char*11),
         ("ClientID", c_char*11),
-        ("ExchangeInstID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
         ("TraderID", c_char*21),
+        ("ExchangeInstID", c_char*81),
     ]
 
     def getParticipantID(self):
@@ -9312,9 +9853,9 @@ class  CThostFtdcQryExchangeQuoteField(Structure):
         '''客户代码'''
         return str(self.ClientID, 'GBK')
 
-    def getExchangeInstID(self):
-        '''合约在交易所的代码'''
-        return str(self.ExchangeInstID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
@@ -9324,8 +9865,12 @@ class  CThostFtdcQryExchangeQuoteField(Structure):
         '''交易所交易员代码'''
         return str(self.TraderID, 'GBK')
 
+    def getExchangeInstID(self):
+        '''合约在交易所的代码'''
+        return str(self.ExchangeInstID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'ExchangeID'={self.getExchangeID()}, 'TraderID'={self.getTraderID()}"
+        return f"'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'TraderID'={self.getTraderID()}, 'ExchangeInstID'={self.getExchangeInstID()}"
 
 
 class  CThostFtdcQryQuoteActionField(Structure):
@@ -9369,8 +9914,9 @@ class  CThostFtdcExchangeQuoteActionField(Structure):
         ("BusinessUnit", c_char*21),
         ("OrderActionStatus", c_char),
         ("UserID", c_char*16),
-        ("IPAddress", c_char*16),
+        ("reserve1", c_char*16),
         ("MacAddress", c_char*21),
+        ("IPAddress", c_char*33),
     ]
 
     def getExchangeID(self):
@@ -9429,16 +9975,20 @@ class  CThostFtdcExchangeQuoteActionField(Structure):
         '''用户代码'''
         return str(self.UserID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'ExchangeID'={self.getExchangeID()}, 'QuoteSysID'={self.getQuoteSysID()}, 'ActionFlag'={self.getActionFlag()}, 'ActionDate'={self.getActionDate()}, 'ActionTime'={self.getActionTime()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'QuoteLocalID'={self.getQuoteLocalID()}, 'ActionLocalID'={self.getActionLocalID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'OrderActionStatus'={self.getOrderActionStatus()}, 'UserID'={self.getUserID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'ExchangeID'={self.getExchangeID()}, 'QuoteSysID'={self.getQuoteSysID()}, 'ActionFlag'={self.getActionFlag()}, 'ActionDate'={self.getActionDate()}, 'ActionTime'={self.getActionTime()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'QuoteLocalID'={self.getQuoteLocalID()}, 'ActionLocalID'={self.getActionLocalID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'OrderActionStatus'={self.getOrderActionStatus()}, 'UserID'={self.getUserID()}, 'reserve1'={self.getreserve1()}, 'MacAddress'={self.getMacAddress()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcQryExchangeQuoteActionField(Structure):
@@ -9473,16 +10023,17 @@ class  CThostFtdcQryExchangeQuoteActionField(Structure):
 class  CThostFtdcOptionInstrDeltaField(Structure):
     """期权合约delta值"""
     _fields_ = [
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("InvestorRange", c_char),
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
         ("Delta", c_double),
+        ("InstrumentID", c_char*81),
     ]
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getInvestorRange(self):
         '''投资者范围'''
@@ -9500,28 +10051,33 @@ class  CThostFtdcOptionInstrDeltaField(Structure):
         '''Delta值'''
         return self.Delta
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'InstrumentID'={self.getInstrumentID()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'Delta'={self.getDelta()}"
+        return f"'reserve1'={self.getreserve1()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'Delta'={self.getDelta()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcForQuoteRspField(Structure):
     """发给做市商的询价请求"""
     _fields_ = [
         ("TradingDay", c_char*9),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ForQuoteSysID", c_char*21),
         ("ForQuoteTime", c_char*9),
         ("ActionDay", c_char*9),
         ("ExchangeID", c_char*9),
+        ("InstrumentID", c_char*81),
     ]
 
     def getTradingDay(self):
         '''交易日'''
         return str(self.TradingDay, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getForQuoteSysID(self):
         '''询价编号'''
@@ -9539,24 +10095,29 @@ class  CThostFtdcForQuoteRspField(Structure):
         '''交易所代码'''
         return str(self.ExchangeID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'TradingDay'={self.getTradingDay()}, 'InstrumentID'={self.getInstrumentID()}, 'ForQuoteSysID'={self.getForQuoteSysID()}, 'ForQuoteTime'={self.getForQuoteTime()}, 'ActionDay'={self.getActionDay()}, 'ExchangeID'={self.getExchangeID()}"
+        return f"'TradingDay'={self.getTradingDay()}, 'reserve1'={self.getreserve1()}, 'ForQuoteSysID'={self.getForQuoteSysID()}, 'ForQuoteTime'={self.getForQuoteTime()}, 'ActionDay'={self.getActionDay()}, 'ExchangeID'={self.getExchangeID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcStrikeOffsetField(Structure):
     """当前期权合约执行偏移值的详细内容"""
     _fields_ = [
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("InvestorRange", c_char),
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
         ("Offset", c_double),
         ("OffsetType", c_char),
+        ("InstrumentID", c_char*81),
     ]
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getInvestorRange(self):
         '''投资者范围'''
@@ -9578,8 +10139,12 @@ class  CThostFtdcStrikeOffsetField(Structure):
         '''执行偏移类型'''
         return TThostFtdcStrikeOffsetTypeType(ord(self.OffsetType)) if ord(self.OffsetType) in [e.value for e in list(TThostFtdcStrikeOffsetTypeType)] else list(TThostFtdcStrikeOffsetTypeType)[0]
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'InstrumentID'={self.getInstrumentID()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'Offset'={self.getOffset()}, 'OffsetType'={self.getOffsetType()}"
+        return f"'reserve1'={self.getreserve1()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'Offset'={self.getOffset()}, 'OffsetType'={self.getOffsetType()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcQryStrikeOffsetField(Structure):
@@ -9587,7 +10152,8 @@ class  CThostFtdcQryStrikeOffsetField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -9598,12 +10164,16 @@ class  CThostFtdcQryStrikeOffsetField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
+
     def getInstrumentID(self):
         '''合约代码'''
         return str(self.InstrumentID, 'GBK')
 
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcInputBatchOrderActionField(Structure):
@@ -9618,8 +10188,9 @@ class  CThostFtdcInputBatchOrderActionField(Structure):
         ("ExchangeID", c_char*9),
         ("UserID", c_char*16),
         ("InvestUnitID", c_char*17),
-        ("IPAddress", c_char*16),
+        ("reserve1", c_char*16),
         ("MacAddress", c_char*21),
+        ("IPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -9658,16 +10229,20 @@ class  CThostFtdcInputBatchOrderActionField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'OrderActionRef'={self.getOrderActionRef()}, 'RequestID'={self.getRequestID()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'ExchangeID'={self.getExchangeID()}, 'UserID'={self.getUserID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'OrderActionRef'={self.getOrderActionRef()}, 'RequestID'={self.getRequestID()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'ExchangeID'={self.getExchangeID()}, 'UserID'={self.getUserID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'reserve1'={self.getreserve1()}, 'MacAddress'={self.getMacAddress()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcBatchOrderActionField(Structure):
@@ -9692,8 +10267,9 @@ class  CThostFtdcBatchOrderActionField(Structure):
         ("UserID", c_char*16),
         ("StatusMsg", c_char*81),
         ("InvestUnitID", c_char*17),
-        ("IPAddress", c_char*16),
+        ("reserve1", c_char*16),
         ("MacAddress", c_char*21),
+        ("IPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -9772,16 +10348,20 @@ class  CThostFtdcBatchOrderActionField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'OrderActionRef'={self.getOrderActionRef()}, 'RequestID'={self.getRequestID()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'ExchangeID'={self.getExchangeID()}, 'ActionDate'={self.getActionDate()}, 'ActionTime'={self.getActionTime()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'ActionLocalID'={self.getActionLocalID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'OrderActionStatus'={self.getOrderActionStatus()}, 'UserID'={self.getUserID()}, 'StatusMsg'={self.getStatusMsg()}, 'InvestUnitID'={self.getInvestUnitID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'OrderActionRef'={self.getOrderActionRef()}, 'RequestID'={self.getRequestID()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'ExchangeID'={self.getExchangeID()}, 'ActionDate'={self.getActionDate()}, 'ActionTime'={self.getActionTime()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'ActionLocalID'={self.getActionLocalID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'OrderActionStatus'={self.getOrderActionStatus()}, 'UserID'={self.getUserID()}, 'StatusMsg'={self.getStatusMsg()}, 'InvestUnitID'={self.getInvestUnitID()}, 'reserve1'={self.getreserve1()}, 'MacAddress'={self.getMacAddress()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcExchangeBatchOrderActionField(Structure):
@@ -9798,8 +10378,9 @@ class  CThostFtdcExchangeBatchOrderActionField(Structure):
         ("BusinessUnit", c_char*21),
         ("OrderActionStatus", c_char),
         ("UserID", c_char*16),
-        ("IPAddress", c_char*16),
+        ("reserve1", c_char*16),
         ("MacAddress", c_char*21),
+        ("IPAddress", c_char*33),
     ]
 
     def getExchangeID(self):
@@ -9846,16 +10427,20 @@ class  CThostFtdcExchangeBatchOrderActionField(Structure):
         '''用户代码'''
         return str(self.UserID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'ExchangeID'={self.getExchangeID()}, 'ActionDate'={self.getActionDate()}, 'ActionTime'={self.getActionTime()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'ActionLocalID'={self.getActionLocalID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'OrderActionStatus'={self.getOrderActionStatus()}, 'UserID'={self.getUserID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'ExchangeID'={self.getExchangeID()}, 'ActionDate'={self.getActionDate()}, 'ActionTime'={self.getActionTime()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'ActionLocalID'={self.getActionLocalID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'OrderActionStatus'={self.getOrderActionStatus()}, 'UserID'={self.getUserID()}, 'reserve1'={self.getreserve1()}, 'MacAddress'={self.getMacAddress()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcQryBatchOrderActionField(Structure):
@@ -9886,18 +10471,19 @@ class  CThostFtdcCombInstrumentGuardField(Structure):
     """组合合约安全系数"""
     _fields_ = [
         ("BrokerID", c_char*11),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("GuarantRatio", c_double),
         ("ExchangeID", c_char*9),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
         '''经纪公司代码'''
         return str(self.BrokerID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getGuarantRatio(self):
         ''''''
@@ -9907,32 +10493,41 @@ class  CThostFtdcCombInstrumentGuardField(Structure):
         '''交易所代码'''
         return str(self.ExchangeID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InstrumentID'={self.getInstrumentID()}, 'GuarantRatio'={self.getGuarantRatio()}, 'ExchangeID'={self.getExchangeID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'reserve1'={self.getreserve1()}, 'GuarantRatio'={self.getGuarantRatio()}, 'ExchangeID'={self.getExchangeID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcQryCombInstrumentGuardField(Structure):
     """组合合约安全系数查询"""
     _fields_ = [
         ("BrokerID", c_char*11),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
         '''经纪公司代码'''
         return str(self.BrokerID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
         return str(self.ExchangeID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeID'={self.getExchangeID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcInputCombActionField(Structure):
@@ -9940,7 +10535,7 @@ class  CThostFtdcInputCombActionField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("CombActionRef", c_char*13),
         ("UserID", c_char*16),
         ("Direction", c_char),
@@ -9948,9 +10543,13 @@ class  CThostFtdcInputCombActionField(Structure):
         ("CombDirection", c_char),
         ("HedgeFlag", c_char),
         ("ExchangeID", c_char*9),
-        ("IPAddress", c_char*16),
+        ("reserve2", c_char*16),
         ("MacAddress", c_char*21),
         ("InvestUnitID", c_char*17),
+        ("FrontID", c_int32),
+        ("SessionID", c_int32),
+        ("InstrumentID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -9961,9 +10560,9 @@ class  CThostFtdcInputCombActionField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getCombActionRef(self):
         '''组合引用'''
@@ -9993,9 +10592,9 @@ class  CThostFtdcInputCombActionField(Structure):
         '''交易所代码'''
         return str(self.ExchangeID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
@@ -10005,8 +10604,24 @@ class  CThostFtdcInputCombActionField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
+    def getFrontID(self):
+        '''前置编号'''
+        return self.FrontID
+
+    def getSessionID(self):
+        '''会话编号'''
+        return self.SessionID
+
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'CombActionRef'={self.getCombActionRef()}, 'UserID'={self.getUserID()}, 'Direction'={self.getDirection()}, 'Volume'={self.getVolume()}, 'CombDirection'={self.getCombDirection()}, 'HedgeFlag'={self.getHedgeFlag()}, 'ExchangeID'={self.getExchangeID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}, 'InvestUnitID'={self.getInvestUnitID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'CombActionRef'={self.getCombActionRef()}, 'UserID'={self.getUserID()}, 'Direction'={self.getDirection()}, 'Volume'={self.getVolume()}, 'CombDirection'={self.getCombDirection()}, 'HedgeFlag'={self.getHedgeFlag()}, 'ExchangeID'={self.getExchangeID()}, 'reserve2'={self.getreserve2()}, 'MacAddress'={self.getMacAddress()}, 'InvestUnitID'={self.getInvestUnitID()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'InstrumentID'={self.getInstrumentID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcCombActionField(Structure):
@@ -10014,7 +10629,7 @@ class  CThostFtdcCombActionField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("CombActionRef", c_char*13),
         ("UserID", c_char*16),
         ("Direction", c_char),
@@ -10025,7 +10640,7 @@ class  CThostFtdcCombActionField(Structure):
         ("ExchangeID", c_char*9),
         ("ParticipantID", c_char*11),
         ("ClientID", c_char*11),
-        ("ExchangeInstID", c_char*31),
+        ("reserve2", c_char*31),
         ("TraderID", c_char*21),
         ("InstallID", c_int32),
         ("ActionStatus", c_char),
@@ -10037,11 +10652,14 @@ class  CThostFtdcCombActionField(Structure):
         ("SessionID", c_int32),
         ("UserProductInfo", c_char*11),
         ("StatusMsg", c_char*81),
-        ("IPAddress", c_char*16),
+        ("reserve3", c_char*16),
         ("MacAddress", c_char*21),
         ("ComTradeID", c_char*21),
         ("BranchID", c_char*9),
         ("InvestUnitID", c_char*17),
+        ("InstrumentID", c_char*81),
+        ("ExchangeInstID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -10052,9 +10670,9 @@ class  CThostFtdcCombActionField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getCombActionRef(self):
         '''组合引用'''
@@ -10096,9 +10714,9 @@ class  CThostFtdcCombActionField(Structure):
         '''客户代码'''
         return str(self.ClientID, 'GBK')
 
-    def getExchangeInstID(self):
-        '''合约在交易所的代码'''
-        return str(self.ExchangeInstID, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getTraderID(self):
         '''交易所交易员代码'''
@@ -10144,9 +10762,9 @@ class  CThostFtdcCombActionField(Structure):
         '''状态信息'''
         return str(self.StatusMsg, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve3(self):
+        '''保留的无效字段'''
+        return str(self.reserve3, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
@@ -10164,8 +10782,20 @@ class  CThostFtdcCombActionField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getExchangeInstID(self):
+        '''合约在交易所的代码'''
+        return str(self.ExchangeInstID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'CombActionRef'={self.getCombActionRef()}, 'UserID'={self.getUserID()}, 'Direction'={self.getDirection()}, 'Volume'={self.getVolume()}, 'CombDirection'={self.getCombDirection()}, 'HedgeFlag'={self.getHedgeFlag()}, 'ActionLocalID'={self.getActionLocalID()}, 'ExchangeID'={self.getExchangeID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'ActionStatus'={self.getActionStatus()}, 'NotifySequence'={self.getNotifySequence()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'SequenceNo'={self.getSequenceNo()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'UserProductInfo'={self.getUserProductInfo()}, 'StatusMsg'={self.getStatusMsg()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}, 'ComTradeID'={self.getComTradeID()}, 'BranchID'={self.getBranchID()}, 'InvestUnitID'={self.getInvestUnitID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'CombActionRef'={self.getCombActionRef()}, 'UserID'={self.getUserID()}, 'Direction'={self.getDirection()}, 'Volume'={self.getVolume()}, 'CombDirection'={self.getCombDirection()}, 'HedgeFlag'={self.getHedgeFlag()}, 'ActionLocalID'={self.getActionLocalID()}, 'ExchangeID'={self.getExchangeID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'reserve2'={self.getreserve2()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'ActionStatus'={self.getActionStatus()}, 'NotifySequence'={self.getNotifySequence()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'SequenceNo'={self.getSequenceNo()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'UserProductInfo'={self.getUserProductInfo()}, 'StatusMsg'={self.getStatusMsg()}, 'reserve3'={self.getreserve3()}, 'MacAddress'={self.getMacAddress()}, 'ComTradeID'={self.getComTradeID()}, 'BranchID'={self.getBranchID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcQryCombActionField(Structure):
@@ -10173,9 +10803,10 @@ class  CThostFtdcQryCombActionField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
         ("InvestUnitID", c_char*17),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -10186,9 +10817,9 @@ class  CThostFtdcQryCombActionField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
@@ -10198,8 +10829,12 @@ class  CThostFtdcQryCombActionField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcExchangeCombActionField(Structure):
@@ -10213,7 +10848,7 @@ class  CThostFtdcExchangeCombActionField(Structure):
         ("ExchangeID", c_char*9),
         ("ParticipantID", c_char*11),
         ("ClientID", c_char*11),
-        ("ExchangeInstID", c_char*31),
+        ("reserve1", c_char*31),
         ("TraderID", c_char*21),
         ("InstallID", c_int32),
         ("ActionStatus", c_char),
@@ -10221,10 +10856,12 @@ class  CThostFtdcExchangeCombActionField(Structure):
         ("TradingDay", c_char*9),
         ("SettlementID", c_int32),
         ("SequenceNo", c_int32),
-        ("IPAddress", c_char*16),
+        ("reserve2", c_char*16),
         ("MacAddress", c_char*21),
         ("ComTradeID", c_char*21),
         ("BranchID", c_char*9),
+        ("ExchangeInstID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getDirection(self):
@@ -10259,9 +10896,9 @@ class  CThostFtdcExchangeCombActionField(Structure):
         '''客户代码'''
         return str(self.ClientID, 'GBK')
 
-    def getExchangeInstID(self):
-        '''合约在交易所的代码'''
-        return str(self.ExchangeInstID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getTraderID(self):
         '''交易所交易员代码'''
@@ -10291,9 +10928,9 @@ class  CThostFtdcExchangeCombActionField(Structure):
         '''序号'''
         return self.SequenceNo
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
@@ -10307,8 +10944,16 @@ class  CThostFtdcExchangeCombActionField(Structure):
         '''营业部编号'''
         return str(self.BranchID, 'GBK')
 
+    def getExchangeInstID(self):
+        '''合约在交易所的代码'''
+        return str(self.ExchangeInstID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'Direction'={self.getDirection()}, 'Volume'={self.getVolume()}, 'CombDirection'={self.getCombDirection()}, 'HedgeFlag'={self.getHedgeFlag()}, 'ActionLocalID'={self.getActionLocalID()}, 'ExchangeID'={self.getExchangeID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'ActionStatus'={self.getActionStatus()}, 'NotifySequence'={self.getNotifySequence()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'SequenceNo'={self.getSequenceNo()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}, 'ComTradeID'={self.getComTradeID()}, 'BranchID'={self.getBranchID()}"
+        return f"'Direction'={self.getDirection()}, 'Volume'={self.getVolume()}, 'CombDirection'={self.getCombDirection()}, 'HedgeFlag'={self.getHedgeFlag()}, 'ActionLocalID'={self.getActionLocalID()}, 'ExchangeID'={self.getExchangeID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'reserve1'={self.getreserve1()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'ActionStatus'={self.getActionStatus()}, 'NotifySequence'={self.getNotifySequence()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'SequenceNo'={self.getSequenceNo()}, 'reserve2'={self.getreserve2()}, 'MacAddress'={self.getMacAddress()}, 'ComTradeID'={self.getComTradeID()}, 'BranchID'={self.getBranchID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcQryExchangeCombActionField(Structure):
@@ -10316,9 +10961,10 @@ class  CThostFtdcQryExchangeCombActionField(Structure):
     _fields_ = [
         ("ParticipantID", c_char*11),
         ("ClientID", c_char*11),
-        ("ExchangeInstID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
         ("TraderID", c_char*21),
+        ("ExchangeInstID", c_char*81),
     ]
 
     def getParticipantID(self):
@@ -10329,9 +10975,9 @@ class  CThostFtdcQryExchangeCombActionField(Structure):
         '''客户代码'''
         return str(self.ClientID, 'GBK')
 
-    def getExchangeInstID(self):
-        '''合约在交易所的代码'''
-        return str(self.ExchangeInstID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
@@ -10341,22 +10987,27 @@ class  CThostFtdcQryExchangeCombActionField(Structure):
         '''交易所交易员代码'''
         return str(self.TraderID, 'GBK')
 
+    def getExchangeInstID(self):
+        '''合约在交易所的代码'''
+        return str(self.ExchangeInstID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'ExchangeID'={self.getExchangeID()}, 'TraderID'={self.getTraderID()}"
+        return f"'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'TraderID'={self.getTraderID()}, 'ExchangeInstID'={self.getExchangeInstID()}"
 
 
 class  CThostFtdcProductExchRateField(Structure):
     """产品报价汇率"""
     _fields_ = [
-        ("ProductID", c_char*31),
+        ("reserve1", c_char*31),
         ("QuoteCurrencyID", c_char*4),
         ("ExchangeRate", c_double),
         ("ExchangeID", c_char*9),
+        ("ProductID", c_char*81),
     ]
 
-    def getProductID(self):
-        '''产品代码'''
-        return str(self.ProductID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getQuoteCurrencyID(self):
         '''报价币种类型'''
@@ -10370,70 +11021,85 @@ class  CThostFtdcProductExchRateField(Structure):
         '''交易所代码'''
         return str(self.ExchangeID, 'GBK')
 
+    def getProductID(self):
+        '''产品代码'''
+        return str(self.ProductID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'ProductID'={self.getProductID()}, 'QuoteCurrencyID'={self.getQuoteCurrencyID()}, 'ExchangeRate'={self.getExchangeRate()}, 'ExchangeID'={self.getExchangeID()}"
+        return f"'reserve1'={self.getreserve1()}, 'QuoteCurrencyID'={self.getQuoteCurrencyID()}, 'ExchangeRate'={self.getExchangeRate()}, 'ExchangeID'={self.getExchangeID()}, 'ProductID'={self.getProductID()}"
 
 
 class  CThostFtdcQryProductExchRateField(Structure):
     """产品报价汇率查询"""
     _fields_ = [
-        ("ProductID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
+        ("ProductID", c_char*81),
     ]
 
-    def getProductID(self):
-        '''产品代码'''
-        return str(self.ProductID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
         return str(self.ExchangeID, 'GBK')
 
+    def getProductID(self):
+        '''产品代码'''
+        return str(self.ProductID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'ProductID'={self.getProductID()}, 'ExchangeID'={self.getExchangeID()}"
+        return f"'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'ProductID'={self.getProductID()}"
 
 
 class  CThostFtdcQryForQuoteParamField(Structure):
     """查询询价价差参数"""
     _fields_ = [
         ("BrokerID", c_char*11),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
         '''经纪公司代码'''
         return str(self.BrokerID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
         return str(self.ExchangeID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeID'={self.getExchangeID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcForQuoteParamField(Structure):
     """询价价差参数"""
     _fields_ = [
         ("BrokerID", c_char*11),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
         ("LastPrice", c_double),
         ("PriceInterval", c_double),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
         '''经纪公司代码'''
         return str(self.BrokerID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
@@ -10447,14 +11113,18 @@ class  CThostFtdcForQuoteParamField(Structure):
         '''价差'''
         return self.PriceInterval
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeID'={self.getExchangeID()}, 'LastPrice'={self.getLastPrice()}, 'PriceInterval'={self.getPriceInterval()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'LastPrice'={self.getLastPrice()}, 'PriceInterval'={self.getPriceInterval()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcMMOptionInstrCommRateField(Structure):
     """当前做市商期权合约手续费的详细内容"""
     _fields_ = [
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("InvestorRange", c_char),
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
@@ -10466,11 +11136,12 @@ class  CThostFtdcMMOptionInstrCommRateField(Structure):
         ("CloseTodayRatioByVolume", c_double),
         ("StrikeRatioByMoney", c_double),
         ("StrikeRatioByVolume", c_double),
+        ("InstrumentID", c_char*81),
     ]
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getInvestorRange(self):
         '''投资者范围'''
@@ -10516,8 +11187,12 @@ class  CThostFtdcMMOptionInstrCommRateField(Structure):
         '''执行手续费'''
         return self.StrikeRatioByVolume
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'InstrumentID'={self.getInstrumentID()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'OpenRatioByMoney'={self.getOpenRatioByMoney()}, 'OpenRatioByVolume'={self.getOpenRatioByVolume()}, 'CloseRatioByMoney'={self.getCloseRatioByMoney()}, 'CloseRatioByVolume'={self.getCloseRatioByVolume()}, 'CloseTodayRatioByMoney'={self.getCloseTodayRatioByMoney()}, 'CloseTodayRatioByVolume'={self.getCloseTodayRatioByVolume()}, 'StrikeRatioByMoney'={self.getStrikeRatioByMoney()}, 'StrikeRatioByVolume'={self.getStrikeRatioByVolume()}"
+        return f"'reserve1'={self.getreserve1()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'OpenRatioByMoney'={self.getOpenRatioByMoney()}, 'OpenRatioByVolume'={self.getOpenRatioByVolume()}, 'CloseRatioByMoney'={self.getCloseRatioByMoney()}, 'CloseRatioByVolume'={self.getCloseRatioByVolume()}, 'CloseTodayRatioByMoney'={self.getCloseTodayRatioByMoney()}, 'CloseTodayRatioByVolume'={self.getCloseTodayRatioByVolume()}, 'StrikeRatioByMoney'={self.getStrikeRatioByMoney()}, 'StrikeRatioByVolume'={self.getStrikeRatioByVolume()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcQryMMOptionInstrCommRateField(Structure):
@@ -10525,7 +11200,8 @@ class  CThostFtdcQryMMOptionInstrCommRateField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -10536,18 +11212,22 @@ class  CThostFtdcQryMMOptionInstrCommRateField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
+
     def getInstrumentID(self):
         '''合约代码'''
         return str(self.InstrumentID, 'GBK')
 
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcMMInstrumentCommissionRateField(Structure):
     """做市商合约手续费率"""
     _fields_ = [
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("InvestorRange", c_char),
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
@@ -10557,11 +11237,12 @@ class  CThostFtdcMMInstrumentCommissionRateField(Structure):
         ("CloseRatioByVolume", c_double),
         ("CloseTodayRatioByMoney", c_double),
         ("CloseTodayRatioByVolume", c_double),
+        ("InstrumentID", c_char*81),
     ]
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getInvestorRange(self):
         '''投资者范围'''
@@ -10599,8 +11280,12 @@ class  CThostFtdcMMInstrumentCommissionRateField(Structure):
         '''平今手续费'''
         return self.CloseTodayRatioByVolume
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'InstrumentID'={self.getInstrumentID()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'OpenRatioByMoney'={self.getOpenRatioByMoney()}, 'OpenRatioByVolume'={self.getOpenRatioByVolume()}, 'CloseRatioByMoney'={self.getCloseRatioByMoney()}, 'CloseRatioByVolume'={self.getCloseRatioByVolume()}, 'CloseTodayRatioByMoney'={self.getCloseTodayRatioByMoney()}, 'CloseTodayRatioByVolume'={self.getCloseTodayRatioByVolume()}"
+        return f"'reserve1'={self.getreserve1()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'OpenRatioByMoney'={self.getOpenRatioByMoney()}, 'OpenRatioByVolume'={self.getOpenRatioByVolume()}, 'CloseRatioByMoney'={self.getCloseRatioByMoney()}, 'CloseRatioByVolume'={self.getCloseRatioByVolume()}, 'CloseTodayRatioByMoney'={self.getCloseTodayRatioByMoney()}, 'CloseTodayRatioByVolume'={self.getCloseTodayRatioByVolume()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcQryMMInstrumentCommissionRateField(Structure):
@@ -10608,7 +11293,8 @@ class  CThostFtdcQryMMInstrumentCommissionRateField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -10619,18 +11305,22 @@ class  CThostFtdcQryMMInstrumentCommissionRateField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
+
     def getInstrumentID(self):
         '''合约代码'''
         return str(self.InstrumentID, 'GBK')
 
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcInstrumentOrderCommRateField(Structure):
     """当前报单手续费的详细内容"""
     _fields_ = [
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("InvestorRange", c_char),
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
@@ -10639,11 +11329,12 @@ class  CThostFtdcInstrumentOrderCommRateField(Structure):
         ("OrderActionCommByVolume", c_double),
         ("ExchangeID", c_char*9),
         ("InvestUnitID", c_char*17),
+        ("InstrumentID", c_char*81),
     ]
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getInvestorRange(self):
         '''投资者范围'''
@@ -10677,8 +11368,12 @@ class  CThostFtdcInstrumentOrderCommRateField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'InstrumentID'={self.getInstrumentID()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'HedgeFlag'={self.getHedgeFlag()}, 'OrderCommByVolume'={self.getOrderCommByVolume()}, 'OrderActionCommByVolume'={self.getOrderActionCommByVolume()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}"
+        return f"'reserve1'={self.getreserve1()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'HedgeFlag'={self.getHedgeFlag()}, 'OrderCommByVolume'={self.getOrderCommByVolume()}, 'OrderActionCommByVolume'={self.getOrderActionCommByVolume()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcQryInstrumentOrderCommRateField(Structure):
@@ -10686,7 +11381,8 @@ class  CThostFtdcQryInstrumentOrderCommRateField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -10697,12 +11393,16 @@ class  CThostFtdcQryInstrumentOrderCommRateField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
+
     def getInstrumentID(self):
         '''合约代码'''
         return str(self.InstrumentID, 'GBK')
 
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcTradeParamField(Structure):
@@ -10737,7 +11437,7 @@ class  CThostFtdcTradeParamField(Structure):
 class  CThostFtdcInstrumentMarginRateULField(Structure):
     """合约保证金率调整"""
     _fields_ = [
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("InvestorRange", c_char),
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
@@ -10746,11 +11446,12 @@ class  CThostFtdcInstrumentMarginRateULField(Structure):
         ("LongMarginRatioByVolume", c_double),
         ("ShortMarginRatioByMoney", c_double),
         ("ShortMarginRatioByVolume", c_double),
+        ("InstrumentID", c_char*81),
     ]
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getInvestorRange(self):
         '''投资者范围'''
@@ -10784,8 +11485,12 @@ class  CThostFtdcInstrumentMarginRateULField(Structure):
         '''空头保证金费'''
         return self.ShortMarginRatioByVolume
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'InstrumentID'={self.getInstrumentID()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'HedgeFlag'={self.getHedgeFlag()}, 'LongMarginRatioByMoney'={self.getLongMarginRatioByMoney()}, 'LongMarginRatioByVolume'={self.getLongMarginRatioByVolume()}, 'ShortMarginRatioByMoney'={self.getShortMarginRatioByMoney()}, 'ShortMarginRatioByVolume'={self.getShortMarginRatioByVolume()}"
+        return f"'reserve1'={self.getreserve1()}, 'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'HedgeFlag'={self.getHedgeFlag()}, 'LongMarginRatioByMoney'={self.getLongMarginRatioByMoney()}, 'LongMarginRatioByVolume'={self.getLongMarginRatioByVolume()}, 'ShortMarginRatioByMoney'={self.getShortMarginRatioByMoney()}, 'ShortMarginRatioByVolume'={self.getShortMarginRatioByVolume()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcFutureLimitPosiParamField(Structure):
@@ -10794,10 +11499,11 @@ class  CThostFtdcFutureLimitPosiParamField(Structure):
         ("InvestorRange", c_char),
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("ProductID", c_char*31),
+        ("reserve1", c_char*31),
         ("SpecOpenVolume", c_int32),
         ("ArbiOpenVolume", c_int32),
         ("OpenVolume", c_int32),
+        ("ProductID", c_char*81),
     ]
 
     def getInvestorRange(self):
@@ -10812,9 +11518,9 @@ class  CThostFtdcFutureLimitPosiParamField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getProductID(self):
-        '''产品代码'''
-        return str(self.ProductID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getSpecOpenVolume(self):
         '''当日投机开仓数量限制'''
@@ -10828,41 +11534,55 @@ class  CThostFtdcFutureLimitPosiParamField(Structure):
         '''当日投机+套利开仓数量限制'''
         return self.OpenVolume
 
+    def getProductID(self):
+        '''产品代码'''
+        return str(self.ProductID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'ProductID'={self.getProductID()}, 'SpecOpenVolume'={self.getSpecOpenVolume()}, 'ArbiOpenVolume'={self.getArbiOpenVolume()}, 'OpenVolume'={self.getOpenVolume()}"
+        return f"'InvestorRange'={self.getInvestorRange()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'SpecOpenVolume'={self.getSpecOpenVolume()}, 'ArbiOpenVolume'={self.getArbiOpenVolume()}, 'OpenVolume'={self.getOpenVolume()}, 'ProductID'={self.getProductID()}"
 
 
 class  CThostFtdcLoginForbiddenIPField(Structure):
     """禁止登录IP"""
     _fields_ = [
-        ("IPAddress", c_char*16),
+        ("reserve1", c_char*16),
+        ("IPAddress", c_char*33),
     ]
+
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getIPAddress(self):
         '''IP地址'''
         return str(self.IPAddress, 'GBK')
 
     def __str__(self): # 可以直接print
-        return f"'IPAddress'={self.getIPAddress()}"
+        return f"'reserve1'={self.getreserve1()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcIPListField(Structure):
     """IP列表"""
     _fields_ = [
-        ("IPAddress", c_char*16),
+        ("reserve1", c_char*16),
         ("IsWhite", c_int32),
+        ("IPAddress", c_char*33),
     ]
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getIsWhite(self):
         '''是否白名单'''
         return self.IsWhite
 
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'IPAddress'={self.getIPAddress()}, 'IsWhite'={self.getIsWhite()}"
+        return f"'reserve1'={self.getreserve1()}, 'IsWhite'={self.getIsWhite()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcInputOptionSelfCloseField(Structure):
@@ -10870,7 +11590,7 @@ class  CThostFtdcInputOptionSelfCloseField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("OptionSelfCloseRef", c_char*13),
         ("UserID", c_char*16),
         ("Volume", c_int32),
@@ -10883,8 +11603,10 @@ class  CThostFtdcInputOptionSelfCloseField(Structure):
         ("AccountID", c_char*13),
         ("CurrencyID", c_char*4),
         ("ClientID", c_char*11),
-        ("IPAddress", c_char*16),
+        ("reserve2", c_char*16),
         ("MacAddress", c_char*21),
+        ("InstrumentID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -10895,9 +11617,9 @@ class  CThostFtdcInputOptionSelfCloseField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getOptionSelfCloseRef(self):
         '''期权自对冲引用'''
@@ -10947,16 +11669,24 @@ class  CThostFtdcInputOptionSelfCloseField(Structure):
         '''交易编码'''
         return str(self.ClientID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'OptionSelfCloseRef'={self.getOptionSelfCloseRef()}, 'UserID'={self.getUserID()}, 'Volume'={self.getVolume()}, 'RequestID'={self.getRequestID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'HedgeFlag'={self.getHedgeFlag()}, 'OptSelfCloseFlag'={self.getOptSelfCloseFlag()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'AccountID'={self.getAccountID()}, 'CurrencyID'={self.getCurrencyID()}, 'ClientID'={self.getClientID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'OptionSelfCloseRef'={self.getOptionSelfCloseRef()}, 'UserID'={self.getUserID()}, 'Volume'={self.getVolume()}, 'RequestID'={self.getRequestID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'HedgeFlag'={self.getHedgeFlag()}, 'OptSelfCloseFlag'={self.getOptSelfCloseFlag()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'AccountID'={self.getAccountID()}, 'CurrencyID'={self.getCurrencyID()}, 'ClientID'={self.getClientID()}, 'reserve2'={self.getreserve2()}, 'MacAddress'={self.getMacAddress()}, 'InstrumentID'={self.getInstrumentID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcInputOptionSelfCloseActionField(Structure):
@@ -10973,10 +11703,12 @@ class  CThostFtdcInputOptionSelfCloseActionField(Structure):
         ("OptionSelfCloseSysID", c_char*21),
         ("ActionFlag", c_char),
         ("UserID", c_char*16),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("InvestUnitID", c_char*17),
-        ("IPAddress", c_char*16),
+        ("reserve2", c_char*16),
         ("MacAddress", c_char*21),
+        ("InstrumentID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -11023,24 +11755,32 @@ class  CThostFtdcInputOptionSelfCloseActionField(Structure):
         '''用户代码'''
         return str(self.UserID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getInvestUnitID(self):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'OptionSelfCloseActionRef'={self.getOptionSelfCloseActionRef()}, 'OptionSelfCloseRef'={self.getOptionSelfCloseRef()}, 'RequestID'={self.getRequestID()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'ExchangeID'={self.getExchangeID()}, 'OptionSelfCloseSysID'={self.getOptionSelfCloseSysID()}, 'ActionFlag'={self.getActionFlag()}, 'UserID'={self.getUserID()}, 'InstrumentID'={self.getInstrumentID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'OptionSelfCloseActionRef'={self.getOptionSelfCloseActionRef()}, 'OptionSelfCloseRef'={self.getOptionSelfCloseRef()}, 'RequestID'={self.getRequestID()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'ExchangeID'={self.getExchangeID()}, 'OptionSelfCloseSysID'={self.getOptionSelfCloseSysID()}, 'ActionFlag'={self.getActionFlag()}, 'UserID'={self.getUserID()}, 'reserve1'={self.getreserve1()}, 'InvestUnitID'={self.getInvestUnitID()}, 'reserve2'={self.getreserve2()}, 'MacAddress'={self.getMacAddress()}, 'InstrumentID'={self.getInstrumentID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcOptionSelfCloseField(Structure):
@@ -11048,7 +11788,7 @@ class  CThostFtdcOptionSelfCloseField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("OptionSelfCloseRef", c_char*13),
         ("UserID", c_char*16),
         ("Volume", c_int32),
@@ -11060,7 +11800,7 @@ class  CThostFtdcOptionSelfCloseField(Structure):
         ("ExchangeID", c_char*9),
         ("ParticipantID", c_char*11),
         ("ClientID", c_char*11),
-        ("ExchangeInstID", c_char*31),
+        ("reserve2", c_char*31),
         ("TraderID", c_char*21),
         ("InstallID", c_int32),
         ("OrderSubmitStatus", c_char),
@@ -11084,8 +11824,11 @@ class  CThostFtdcOptionSelfCloseField(Structure):
         ("InvestUnitID", c_char*17),
         ("AccountID", c_char*13),
         ("CurrencyID", c_char*4),
-        ("IPAddress", c_char*16),
+        ("reserve3", c_char*16),
         ("MacAddress", c_char*21),
+        ("InstrumentID", c_char*81),
+        ("ExchangeInstID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -11096,9 +11839,9 @@ class  CThostFtdcOptionSelfCloseField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getOptionSelfCloseRef(self):
         '''期权自对冲引用'''
@@ -11144,9 +11887,9 @@ class  CThostFtdcOptionSelfCloseField(Structure):
         '''客户代码'''
         return str(self.ClientID, 'GBK')
 
-    def getExchangeInstID(self):
-        '''合约在交易所的代码'''
-        return str(self.ExchangeInstID, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getTraderID(self):
         '''交易所交易员代码'''
@@ -11240,16 +11983,28 @@ class  CThostFtdcOptionSelfCloseField(Structure):
         '''币种代码'''
         return str(self.CurrencyID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve3(self):
+        '''保留的无效字段'''
+        return str(self.reserve3, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getExchangeInstID(self):
+        '''合约在交易所的代码'''
+        return str(self.ExchangeInstID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'OptionSelfCloseRef'={self.getOptionSelfCloseRef()}, 'UserID'={self.getUserID()}, 'Volume'={self.getVolume()}, 'RequestID'={self.getRequestID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'HedgeFlag'={self.getHedgeFlag()}, 'OptSelfCloseFlag'={self.getOptSelfCloseFlag()}, 'OptionSelfCloseLocalID'={self.getOptionSelfCloseLocalID()}, 'ExchangeID'={self.getExchangeID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'OrderSubmitStatus'={self.getOrderSubmitStatus()}, 'NotifySequence'={self.getNotifySequence()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'OptionSelfCloseSysID'={self.getOptionSelfCloseSysID()}, 'InsertDate'={self.getInsertDate()}, 'InsertTime'={self.getInsertTime()}, 'CancelTime'={self.getCancelTime()}, 'ExecResult'={self.getExecResult()}, 'ClearingPartID'={self.getClearingPartID()}, 'SequenceNo'={self.getSequenceNo()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'UserProductInfo'={self.getUserProductInfo()}, 'StatusMsg'={self.getStatusMsg()}, 'ActiveUserID'={self.getActiveUserID()}, 'BrokerOptionSelfCloseSeq'={self.getBrokerOptionSelfCloseSeq()}, 'BranchID'={self.getBranchID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'AccountID'={self.getAccountID()}, 'CurrencyID'={self.getCurrencyID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'OptionSelfCloseRef'={self.getOptionSelfCloseRef()}, 'UserID'={self.getUserID()}, 'Volume'={self.getVolume()}, 'RequestID'={self.getRequestID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'HedgeFlag'={self.getHedgeFlag()}, 'OptSelfCloseFlag'={self.getOptSelfCloseFlag()}, 'OptionSelfCloseLocalID'={self.getOptionSelfCloseLocalID()}, 'ExchangeID'={self.getExchangeID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'reserve2'={self.getreserve2()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'OrderSubmitStatus'={self.getOrderSubmitStatus()}, 'NotifySequence'={self.getNotifySequence()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'OptionSelfCloseSysID'={self.getOptionSelfCloseSysID()}, 'InsertDate'={self.getInsertDate()}, 'InsertTime'={self.getInsertTime()}, 'CancelTime'={self.getCancelTime()}, 'ExecResult'={self.getExecResult()}, 'ClearingPartID'={self.getClearingPartID()}, 'SequenceNo'={self.getSequenceNo()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'UserProductInfo'={self.getUserProductInfo()}, 'StatusMsg'={self.getStatusMsg()}, 'ActiveUserID'={self.getActiveUserID()}, 'BrokerOptionSelfCloseSeq'={self.getBrokerOptionSelfCloseSeq()}, 'BranchID'={self.getBranchID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'AccountID'={self.getAccountID()}, 'CurrencyID'={self.getCurrencyID()}, 'reserve3'={self.getreserve3()}, 'MacAddress'={self.getMacAddress()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcOptionSelfCloseActionField(Structure):
@@ -11277,11 +12032,13 @@ class  CThostFtdcOptionSelfCloseActionField(Structure):
         ("OrderActionStatus", c_char),
         ("UserID", c_char*16),
         ("StatusMsg", c_char*81),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("BranchID", c_char*9),
         ("InvestUnitID", c_char*17),
-        ("IPAddress", c_char*16),
+        ("reserve2", c_char*16),
         ("MacAddress", c_char*21),
+        ("InstrumentID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -11372,9 +12129,9 @@ class  CThostFtdcOptionSelfCloseActionField(Structure):
         '''状态信息'''
         return str(self.StatusMsg, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getBranchID(self):
         '''营业部编号'''
@@ -11384,16 +12141,24 @@ class  CThostFtdcOptionSelfCloseActionField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'OptionSelfCloseActionRef'={self.getOptionSelfCloseActionRef()}, 'OptionSelfCloseRef'={self.getOptionSelfCloseRef()}, 'RequestID'={self.getRequestID()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'ExchangeID'={self.getExchangeID()}, 'OptionSelfCloseSysID'={self.getOptionSelfCloseSysID()}, 'ActionFlag'={self.getActionFlag()}, 'ActionDate'={self.getActionDate()}, 'ActionTime'={self.getActionTime()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'OptionSelfCloseLocalID'={self.getOptionSelfCloseLocalID()}, 'ActionLocalID'={self.getActionLocalID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'OrderActionStatus'={self.getOrderActionStatus()}, 'UserID'={self.getUserID()}, 'StatusMsg'={self.getStatusMsg()}, 'InstrumentID'={self.getInstrumentID()}, 'BranchID'={self.getBranchID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'OptionSelfCloseActionRef'={self.getOptionSelfCloseActionRef()}, 'OptionSelfCloseRef'={self.getOptionSelfCloseRef()}, 'RequestID'={self.getRequestID()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'ExchangeID'={self.getExchangeID()}, 'OptionSelfCloseSysID'={self.getOptionSelfCloseSysID()}, 'ActionFlag'={self.getActionFlag()}, 'ActionDate'={self.getActionDate()}, 'ActionTime'={self.getActionTime()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'OptionSelfCloseLocalID'={self.getOptionSelfCloseLocalID()}, 'ActionLocalID'={self.getActionLocalID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'OrderActionStatus'={self.getOrderActionStatus()}, 'UserID'={self.getUserID()}, 'StatusMsg'={self.getStatusMsg()}, 'reserve1'={self.getreserve1()}, 'BranchID'={self.getBranchID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'reserve2'={self.getreserve2()}, 'MacAddress'={self.getMacAddress()}, 'InstrumentID'={self.getInstrumentID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcQryOptionSelfCloseField(Structure):
@@ -11401,11 +12166,12 @@ class  CThostFtdcQryOptionSelfCloseField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
         ("OptionSelfCloseSysID", c_char*21),
         ("InsertTimeStart", c_char*9),
         ("InsertTimeEnd", c_char*9),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -11416,9 +12182,9 @@ class  CThostFtdcQryOptionSelfCloseField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
@@ -11436,8 +12202,12 @@ class  CThostFtdcQryOptionSelfCloseField(Structure):
         '''结束时间'''
         return str(self.InsertTimeEnd, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeID'={self.getExchangeID()}, 'OptionSelfCloseSysID'={self.getOptionSelfCloseSysID()}, 'InsertTimeStart'={self.getInsertTimeStart()}, 'InsertTimeEnd'={self.getInsertTimeEnd()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'OptionSelfCloseSysID'={self.getOptionSelfCloseSysID()}, 'InsertTimeStart'={self.getInsertTimeStart()}, 'InsertTimeEnd'={self.getInsertTimeEnd()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcExchangeOptionSelfCloseField(Structure):
@@ -11452,7 +12222,7 @@ class  CThostFtdcExchangeOptionSelfCloseField(Structure):
         ("ExchangeID", c_char*9),
         ("ParticipantID", c_char*11),
         ("ClientID", c_char*11),
-        ("ExchangeInstID", c_char*31),
+        ("reserve1", c_char*31),
         ("TraderID", c_char*21),
         ("InstallID", c_int32),
         ("OrderSubmitStatus", c_char),
@@ -11467,8 +12237,10 @@ class  CThostFtdcExchangeOptionSelfCloseField(Structure):
         ("ClearingPartID", c_char*11),
         ("SequenceNo", c_int32),
         ("BranchID", c_char*9),
-        ("IPAddress", c_char*16),
+        ("reserve2", c_char*16),
         ("MacAddress", c_char*21),
+        ("ExchangeInstID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getVolume(self):
@@ -11507,9 +12279,9 @@ class  CThostFtdcExchangeOptionSelfCloseField(Structure):
         '''客户代码'''
         return str(self.ClientID, 'GBK')
 
-    def getExchangeInstID(self):
-        '''合约在交易所的代码'''
-        return str(self.ExchangeInstID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getTraderID(self):
         '''交易所交易员代码'''
@@ -11567,16 +12339,24 @@ class  CThostFtdcExchangeOptionSelfCloseField(Structure):
         '''营业部编号'''
         return str(self.BranchID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getExchangeInstID(self):
+        '''合约在交易所的代码'''
+        return str(self.ExchangeInstID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'Volume'={self.getVolume()}, 'RequestID'={self.getRequestID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'HedgeFlag'={self.getHedgeFlag()}, 'OptSelfCloseFlag'={self.getOptSelfCloseFlag()}, 'OptionSelfCloseLocalID'={self.getOptionSelfCloseLocalID()}, 'ExchangeID'={self.getExchangeID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'OrderSubmitStatus'={self.getOrderSubmitStatus()}, 'NotifySequence'={self.getNotifySequence()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'OptionSelfCloseSysID'={self.getOptionSelfCloseSysID()}, 'InsertDate'={self.getInsertDate()}, 'InsertTime'={self.getInsertTime()}, 'CancelTime'={self.getCancelTime()}, 'ExecResult'={self.getExecResult()}, 'ClearingPartID'={self.getClearingPartID()}, 'SequenceNo'={self.getSequenceNo()}, 'BranchID'={self.getBranchID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'Volume'={self.getVolume()}, 'RequestID'={self.getRequestID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'HedgeFlag'={self.getHedgeFlag()}, 'OptSelfCloseFlag'={self.getOptSelfCloseFlag()}, 'OptionSelfCloseLocalID'={self.getOptionSelfCloseLocalID()}, 'ExchangeID'={self.getExchangeID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'reserve1'={self.getreserve1()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'OrderSubmitStatus'={self.getOrderSubmitStatus()}, 'NotifySequence'={self.getNotifySequence()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'OptionSelfCloseSysID'={self.getOptionSelfCloseSysID()}, 'InsertDate'={self.getInsertDate()}, 'InsertTime'={self.getInsertTime()}, 'CancelTime'={self.getCancelTime()}, 'ExecResult'={self.getExecResult()}, 'ClearingPartID'={self.getClearingPartID()}, 'SequenceNo'={self.getSequenceNo()}, 'BranchID'={self.getBranchID()}, 'reserve2'={self.getreserve2()}, 'MacAddress'={self.getMacAddress()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcQryOptionSelfCloseActionField(Structure):
@@ -11621,10 +12401,12 @@ class  CThostFtdcExchangeOptionSelfCloseActionField(Structure):
         ("OrderActionStatus", c_char),
         ("UserID", c_char*16),
         ("BranchID", c_char*9),
-        ("IPAddress", c_char*16),
+        ("reserve1", c_char*16),
         ("MacAddress", c_char*21),
-        ("ExchangeInstID", c_char*31),
+        ("reserve2", c_char*31),
         ("OptSelfCloseFlag", c_char),
+        ("IPAddress", c_char*33),
+        ("ExchangeInstID", c_char*81),
     ]
 
     def getExchangeID(self):
@@ -11687,24 +12469,32 @@ class  CThostFtdcExchangeOptionSelfCloseActionField(Structure):
         '''营业部编号'''
         return str(self.BranchID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
-    def getExchangeInstID(self):
-        '''合约在交易所的代码'''
-        return str(self.ExchangeInstID, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getOptSelfCloseFlag(self):
         '''期权行权的头寸是否自对冲'''
         return TThostFtdcOptSelfCloseFlagType(ord(self.OptSelfCloseFlag)) if ord(self.OptSelfCloseFlag) in [e.value for e in list(TThostFtdcOptSelfCloseFlagType)] else list(TThostFtdcOptSelfCloseFlagType)[0]
 
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
+    def getExchangeInstID(self):
+        '''合约在交易所的代码'''
+        return str(self.ExchangeInstID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'ExchangeID'={self.getExchangeID()}, 'OptionSelfCloseSysID'={self.getOptionSelfCloseSysID()}, 'ActionFlag'={self.getActionFlag()}, 'ActionDate'={self.getActionDate()}, 'ActionTime'={self.getActionTime()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'OptionSelfCloseLocalID'={self.getOptionSelfCloseLocalID()}, 'ActionLocalID'={self.getActionLocalID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'OrderActionStatus'={self.getOrderActionStatus()}, 'UserID'={self.getUserID()}, 'BranchID'={self.getBranchID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'OptSelfCloseFlag'={self.getOptSelfCloseFlag()}"
+        return f"'ExchangeID'={self.getExchangeID()}, 'OptionSelfCloseSysID'={self.getOptionSelfCloseSysID()}, 'ActionFlag'={self.getActionFlag()}, 'ActionDate'={self.getActionDate()}, 'ActionTime'={self.getActionTime()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'OptionSelfCloseLocalID'={self.getOptionSelfCloseLocalID()}, 'ActionLocalID'={self.getActionLocalID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'OrderActionStatus'={self.getOrderActionStatus()}, 'UserID'={self.getUserID()}, 'BranchID'={self.getBranchID()}, 'reserve1'={self.getreserve1()}, 'MacAddress'={self.getMacAddress()}, 'reserve2'={self.getreserve2()}, 'OptSelfCloseFlag'={self.getOptSelfCloseFlag()}, 'IPAddress'={self.getIPAddress()}, 'ExchangeInstID'={self.getExchangeInstID()}"
 
 
 class  CThostFtdcSyncDelaySwapField(Structure):
@@ -11719,6 +12509,8 @@ class  CThostFtdcSyncDelaySwapField(Structure):
         ("FromRemainSwap", c_double),
         ("ToCurrencyID", c_char*4),
         ("ToAmount", c_double),
+        ("IsManualSwap", c_int32),
+        ("IsAllRemainSetZero", c_int32),
     ]
 
     def getDelaySwapSeqNo(self):
@@ -11757,8 +12549,16 @@ class  CThostFtdcSyncDelaySwapField(Structure):
         '''目标金额'''
         return self.ToAmount
 
+    def getIsManualSwap(self):
+        '''是否手工换汇'''
+        return self.IsManualSwap
+
+    def getIsAllRemainSetZero(self):
+        '''是否将所有外币的剩余换汇额度设置为0'''
+        return self.IsAllRemainSetZero
+
     def __str__(self): # 可以直接print
-        return f"'DelaySwapSeqNo'={self.getDelaySwapSeqNo()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'FromCurrencyID'={self.getFromCurrencyID()}, 'FromAmount'={self.getFromAmount()}, 'FromFrozenSwap'={self.getFromFrozenSwap()}, 'FromRemainSwap'={self.getFromRemainSwap()}, 'ToCurrencyID'={self.getToCurrencyID()}, 'ToAmount'={self.getToAmount()}"
+        return f"'DelaySwapSeqNo'={self.getDelaySwapSeqNo()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'FromCurrencyID'={self.getFromCurrencyID()}, 'FromAmount'={self.getFromAmount()}, 'FromFrozenSwap'={self.getFromFrozenSwap()}, 'FromRemainSwap'={self.getFromRemainSwap()}, 'ToCurrencyID'={self.getToCurrencyID()}, 'ToAmount'={self.getToAmount()}, 'IsManualSwap'={self.getIsManualSwap()}, 'IsAllRemainSetZero'={self.getIsAllRemainSetZero()}"
 
 
 class  CThostFtdcQrySyncDelaySwapField(Structure):
@@ -11925,9 +12725,9 @@ class  CThostFtdcMarketDataField(Structure):
     """市场行情"""
     _fields_ = [
         ("TradingDay", c_char*9),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
-        ("ExchangeInstID", c_char*31),
+        ("reserve2", c_char*31),
         ("LastPrice", c_double),
         ("PreSettlementPrice", c_double),
         ("PreClosePrice", c_double),
@@ -11947,23 +12747,25 @@ class  CThostFtdcMarketDataField(Structure):
         ("UpdateTime", c_char*9),
         ("UpdateMillisec", c_int32),
         ("ActionDay", c_char*9),
+        ("InstrumentID", c_char*81),
+        ("ExchangeInstID", c_char*81),
     ]
 
     def getTradingDay(self):
         '''交易日'''
         return str(self.TradingDay, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
         return str(self.ExchangeID, 'GBK')
 
-    def getExchangeInstID(self):
-        '''合约在交易所的代码'''
-        return str(self.ExchangeInstID, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getLastPrice(self):
         '''最新价'''
@@ -12041,8 +12843,16 @@ class  CThostFtdcMarketDataField(Structure):
         '''业务日期'''
         return str(self.ActionDay, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getExchangeInstID(self):
+        '''合约在交易所的代码'''
+        return str(self.ExchangeInstID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'TradingDay'={self.getTradingDay()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeID'={self.getExchangeID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'LastPrice'={self.getLastPrice()}, 'PreSettlementPrice'={self.getPreSettlementPrice()}, 'PreClosePrice'={self.getPreClosePrice()}, 'PreOpenInterest'={self.getPreOpenInterest()}, 'OpenPrice'={self.getOpenPrice()}, 'HighestPrice'={self.getHighestPrice()}, 'LowestPrice'={self.getLowestPrice()}, 'Volume'={self.getVolume()}, 'Turnover'={self.getTurnover()}, 'OpenInterest'={self.getOpenInterest()}, 'ClosePrice'={self.getClosePrice()}, 'SettlementPrice'={self.getSettlementPrice()}, 'UpperLimitPrice'={self.getUpperLimitPrice()}, 'LowerLimitPrice'={self.getLowerLimitPrice()}, 'PreDelta'={self.getPreDelta()}, 'CurrDelta'={self.getCurrDelta()}, 'UpdateTime'={self.getUpdateTime()}, 'UpdateMillisec'={self.getUpdateMillisec()}, 'ActionDay'={self.getActionDay()}"
+        return f"'TradingDay'={self.getTradingDay()}, 'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'reserve2'={self.getreserve2()}, 'LastPrice'={self.getLastPrice()}, 'PreSettlementPrice'={self.getPreSettlementPrice()}, 'PreClosePrice'={self.getPreClosePrice()}, 'PreOpenInterest'={self.getPreOpenInterest()}, 'OpenPrice'={self.getOpenPrice()}, 'HighestPrice'={self.getHighestPrice()}, 'LowestPrice'={self.getLowestPrice()}, 'Volume'={self.getVolume()}, 'Turnover'={self.getTurnover()}, 'OpenInterest'={self.getOpenInterest()}, 'ClosePrice'={self.getClosePrice()}, 'SettlementPrice'={self.getSettlementPrice()}, 'UpperLimitPrice'={self.getUpperLimitPrice()}, 'LowerLimitPrice'={self.getLowerLimitPrice()}, 'PreDelta'={self.getPreDelta()}, 'CurrDelta'={self.getCurrDelta()}, 'UpdateTime'={self.getUpdateTime()}, 'UpdateMillisec'={self.getUpdateMillisec()}, 'ActionDay'={self.getActionDay()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeInstID'={self.getExchangeInstID()}"
 
 
 class  CThostFtdcMarketDataBaseField(Structure):
@@ -12305,15 +13115,16 @@ class  CThostFtdcMarketDataAsk45Field(Structure):
 class  CThostFtdcMarketDataUpdateTimeField(Structure):
     """行情更新时间属性"""
     _fields_ = [
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("UpdateTime", c_char*9),
         ("UpdateMillisec", c_int32),
         ("ActionDay", c_char*9),
+        ("InstrumentID", c_char*81),
     ]
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getUpdateTime(self):
         '''最后修改时间'''
@@ -12327,8 +13138,12 @@ class  CThostFtdcMarketDataUpdateTimeField(Structure):
         '''业务日期'''
         return str(self.ActionDay, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'InstrumentID'={self.getInstrumentID()}, 'UpdateTime'={self.getUpdateTime()}, 'UpdateMillisec'={self.getUpdateMillisec()}, 'ActionDay'={self.getActionDay()}"
+        return f"'reserve1'={self.getreserve1()}, 'UpdateTime'={self.getUpdateTime()}, 'UpdateMillisec'={self.getUpdateMillisec()}, 'ActionDay'={self.getActionDay()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcMarketDataExchangeField(Structure):
@@ -12348,45 +13163,52 @@ class  CThostFtdcMarketDataExchangeField(Structure):
 class  CThostFtdcSpecificInstrumentField(Structure):
     """指定的合约"""
     _fields_ = [
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
+        ("InstrumentID", c_char*81),
     ]
+
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getInstrumentID(self):
         '''合约代码'''
         return str(self.InstrumentID, 'GBK')
 
     def __str__(self): # 可以直接print
-        return f"'InstrumentID'={self.getInstrumentID()}"
+        return f"'reserve1'={self.getreserve1()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcInstrumentStatusField(Structure):
     """合约状态"""
     _fields_ = [
         ("ExchangeID", c_char*9),
-        ("ExchangeInstID", c_char*31),
+        ("reserve1", c_char*31),
         ("SettlementGroupID", c_char*9),
-        ("InstrumentID", c_char*31),
+        ("reserve2", c_char*31),
         ("InstrumentStatus", c_char),
         ("TradingSegmentSN", c_int32),
         ("EnterTime", c_char*9),
         ("EnterReason", c_char),
+        ("ExchangeInstID", c_char*81),
+        ("InstrumentID", c_char*81),
     ]
 
     def getExchangeID(self):
         '''交易所代码'''
         return str(self.ExchangeID, 'GBK')
 
-    def getExchangeInstID(self):
-        '''合约在交易所的代码'''
-        return str(self.ExchangeInstID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getSettlementGroupID(self):
         '''结算组代码'''
         return str(self.SettlementGroupID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getInstrumentStatus(self):
         '''合约交易状态'''
@@ -12404,27 +13226,40 @@ class  CThostFtdcInstrumentStatusField(Structure):
         '''进入本状态原因'''
         return TThostFtdcInstStatusEnterReasonType(ord(self.EnterReason)) if ord(self.EnterReason) in [e.value for e in list(TThostFtdcInstStatusEnterReasonType)] else list(TThostFtdcInstStatusEnterReasonType)[0]
 
+    def getExchangeInstID(self):
+        '''合约在交易所的代码'''
+        return str(self.ExchangeInstID, 'GBK')
+
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'ExchangeID'={self.getExchangeID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'SettlementGroupID'={self.getSettlementGroupID()}, 'InstrumentID'={self.getInstrumentID()}, 'InstrumentStatus'={self.getInstrumentStatus()}, 'TradingSegmentSN'={self.getTradingSegmentSN()}, 'EnterTime'={self.getEnterTime()}, 'EnterReason'={self.getEnterReason()}"
+        return f"'ExchangeID'={self.getExchangeID()}, 'reserve1'={self.getreserve1()}, 'SettlementGroupID'={self.getSettlementGroupID()}, 'reserve2'={self.getreserve2()}, 'InstrumentStatus'={self.getInstrumentStatus()}, 'TradingSegmentSN'={self.getTradingSegmentSN()}, 'EnterTime'={self.getEnterTime()}, 'EnterReason'={self.getEnterReason()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcQryInstrumentStatusField(Structure):
     """查询合约状态"""
     _fields_ = [
         ("ExchangeID", c_char*9),
-        ("ExchangeInstID", c_char*31),
+        ("reserve1", c_char*31),
+        ("ExchangeInstID", c_char*81),
     ]
 
     def getExchangeID(self):
         '''交易所代码'''
         return str(self.ExchangeID, 'GBK')
 
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
+
     def getExchangeInstID(self):
         '''合约在交易所的代码'''
         return str(self.ExchangeInstID, 'GBK')
 
     def __str__(self): # 可以直接print
-        return f"'ExchangeID'={self.getExchangeID()}, 'ExchangeInstID'={self.getExchangeInstID()}"
+        return f"'ExchangeID'={self.getExchangeID()}, 'reserve1'={self.getreserve1()}, 'ExchangeInstID'={self.getExchangeInstID()}"
 
 
 class  CThostFtdcInvestorAccountField(Structure):
@@ -12572,9 +13407,10 @@ class  CThostFtdcQryInvestorPositionDetailField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
         ("InvestUnitID", c_char*17),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -12585,9 +13421,9 @@ class  CThostFtdcQryInvestorPositionDetailField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
@@ -12597,14 +13433,18 @@ class  CThostFtdcQryInvestorPositionDetailField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcInvestorPositionDetailField(Structure):
     """投资者持仓明细"""
     _fields_ = [
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
         ("HedgeFlag", c_char),
@@ -12616,7 +13456,7 @@ class  CThostFtdcInvestorPositionDetailField(Structure):
         ("TradingDay", c_char*9),
         ("SettlementID", c_int32),
         ("TradeType", c_char),
-        ("CombInstrumentID", c_char*31),
+        ("reserve2", c_char*31),
         ("ExchangeID", c_char*9),
         ("CloseProfitByDate", c_double),
         ("CloseProfitByTrade", c_double),
@@ -12632,11 +13472,14 @@ class  CThostFtdcInvestorPositionDetailField(Structure):
         ("CloseAmount", c_double),
         ("TimeFirstVolume", c_int32),
         ("InvestUnitID", c_char*17),
+        ("SpecPosiType", c_char),
+        ("InstrumentID", c_char*81),
+        ("CombInstrumentID", c_char*81),
     ]
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getBrokerID(self):
         '''经纪公司代码'''
@@ -12682,9 +13525,9 @@ class  CThostFtdcInvestorPositionDetailField(Structure):
         '''成交类型'''
         return TThostFtdcTradeTypeType(ord(self.TradeType)) if ord(self.TradeType) in [e.value for e in list(TThostFtdcTradeTypeType)] else list(TThostFtdcTradeTypeType)[0]
 
-    def getCombInstrumentID(self):
-        '''组合合约代码'''
-        return str(self.CombInstrumentID, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
@@ -12739,15 +13582,27 @@ class  CThostFtdcInvestorPositionDetailField(Structure):
         return self.CloseAmount
 
     def getTimeFirstVolume(self):
-        '''按照时间顺序平仓的笔数,大商所专用'''
+        '''先开先平剩余数量（DCE）'''
         return self.TimeFirstVolume
 
     def getInvestUnitID(self):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
+    def getSpecPosiType(self):
+        '''特殊持仓标志'''
+        return TThostFtdcSpecPosiTypeType(ord(self.SpecPosiType)) if ord(self.SpecPosiType) in [e.value for e in list(TThostFtdcSpecPosiTypeType)] else list(TThostFtdcSpecPosiTypeType)[0]
+
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getCombInstrumentID(self):
+        '''组合合约代码'''
+        return str(self.CombInstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'InstrumentID'={self.getInstrumentID()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'HedgeFlag'={self.getHedgeFlag()}, 'Direction'={self.getDirection()}, 'OpenDate'={self.getOpenDate()}, 'TradeID'={self.getTradeID()}, 'Volume'={self.getVolume()}, 'OpenPrice'={self.getOpenPrice()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'TradeType'={self.getTradeType()}, 'CombInstrumentID'={self.getCombInstrumentID()}, 'ExchangeID'={self.getExchangeID()}, 'CloseProfitByDate'={self.getCloseProfitByDate()}, 'CloseProfitByTrade'={self.getCloseProfitByTrade()}, 'PositionProfitByDate'={self.getPositionProfitByDate()}, 'PositionProfitByTrade'={self.getPositionProfitByTrade()}, 'Margin'={self.getMargin()}, 'ExchMargin'={self.getExchMargin()}, 'MarginRateByMoney'={self.getMarginRateByMoney()}, 'MarginRateByVolume'={self.getMarginRateByVolume()}, 'LastSettlementPrice'={self.getLastSettlementPrice()}, 'SettlementPrice'={self.getSettlementPrice()}, 'CloseVolume'={self.getCloseVolume()}, 'CloseAmount'={self.getCloseAmount()}, 'TimeFirstVolume'={self.getTimeFirstVolume()}, 'InvestUnitID'={self.getInvestUnitID()}"
+        return f"'reserve1'={self.getreserve1()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'HedgeFlag'={self.getHedgeFlag()}, 'Direction'={self.getDirection()}, 'OpenDate'={self.getOpenDate()}, 'TradeID'={self.getTradeID()}, 'Volume'={self.getVolume()}, 'OpenPrice'={self.getOpenPrice()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'TradeType'={self.getTradeType()}, 'reserve2'={self.getreserve2()}, 'ExchangeID'={self.getExchangeID()}, 'CloseProfitByDate'={self.getCloseProfitByDate()}, 'CloseProfitByTrade'={self.getCloseProfitByTrade()}, 'PositionProfitByDate'={self.getPositionProfitByDate()}, 'PositionProfitByTrade'={self.getPositionProfitByTrade()}, 'Margin'={self.getMargin()}, 'ExchMargin'={self.getExchMargin()}, 'MarginRateByMoney'={self.getMarginRateByMoney()}, 'MarginRateByVolume'={self.getMarginRateByVolume()}, 'LastSettlementPrice'={self.getLastSettlementPrice()}, 'SettlementPrice'={self.getSettlementPrice()}, 'CloseVolume'={self.getCloseVolume()}, 'CloseAmount'={self.getCloseAmount()}, 'TimeFirstVolume'={self.getTimeFirstVolume()}, 'InvestUnitID'={self.getInvestUnitID()}, 'SpecPosiType'={self.getSpecPosiType()}, 'InstrumentID'={self.getInstrumentID()}, 'CombInstrumentID'={self.getCombInstrumentID()}"
 
 
 class  CThostFtdcTradingAccountPasswordField(Structure):
@@ -13142,25 +13997,35 @@ class  CThostFtdcTradingAccountPasswordUpdateField(Structure):
 class  CThostFtdcQryCombinationLegField(Structure):
     """查询组合合约分腿"""
     _fields_ = [
-        ("CombInstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("LegID", c_int32),
-        ("LegInstrumentID", c_char*31),
+        ("reserve2", c_char*31),
+        ("CombInstrumentID", c_char*81),
+        ("LegInstrumentID", c_char*81),
     ]
 
-    def getCombInstrumentID(self):
-        '''组合合约代码'''
-        return str(self.CombInstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getLegID(self):
         '''单腿编号'''
         return self.LegID
+
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
+
+    def getCombInstrumentID(self):
+        '''组合合约代码'''
+        return str(self.CombInstrumentID, 'GBK')
 
     def getLegInstrumentID(self):
         '''单腿合约代码'''
         return str(self.LegInstrumentID, 'GBK')
 
     def __str__(self): # 可以直接print
-        return f"'CombInstrumentID'={self.getCombInstrumentID()}, 'LegID'={self.getLegID()}, 'LegInstrumentID'={self.getLegInstrumentID()}"
+        return f"'reserve1'={self.getreserve1()}, 'LegID'={self.getLegID()}, 'reserve2'={self.getreserve2()}, 'CombInstrumentID'={self.getCombInstrumentID()}, 'LegInstrumentID'={self.getLegInstrumentID()}"
 
 
 class  CThostFtdcQrySyncStatusField(Structure):
@@ -13180,25 +14045,27 @@ class  CThostFtdcQrySyncStatusField(Structure):
 class  CThostFtdcCombinationLegField(Structure):
     """组合交易合约的单腿"""
     _fields_ = [
-        ("CombInstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("LegID", c_int32),
-        ("LegInstrumentID", c_char*31),
+        ("reserve2", c_char*31),
         ("Direction", c_char),
         ("LegMultiple", c_int32),
         ("ImplyLevel", c_int32),
+        ("CombInstrumentID", c_char*81),
+        ("LegInstrumentID", c_char*81),
     ]
 
-    def getCombInstrumentID(self):
-        '''组合合约代码'''
-        return str(self.CombInstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getLegID(self):
         '''单腿编号'''
         return self.LegID
 
-    def getLegInstrumentID(self):
-        '''单腿合约代码'''
-        return str(self.LegInstrumentID, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getDirection(self):
         '''买卖方向'''
@@ -13212,8 +14079,16 @@ class  CThostFtdcCombinationLegField(Structure):
         '''派生层数'''
         return self.ImplyLevel
 
+    def getCombInstrumentID(self):
+        '''组合合约代码'''
+        return str(self.CombInstrumentID, 'GBK')
+
+    def getLegInstrumentID(self):
+        '''单腿合约代码'''
+        return str(self.LegInstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'CombInstrumentID'={self.getCombInstrumentID()}, 'LegID'={self.getLegID()}, 'LegInstrumentID'={self.getLegInstrumentID()}, 'Direction'={self.getDirection()}, 'LegMultiple'={self.getLegMultiple()}, 'ImplyLevel'={self.getImplyLevel()}"
+        return f"'reserve1'={self.getreserve1()}, 'LegID'={self.getLegID()}, 'reserve2'={self.getreserve2()}, 'Direction'={self.getDirection()}, 'LegMultiple'={self.getLegMultiple()}, 'ImplyLevel'={self.getImplyLevel()}, 'CombInstrumentID'={self.getCombInstrumentID()}, 'LegInstrumentID'={self.getLegInstrumentID()}"
 
 
 class  CThostFtdcSyncStatusField(Structure):
@@ -13358,7 +14233,8 @@ class  CThostFtdcBrokerUserEventField(Structure):
         ("EventTime", c_char*9),
         ("UserEventInfo", c_char*1025),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -13393,12 +14269,16 @@ class  CThostFtdcBrokerUserEventField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
+
     def getInstrumentID(self):
         '''合约代码'''
         return str(self.InstrumentID, 'GBK')
 
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'UserID'={self.getUserID()}, 'UserEventType'={self.getUserEventType()}, 'EventSequenceNo'={self.getEventSequenceNo()}, 'EventDate'={self.getEventDate()}, 'EventTime'={self.getEventTime()}, 'UserEventInfo'={self.getUserEventInfo()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'UserID'={self.getUserID()}, 'UserEventType'={self.getUserEventType()}, 'EventSequenceNo'={self.getEventSequenceNo()}, 'EventDate'={self.getEventDate()}, 'EventTime'={self.getEventTime()}, 'UserEventInfo'={self.getUserEventInfo()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcQryContractBankField(Structure):
@@ -13465,7 +14345,7 @@ class  CThostFtdcInvestorPositionCombineDetailField(Structure):
         ("InvestorID", c_char*13),
         ("ComTradeID", c_char*21),
         ("TradeID", c_char*21),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("HedgeFlag", c_char),
         ("Direction", c_char),
         ("TotalAmt", c_int32),
@@ -13475,9 +14355,11 @@ class  CThostFtdcInvestorPositionCombineDetailField(Structure):
         ("MarginRateByVolume", c_double),
         ("LegID", c_int32),
         ("LegMultiple", c_int32),
-        ("CombInstrumentID", c_char*31),
+        ("reserve2", c_char*31),
         ("TradeGroupID", c_int32),
         ("InvestUnitID", c_char*17),
+        ("InstrumentID", c_char*81),
+        ("CombInstrumentID", c_char*81),
     ]
 
     def getTradingDay(self):
@@ -13512,9 +14394,9 @@ class  CThostFtdcInvestorPositionCombineDetailField(Structure):
         '''撮合编号'''
         return str(self.TradeID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getHedgeFlag(self):
         '''投机套保标志'''
@@ -13552,9 +14434,9 @@ class  CThostFtdcInvestorPositionCombineDetailField(Structure):
         '''单腿乘数'''
         return self.LegMultiple
 
-    def getCombInstrumentID(self):
-        '''组合持仓合约编码'''
-        return str(self.CombInstrumentID, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getTradeGroupID(self):
         '''成交组号'''
@@ -13564,8 +14446,16 @@ class  CThostFtdcInvestorPositionCombineDetailField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getCombInstrumentID(self):
+        '''组合持仓合约编码'''
+        return str(self.CombInstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'TradingDay'={self.getTradingDay()}, 'OpenDate'={self.getOpenDate()}, 'ExchangeID'={self.getExchangeID()}, 'SettlementID'={self.getSettlementID()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'ComTradeID'={self.getComTradeID()}, 'TradeID'={self.getTradeID()}, 'InstrumentID'={self.getInstrumentID()}, 'HedgeFlag'={self.getHedgeFlag()}, 'Direction'={self.getDirection()}, 'TotalAmt'={self.getTotalAmt()}, 'Margin'={self.getMargin()}, 'ExchMargin'={self.getExchMargin()}, 'MarginRateByMoney'={self.getMarginRateByMoney()}, 'MarginRateByVolume'={self.getMarginRateByVolume()}, 'LegID'={self.getLegID()}, 'LegMultiple'={self.getLegMultiple()}, 'CombInstrumentID'={self.getCombInstrumentID()}, 'TradeGroupID'={self.getTradeGroupID()}, 'InvestUnitID'={self.getInvestUnitID()}"
+        return f"'TradingDay'={self.getTradingDay()}, 'OpenDate'={self.getOpenDate()}, 'ExchangeID'={self.getExchangeID()}, 'SettlementID'={self.getSettlementID()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'ComTradeID'={self.getComTradeID()}, 'TradeID'={self.getTradeID()}, 'reserve1'={self.getreserve1()}, 'HedgeFlag'={self.getHedgeFlag()}, 'Direction'={self.getDirection()}, 'TotalAmt'={self.getTotalAmt()}, 'Margin'={self.getMargin()}, 'ExchMargin'={self.getExchMargin()}, 'MarginRateByMoney'={self.getMarginRateByMoney()}, 'MarginRateByVolume'={self.getMarginRateByVolume()}, 'LegID'={self.getLegID()}, 'LegMultiple'={self.getLegMultiple()}, 'reserve2'={self.getreserve2()}, 'TradeGroupID'={self.getTradeGroupID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'InstrumentID'={self.getInstrumentID()}, 'CombInstrumentID'={self.getCombInstrumentID()}"
 
 
 class  CThostFtdcParkedOrderField(Structure):
@@ -13573,7 +14463,7 @@ class  CThostFtdcParkedOrderField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("OrderRef", c_char*13),
         ("UserID", c_char*16),
         ("OrderPriceType", c_char),
@@ -13604,8 +14494,10 @@ class  CThostFtdcParkedOrderField(Structure):
         ("CurrencyID", c_char*4),
         ("ClientID", c_char*11),
         ("InvestUnitID", c_char*17),
-        ("IPAddress", c_char*16),
+        ("reserve2", c_char*16),
         ("MacAddress", c_char*21),
+        ("InstrumentID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -13616,9 +14508,9 @@ class  CThostFtdcParkedOrderField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getOrderRef(self):
         '''报单引用'''
@@ -13740,16 +14632,24 @@ class  CThostFtdcParkedOrderField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'OrderRef'={self.getOrderRef()}, 'UserID'={self.getUserID()}, 'OrderPriceType'={self.getOrderPriceType()}, 'Direction'={self.getDirection()}, 'CombOffsetFlag'={self.getCombOffsetFlag()}, 'CombHedgeFlag'={self.getCombHedgeFlag()}, 'LimitPrice'={self.getLimitPrice()}, 'VolumeTotalOriginal'={self.getVolumeTotalOriginal()}, 'TimeCondition'={self.getTimeCondition()}, 'GTDDate'={self.getGTDDate()}, 'VolumeCondition'={self.getVolumeCondition()}, 'MinVolume'={self.getMinVolume()}, 'ContingentCondition'={self.getContingentCondition()}, 'StopPrice'={self.getStopPrice()}, 'ForceCloseReason'={self.getForceCloseReason()}, 'IsAutoSuspend'={self.getIsAutoSuspend()}, 'BusinessUnit'={self.getBusinessUnit()}, 'RequestID'={self.getRequestID()}, 'UserForceClose'={self.getUserForceClose()}, 'ExchangeID'={self.getExchangeID()}, 'ParkedOrderID'={self.getParkedOrderID()}, 'UserType'={self.getUserType()}, 'Status'={self.getStatus()}, 'ErrorID'={self.getErrorID()}, 'ErrorMsg'={self.getErrorMsg()}, 'IsSwapOrder'={self.getIsSwapOrder()}, 'AccountID'={self.getAccountID()}, 'CurrencyID'={self.getCurrencyID()}, 'ClientID'={self.getClientID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'OrderRef'={self.getOrderRef()}, 'UserID'={self.getUserID()}, 'OrderPriceType'={self.getOrderPriceType()}, 'Direction'={self.getDirection()}, 'CombOffsetFlag'={self.getCombOffsetFlag()}, 'CombHedgeFlag'={self.getCombHedgeFlag()}, 'LimitPrice'={self.getLimitPrice()}, 'VolumeTotalOriginal'={self.getVolumeTotalOriginal()}, 'TimeCondition'={self.getTimeCondition()}, 'GTDDate'={self.getGTDDate()}, 'VolumeCondition'={self.getVolumeCondition()}, 'MinVolume'={self.getMinVolume()}, 'ContingentCondition'={self.getContingentCondition()}, 'StopPrice'={self.getStopPrice()}, 'ForceCloseReason'={self.getForceCloseReason()}, 'IsAutoSuspend'={self.getIsAutoSuspend()}, 'BusinessUnit'={self.getBusinessUnit()}, 'RequestID'={self.getRequestID()}, 'UserForceClose'={self.getUserForceClose()}, 'ExchangeID'={self.getExchangeID()}, 'ParkedOrderID'={self.getParkedOrderID()}, 'UserType'={self.getUserType()}, 'Status'={self.getStatus()}, 'ErrorID'={self.getErrorID()}, 'ErrorMsg'={self.getErrorMsg()}, 'IsSwapOrder'={self.getIsSwapOrder()}, 'AccountID'={self.getAccountID()}, 'CurrencyID'={self.getCurrencyID()}, 'ClientID'={self.getClientID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'reserve2'={self.getreserve2()}, 'MacAddress'={self.getMacAddress()}, 'InstrumentID'={self.getInstrumentID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcParkedOrderActionField(Structure):
@@ -13768,15 +14668,17 @@ class  CThostFtdcParkedOrderActionField(Structure):
         ("LimitPrice", c_double),
         ("VolumeChange", c_int32),
         ("UserID", c_char*16),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ParkedOrderActionID", c_char*13),
         ("UserType", c_char),
         ("Status", c_char),
         ("ErrorID", c_int32),
         ("ErrorMsg", c_char*81),
         ("InvestUnitID", c_char*17),
-        ("IPAddress", c_char*16),
+        ("reserve2", c_char*16),
         ("MacAddress", c_char*21),
+        ("InstrumentID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -13831,9 +14733,9 @@ class  CThostFtdcParkedOrderActionField(Structure):
         '''用户代码'''
         return str(self.UserID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getParkedOrderActionID(self):
         '''预埋撤单单编号'''
@@ -13859,16 +14761,24 @@ class  CThostFtdcParkedOrderActionField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'OrderActionRef'={self.getOrderActionRef()}, 'OrderRef'={self.getOrderRef()}, 'RequestID'={self.getRequestID()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'ExchangeID'={self.getExchangeID()}, 'OrderSysID'={self.getOrderSysID()}, 'ActionFlag'={self.getActionFlag()}, 'LimitPrice'={self.getLimitPrice()}, 'VolumeChange'={self.getVolumeChange()}, 'UserID'={self.getUserID()}, 'InstrumentID'={self.getInstrumentID()}, 'ParkedOrderActionID'={self.getParkedOrderActionID()}, 'UserType'={self.getUserType()}, 'Status'={self.getStatus()}, 'ErrorID'={self.getErrorID()}, 'ErrorMsg'={self.getErrorMsg()}, 'InvestUnitID'={self.getInvestUnitID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'OrderActionRef'={self.getOrderActionRef()}, 'OrderRef'={self.getOrderRef()}, 'RequestID'={self.getRequestID()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'ExchangeID'={self.getExchangeID()}, 'OrderSysID'={self.getOrderSysID()}, 'ActionFlag'={self.getActionFlag()}, 'LimitPrice'={self.getLimitPrice()}, 'VolumeChange'={self.getVolumeChange()}, 'UserID'={self.getUserID()}, 'reserve1'={self.getreserve1()}, 'ParkedOrderActionID'={self.getParkedOrderActionID()}, 'UserType'={self.getUserType()}, 'Status'={self.getStatus()}, 'ErrorID'={self.getErrorID()}, 'ErrorMsg'={self.getErrorMsg()}, 'InvestUnitID'={self.getInvestUnitID()}, 'reserve2'={self.getreserve2()}, 'MacAddress'={self.getMacAddress()}, 'InstrumentID'={self.getInstrumentID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcQryParkedOrderField(Structure):
@@ -13876,9 +14786,10 @@ class  CThostFtdcQryParkedOrderField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
         ("InvestUnitID", c_char*17),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -13889,9 +14800,9 @@ class  CThostFtdcQryParkedOrderField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
@@ -13901,8 +14812,12 @@ class  CThostFtdcQryParkedOrderField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcQryParkedOrderActionField(Structure):
@@ -13910,9 +14825,10 @@ class  CThostFtdcQryParkedOrderActionField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
         ("InvestUnitID", c_char*17),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -13923,9 +14839,9 @@ class  CThostFtdcQryParkedOrderActionField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
@@ -13935,8 +14851,12 @@ class  CThostFtdcQryParkedOrderActionField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcRemoveParkedOrderField(Structure):
@@ -14041,9 +14961,10 @@ class  CThostFtdcQryInvestorPositionCombineDetailField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("CombInstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
         ("InvestUnitID", c_char*17),
+        ("CombInstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -14054,9 +14975,9 @@ class  CThostFtdcQryInvestorPositionCombineDetailField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getCombInstrumentID(self):
-        '''组合持仓合约编码'''
-        return str(self.CombInstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
@@ -14066,8 +14987,12 @@ class  CThostFtdcQryInvestorPositionCombineDetailField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
+    def getCombInstrumentID(self):
+        '''组合持仓合约编码'''
+        return str(self.CombInstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'CombInstrumentID'={self.getCombInstrumentID()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'CombInstrumentID'={self.getCombInstrumentID()}"
 
 
 class  CThostFtdcMarketDataAveragePriceField(Structure):
@@ -14113,9 +15038,11 @@ class  CThostFtdcUserIPField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("UserID", c_char*16),
-        ("IPAddress", c_char*16),
-        ("IPMask", c_char*16),
+        ("reserve1", c_char*16),
+        ("reserve2", c_char*16),
         ("MacAddress", c_char*21),
+        ("IPAddress", c_char*33),
+        ("IPMask", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -14126,6 +15053,18 @@ class  CThostFtdcUserIPField(Structure):
         '''用户代码'''
         return str(self.UserID, 'GBK')
 
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
+
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
+
+    def getMacAddress(self):
+        '''Mac地址'''
+        return str(self.MacAddress, 'GBK')
+
     def getIPAddress(self):
         '''IP地址'''
         return str(self.IPAddress, 'GBK')
@@ -14134,12 +15073,8 @@ class  CThostFtdcUserIPField(Structure):
         '''IP地址掩码'''
         return str(self.IPMask, 'GBK')
 
-    def getMacAddress(self):
-        '''Mac地址'''
-        return str(self.MacAddress, 'GBK')
-
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'UserID'={self.getUserID()}, 'IPAddress'={self.getIPAddress()}, 'IPMask'={self.getIPMask()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'UserID'={self.getUserID()}, 'reserve1'={self.getreserve1()}, 'reserve2'={self.getreserve2()}, 'MacAddress'={self.getMacAddress()}, 'IPAddress'={self.getIPAddress()}, 'IPMask'={self.getIPMask()}"
 
 
 class  CThostFtdcTradingNoticeInfoField(Structure):
@@ -14288,7 +15223,7 @@ class  CThostFtdcErrOrderField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("OrderRef", c_char*13),
         ("UserID", c_char*16),
         ("OrderPriceType", c_char),
@@ -14316,8 +15251,10 @@ class  CThostFtdcErrOrderField(Structure):
         ("AccountID", c_char*13),
         ("CurrencyID", c_char*4),
         ("ClientID", c_char*11),
-        ("IPAddress", c_char*16),
+        ("reserve2", c_char*16),
         ("MacAddress", c_char*21),
+        ("InstrumentID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -14328,9 +15265,9 @@ class  CThostFtdcErrOrderField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getOrderRef(self):
         '''报单引用'''
@@ -14440,16 +15377,24 @@ class  CThostFtdcErrOrderField(Structure):
         '''交易编码'''
         return str(self.ClientID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'OrderRef'={self.getOrderRef()}, 'UserID'={self.getUserID()}, 'OrderPriceType'={self.getOrderPriceType()}, 'Direction'={self.getDirection()}, 'CombOffsetFlag'={self.getCombOffsetFlag()}, 'CombHedgeFlag'={self.getCombHedgeFlag()}, 'LimitPrice'={self.getLimitPrice()}, 'VolumeTotalOriginal'={self.getVolumeTotalOriginal()}, 'TimeCondition'={self.getTimeCondition()}, 'GTDDate'={self.getGTDDate()}, 'VolumeCondition'={self.getVolumeCondition()}, 'MinVolume'={self.getMinVolume()}, 'ContingentCondition'={self.getContingentCondition()}, 'StopPrice'={self.getStopPrice()}, 'ForceCloseReason'={self.getForceCloseReason()}, 'IsAutoSuspend'={self.getIsAutoSuspend()}, 'BusinessUnit'={self.getBusinessUnit()}, 'RequestID'={self.getRequestID()}, 'UserForceClose'={self.getUserForceClose()}, 'ErrorID'={self.getErrorID()}, 'ErrorMsg'={self.getErrorMsg()}, 'IsSwapOrder'={self.getIsSwapOrder()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'AccountID'={self.getAccountID()}, 'CurrencyID'={self.getCurrencyID()}, 'ClientID'={self.getClientID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'OrderRef'={self.getOrderRef()}, 'UserID'={self.getUserID()}, 'OrderPriceType'={self.getOrderPriceType()}, 'Direction'={self.getDirection()}, 'CombOffsetFlag'={self.getCombOffsetFlag()}, 'CombHedgeFlag'={self.getCombHedgeFlag()}, 'LimitPrice'={self.getLimitPrice()}, 'VolumeTotalOriginal'={self.getVolumeTotalOriginal()}, 'TimeCondition'={self.getTimeCondition()}, 'GTDDate'={self.getGTDDate()}, 'VolumeCondition'={self.getVolumeCondition()}, 'MinVolume'={self.getMinVolume()}, 'ContingentCondition'={self.getContingentCondition()}, 'StopPrice'={self.getStopPrice()}, 'ForceCloseReason'={self.getForceCloseReason()}, 'IsAutoSuspend'={self.getIsAutoSuspend()}, 'BusinessUnit'={self.getBusinessUnit()}, 'RequestID'={self.getRequestID()}, 'UserForceClose'={self.getUserForceClose()}, 'ErrorID'={self.getErrorID()}, 'ErrorMsg'={self.getErrorMsg()}, 'IsSwapOrder'={self.getIsSwapOrder()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'AccountID'={self.getAccountID()}, 'CurrencyID'={self.getCurrencyID()}, 'ClientID'={self.getClientID()}, 'reserve2'={self.getreserve2()}, 'MacAddress'={self.getMacAddress()}, 'InstrumentID'={self.getInstrumentID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcErrorConditionalOrderField(Structure):
@@ -14457,7 +15402,7 @@ class  CThostFtdcErrorConditionalOrderField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("OrderRef", c_char*13),
         ("UserID", c_char*16),
         ("OrderPriceType", c_char),
@@ -14480,7 +15425,7 @@ class  CThostFtdcErrorConditionalOrderField(Structure):
         ("ExchangeID", c_char*9),
         ("ParticipantID", c_char*11),
         ("ClientID", c_char*11),
-        ("ExchangeInstID", c_char*31),
+        ("reserve2", c_char*31),
         ("TraderID", c_char*21),
         ("InstallID", c_int32),
         ("OrderSubmitStatus", c_char),
@@ -14518,8 +15463,11 @@ class  CThostFtdcErrorConditionalOrderField(Structure):
         ("InvestUnitID", c_char*17),
         ("AccountID", c_char*13),
         ("CurrencyID", c_char*4),
-        ("IPAddress", c_char*16),
+        ("reserve3", c_char*16),
         ("MacAddress", c_char*21),
+        ("InstrumentID", c_char*81),
+        ("ExchangeInstID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -14530,9 +15478,9 @@ class  CThostFtdcErrorConditionalOrderField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getOrderRef(self):
         '''报单引用'''
@@ -14622,9 +15570,9 @@ class  CThostFtdcErrorConditionalOrderField(Structure):
         '''客户代码'''
         return str(self.ClientID, 'GBK')
 
-    def getExchangeInstID(self):
-        '''合约在交易所的代码'''
-        return str(self.ExchangeInstID, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getTraderID(self):
         '''交易所交易员代码'''
@@ -14774,16 +15722,28 @@ class  CThostFtdcErrorConditionalOrderField(Structure):
         '''币种代码'''
         return str(self.CurrencyID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve3(self):
+        '''保留的无效字段'''
+        return str(self.reserve3, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getExchangeInstID(self):
+        '''合约在交易所的代码'''
+        return str(self.ExchangeInstID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'OrderRef'={self.getOrderRef()}, 'UserID'={self.getUserID()}, 'OrderPriceType'={self.getOrderPriceType()}, 'Direction'={self.getDirection()}, 'CombOffsetFlag'={self.getCombOffsetFlag()}, 'CombHedgeFlag'={self.getCombHedgeFlag()}, 'LimitPrice'={self.getLimitPrice()}, 'VolumeTotalOriginal'={self.getVolumeTotalOriginal()}, 'TimeCondition'={self.getTimeCondition()}, 'GTDDate'={self.getGTDDate()}, 'VolumeCondition'={self.getVolumeCondition()}, 'MinVolume'={self.getMinVolume()}, 'ContingentCondition'={self.getContingentCondition()}, 'StopPrice'={self.getStopPrice()}, 'ForceCloseReason'={self.getForceCloseReason()}, 'IsAutoSuspend'={self.getIsAutoSuspend()}, 'BusinessUnit'={self.getBusinessUnit()}, 'RequestID'={self.getRequestID()}, 'OrderLocalID'={self.getOrderLocalID()}, 'ExchangeID'={self.getExchangeID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'OrderSubmitStatus'={self.getOrderSubmitStatus()}, 'NotifySequence'={self.getNotifySequence()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'OrderSysID'={self.getOrderSysID()}, 'OrderSource'={self.getOrderSource()}, 'OrderStatus'={self.getOrderStatus()}, 'OrderType'={self.getOrderType()}, 'VolumeTraded'={self.getVolumeTraded()}, 'VolumeTotal'={self.getVolumeTotal()}, 'InsertDate'={self.getInsertDate()}, 'InsertTime'={self.getInsertTime()}, 'ActiveTime'={self.getActiveTime()}, 'SuspendTime'={self.getSuspendTime()}, 'UpdateTime'={self.getUpdateTime()}, 'CancelTime'={self.getCancelTime()}, 'ActiveTraderID'={self.getActiveTraderID()}, 'ClearingPartID'={self.getClearingPartID()}, 'SequenceNo'={self.getSequenceNo()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'UserProductInfo'={self.getUserProductInfo()}, 'StatusMsg'={self.getStatusMsg()}, 'UserForceClose'={self.getUserForceClose()}, 'ActiveUserID'={self.getActiveUserID()}, 'BrokerOrderSeq'={self.getBrokerOrderSeq()}, 'RelativeOrderSysID'={self.getRelativeOrderSysID()}, 'ZCETotalTradedVolume'={self.getZCETotalTradedVolume()}, 'ErrorID'={self.getErrorID()}, 'ErrorMsg'={self.getErrorMsg()}, 'IsSwapOrder'={self.getIsSwapOrder()}, 'BranchID'={self.getBranchID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'AccountID'={self.getAccountID()}, 'CurrencyID'={self.getCurrencyID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'OrderRef'={self.getOrderRef()}, 'UserID'={self.getUserID()}, 'OrderPriceType'={self.getOrderPriceType()}, 'Direction'={self.getDirection()}, 'CombOffsetFlag'={self.getCombOffsetFlag()}, 'CombHedgeFlag'={self.getCombHedgeFlag()}, 'LimitPrice'={self.getLimitPrice()}, 'VolumeTotalOriginal'={self.getVolumeTotalOriginal()}, 'TimeCondition'={self.getTimeCondition()}, 'GTDDate'={self.getGTDDate()}, 'VolumeCondition'={self.getVolumeCondition()}, 'MinVolume'={self.getMinVolume()}, 'ContingentCondition'={self.getContingentCondition()}, 'StopPrice'={self.getStopPrice()}, 'ForceCloseReason'={self.getForceCloseReason()}, 'IsAutoSuspend'={self.getIsAutoSuspend()}, 'BusinessUnit'={self.getBusinessUnit()}, 'RequestID'={self.getRequestID()}, 'OrderLocalID'={self.getOrderLocalID()}, 'ExchangeID'={self.getExchangeID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'reserve2'={self.getreserve2()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'OrderSubmitStatus'={self.getOrderSubmitStatus()}, 'NotifySequence'={self.getNotifySequence()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'OrderSysID'={self.getOrderSysID()}, 'OrderSource'={self.getOrderSource()}, 'OrderStatus'={self.getOrderStatus()}, 'OrderType'={self.getOrderType()}, 'VolumeTraded'={self.getVolumeTraded()}, 'VolumeTotal'={self.getVolumeTotal()}, 'InsertDate'={self.getInsertDate()}, 'InsertTime'={self.getInsertTime()}, 'ActiveTime'={self.getActiveTime()}, 'SuspendTime'={self.getSuspendTime()}, 'UpdateTime'={self.getUpdateTime()}, 'CancelTime'={self.getCancelTime()}, 'ActiveTraderID'={self.getActiveTraderID()}, 'ClearingPartID'={self.getClearingPartID()}, 'SequenceNo'={self.getSequenceNo()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'UserProductInfo'={self.getUserProductInfo()}, 'StatusMsg'={self.getStatusMsg()}, 'UserForceClose'={self.getUserForceClose()}, 'ActiveUserID'={self.getActiveUserID()}, 'BrokerOrderSeq'={self.getBrokerOrderSeq()}, 'RelativeOrderSysID'={self.getRelativeOrderSysID()}, 'ZCETotalTradedVolume'={self.getZCETotalTradedVolume()}, 'ErrorID'={self.getErrorID()}, 'ErrorMsg'={self.getErrorMsg()}, 'IsSwapOrder'={self.getIsSwapOrder()}, 'BranchID'={self.getBranchID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'AccountID'={self.getAccountID()}, 'CurrencyID'={self.getCurrencyID()}, 'reserve3'={self.getreserve3()}, 'MacAddress'={self.getMacAddress()}, 'InstrumentID'={self.getInstrumentID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcQryErrOrderActionField(Structure):
@@ -14832,13 +15792,15 @@ class  CThostFtdcErrOrderActionField(Structure):
         ("OrderActionStatus", c_char),
         ("UserID", c_char*16),
         ("StatusMsg", c_char*81),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("BranchID", c_char*9),
         ("InvestUnitID", c_char*17),
-        ("IPAddress", c_char*16),
+        ("reserve2", c_char*16),
         ("MacAddress", c_char*21),
         ("ErrorID", c_int32),
         ("ErrorMsg", c_char*81),
+        ("InstrumentID", c_char*81),
+        ("IPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -14937,9 +15899,9 @@ class  CThostFtdcErrOrderActionField(Structure):
         '''状态信息'''
         return str(self.StatusMsg, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getBranchID(self):
         '''营业部编号'''
@@ -14949,9 +15911,9 @@ class  CThostFtdcErrOrderActionField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
-    def getIPAddress(self):
-        '''IP地址'''
-        return str(self.IPAddress, 'GBK')
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
 
     def getMacAddress(self):
         '''Mac地址'''
@@ -14965,8 +15927,16 @@ class  CThostFtdcErrOrderActionField(Structure):
         '''错误信息'''
         return str(self.ErrorMsg, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'OrderActionRef'={self.getOrderActionRef()}, 'OrderRef'={self.getOrderRef()}, 'RequestID'={self.getRequestID()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'ExchangeID'={self.getExchangeID()}, 'OrderSysID'={self.getOrderSysID()}, 'ActionFlag'={self.getActionFlag()}, 'LimitPrice'={self.getLimitPrice()}, 'VolumeChange'={self.getVolumeChange()}, 'ActionDate'={self.getActionDate()}, 'ActionTime'={self.getActionTime()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'OrderLocalID'={self.getOrderLocalID()}, 'ActionLocalID'={self.getActionLocalID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'OrderActionStatus'={self.getOrderActionStatus()}, 'UserID'={self.getUserID()}, 'StatusMsg'={self.getStatusMsg()}, 'InstrumentID'={self.getInstrumentID()}, 'BranchID'={self.getBranchID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'IPAddress'={self.getIPAddress()}, 'MacAddress'={self.getMacAddress()}, 'ErrorID'={self.getErrorID()}, 'ErrorMsg'={self.getErrorMsg()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'OrderActionRef'={self.getOrderActionRef()}, 'OrderRef'={self.getOrderRef()}, 'RequestID'={self.getRequestID()}, 'FrontID'={self.getFrontID()}, 'SessionID'={self.getSessionID()}, 'ExchangeID'={self.getExchangeID()}, 'OrderSysID'={self.getOrderSysID()}, 'ActionFlag'={self.getActionFlag()}, 'LimitPrice'={self.getLimitPrice()}, 'VolumeChange'={self.getVolumeChange()}, 'ActionDate'={self.getActionDate()}, 'ActionTime'={self.getActionTime()}, 'TraderID'={self.getTraderID()}, 'InstallID'={self.getInstallID()}, 'OrderLocalID'={self.getOrderLocalID()}, 'ActionLocalID'={self.getActionLocalID()}, 'ParticipantID'={self.getParticipantID()}, 'ClientID'={self.getClientID()}, 'BusinessUnit'={self.getBusinessUnit()}, 'OrderActionStatus'={self.getOrderActionStatus()}, 'UserID'={self.getUserID()}, 'StatusMsg'={self.getStatusMsg()}, 'reserve1'={self.getreserve1()}, 'BranchID'={self.getBranchID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'reserve2'={self.getreserve2()}, 'MacAddress'={self.getMacAddress()}, 'ErrorID'={self.getErrorID()}, 'ErrorMsg'={self.getErrorMsg()}, 'InstrumentID'={self.getInstrumentID()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcQryExchangeSequenceField(Structure):
@@ -15007,12 +15977,12 @@ class  CThostFtdcExchangeSequenceField(Structure):
         return f"'ExchangeID'={self.getExchangeID()}, 'SequenceNo'={self.getSequenceNo()}, 'MarketStatus'={self.getMarketStatus()}"
 
 
-class  CThostFtdcQueryMaxOrderVolumeWithPriceField(Structure):
+class  CThostFtdcQryMaxOrderVolumeWithPriceField(Structure):
     """根据价格查询最大报单数量"""
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("Direction", c_char),
         ("OffsetFlag", c_char),
         ("HedgeFlag", c_char),
@@ -15020,6 +15990,7 @@ class  CThostFtdcQueryMaxOrderVolumeWithPriceField(Structure):
         ("Price", c_double),
         ("ExchangeID", c_char*9),
         ("InvestUnitID", c_char*17),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -15030,9 +16001,9 @@ class  CThostFtdcQueryMaxOrderVolumeWithPriceField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getDirection(self):
         '''买卖方向'''
@@ -15062,8 +16033,12 @@ class  CThostFtdcQueryMaxOrderVolumeWithPriceField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'InstrumentID'={self.getInstrumentID()}, 'Direction'={self.getDirection()}, 'OffsetFlag'={self.getOffsetFlag()}, 'HedgeFlag'={self.getHedgeFlag()}, 'MaxVolume'={self.getMaxVolume()}, 'Price'={self.getPrice()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'Direction'={self.getDirection()}, 'OffsetFlag'={self.getOffsetFlag()}, 'HedgeFlag'={self.getHedgeFlag()}, 'MaxVolume'={self.getMaxVolume()}, 'Price'={self.getPrice()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcQryBrokerTradingParamsField(Structure):
@@ -15149,7 +16124,8 @@ class  CThostFtdcQryBrokerTradingAlgosField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("ExchangeID", c_char*9),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -15160,12 +16136,16 @@ class  CThostFtdcQryBrokerTradingAlgosField(Structure):
         '''交易所代码'''
         return str(self.ExchangeID, 'GBK')
 
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
+
     def getInstrumentID(self):
         '''合约代码'''
         return str(self.InstrumentID, 'GBK')
 
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'ExchangeID'={self.getExchangeID()}, 'InstrumentID'={self.getInstrumentID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'ExchangeID'={self.getExchangeID()}, 'reserve1'={self.getreserve1()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcBrokerTradingAlgosField(Structure):
@@ -15173,10 +16153,11 @@ class  CThostFtdcBrokerTradingAlgosField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("ExchangeID", c_char*9),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("HandlePositionAlgoID", c_char),
         ("FindMarginRateAlgoID", c_char),
         ("HandleTradingAccountAlgoID", c_char),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -15187,9 +16168,9 @@ class  CThostFtdcBrokerTradingAlgosField(Structure):
         '''交易所代码'''
         return str(self.ExchangeID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getHandlePositionAlgoID(self):
         '''持仓处理算法编号'''
@@ -15203,8 +16184,12 @@ class  CThostFtdcBrokerTradingAlgosField(Structure):
         '''资金处理算法编号'''
         return TThostFtdcHandleTradingAccountAlgoIDType(ord(self.HandleTradingAccountAlgoID)) if ord(self.HandleTradingAccountAlgoID) in [e.value for e in list(TThostFtdcHandleTradingAccountAlgoIDType)] else list(TThostFtdcHandleTradingAccountAlgoIDType)[0]
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'ExchangeID'={self.getExchangeID()}, 'InstrumentID'={self.getInstrumentID()}, 'HandlePositionAlgoID'={self.getHandlePositionAlgoID()}, 'FindMarginRateAlgoID'={self.getFindMarginRateAlgoID()}, 'HandleTradingAccountAlgoID'={self.getHandleTradingAccountAlgoID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'ExchangeID'={self.getExchangeID()}, 'reserve1'={self.getreserve1()}, 'HandlePositionAlgoID'={self.getHandlePositionAlgoID()}, 'FindMarginRateAlgoID'={self.getFindMarginRateAlgoID()}, 'HandleTradingAccountAlgoID'={self.getHandleTradingAccountAlgoID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcQueryBrokerDepositField(Structure):
@@ -15587,11 +16572,12 @@ class  CThostFtdcEWarrantOffsetField(Structure):
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
         ("ExchangeID", c_char*9),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("Direction", c_char),
         ("HedgeFlag", c_char),
         ("Volume", c_int32),
         ("InvestUnitID", c_char*17),
+        ("InstrumentID", c_char*81),
     ]
 
     def getTradingDay(self):
@@ -15610,9 +16596,9 @@ class  CThostFtdcEWarrantOffsetField(Structure):
         '''交易所代码'''
         return str(self.ExchangeID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getDirection(self):
         '''买卖方向'''
@@ -15630,8 +16616,12 @@ class  CThostFtdcEWarrantOffsetField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'TradingDay'={self.getTradingDay()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'ExchangeID'={self.getExchangeID()}, 'InstrumentID'={self.getInstrumentID()}, 'Direction'={self.getDirection()}, 'HedgeFlag'={self.getHedgeFlag()}, 'Volume'={self.getVolume()}, 'InvestUnitID'={self.getInvestUnitID()}"
+        return f"'TradingDay'={self.getTradingDay()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'ExchangeID'={self.getExchangeID()}, 'reserve1'={self.getreserve1()}, 'Direction'={self.getDirection()}, 'HedgeFlag'={self.getHedgeFlag()}, 'Volume'={self.getVolume()}, 'InvestUnitID'={self.getInvestUnitID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcQryEWarrantOffsetField(Structure):
@@ -15640,8 +16630,9 @@ class  CThostFtdcQryEWarrantOffsetField(Structure):
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
         ("ExchangeID", c_char*9),
-        ("InstrumentID", c_char*31),
+        ("reserve1", c_char*31),
         ("InvestUnitID", c_char*17),
+        ("InstrumentID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -15656,16 +16647,20 @@ class  CThostFtdcQryEWarrantOffsetField(Structure):
         '''交易所代码'''
         return str(self.ExchangeID, 'GBK')
 
-    def getInstrumentID(self):
-        '''合约代码'''
-        return str(self.InstrumentID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getInvestUnitID(self):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'ExchangeID'={self.getExchangeID()}, 'InstrumentID'={self.getInstrumentID()}, 'InvestUnitID'={self.getInvestUnitID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'ExchangeID'={self.getExchangeID()}, 'reserve1'={self.getreserve1()}, 'InvestUnitID'={self.getInvestUnitID()}, 'InstrumentID'={self.getInstrumentID()}"
 
 
 class  CThostFtdcQryInvestorProductGroupMarginField(Structure):
@@ -15673,10 +16668,11 @@ class  CThostFtdcQryInvestorProductGroupMarginField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
-        ("ProductGroupID", c_char*31),
+        ("reserve1", c_char*31),
         ("HedgeFlag", c_char),
         ("ExchangeID", c_char*9),
         ("InvestUnitID", c_char*17),
+        ("ProductGroupID", c_char*81),
     ]
 
     def getBrokerID(self):
@@ -15687,9 +16683,9 @@ class  CThostFtdcQryInvestorProductGroupMarginField(Structure):
         '''投资者代码'''
         return str(self.InvestorID, 'GBK')
 
-    def getProductGroupID(self):
-        '''品种/跨品种标示'''
-        return str(self.ProductGroupID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getHedgeFlag(self):
         '''投机套保标志'''
@@ -15703,14 +16699,18 @@ class  CThostFtdcQryInvestorProductGroupMarginField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
+    def getProductGroupID(self):
+        '''品种/跨品种标示'''
+        return str(self.ProductGroupID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'ProductGroupID'={self.getProductGroupID()}, 'HedgeFlag'={self.getHedgeFlag()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'reserve1'={self.getreserve1()}, 'HedgeFlag'={self.getHedgeFlag()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'ProductGroupID'={self.getProductGroupID()}"
 
 
 class  CThostFtdcInvestorProductGroupMarginField(Structure):
     """投资者品种/跨品种保证金"""
     _fields_ = [
-        ("ProductGroupID", c_char*31),
+        ("reserve1", c_char*31),
         ("BrokerID", c_char*11),
         ("InvestorID", c_char*13),
         ("TradingDay", c_char*9),
@@ -15739,11 +16739,12 @@ class  CThostFtdcInvestorProductGroupMarginField(Structure):
         ("HedgeFlag", c_char),
         ("ExchangeID", c_char*9),
         ("InvestUnitID", c_char*17),
+        ("ProductGroupID", c_char*81),
     ]
 
-    def getProductGroupID(self):
-        '''品种/跨品种标示'''
-        return str(self.ProductGroupID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getBrokerID(self):
         '''经纪公司代码'''
@@ -15857,8 +16858,12 @@ class  CThostFtdcInvestorProductGroupMarginField(Structure):
         '''投资单元代码'''
         return str(self.InvestUnitID, 'GBK')
 
+    def getProductGroupID(self):
+        '''品种/跨品种标示'''
+        return str(self.ProductGroupID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'ProductGroupID'={self.getProductGroupID()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'FrozenMargin'={self.getFrozenMargin()}, 'LongFrozenMargin'={self.getLongFrozenMargin()}, 'ShortFrozenMargin'={self.getShortFrozenMargin()}, 'UseMargin'={self.getUseMargin()}, 'LongUseMargin'={self.getLongUseMargin()}, 'ShortUseMargin'={self.getShortUseMargin()}, 'ExchMargin'={self.getExchMargin()}, 'LongExchMargin'={self.getLongExchMargin()}, 'ShortExchMargin'={self.getShortExchMargin()}, 'CloseProfit'={self.getCloseProfit()}, 'FrozenCommission'={self.getFrozenCommission()}, 'Commission'={self.getCommission()}, 'FrozenCash'={self.getFrozenCash()}, 'CashIn'={self.getCashIn()}, 'PositionProfit'={self.getPositionProfit()}, 'OffsetAmount'={self.getOffsetAmount()}, 'LongOffsetAmount'={self.getLongOffsetAmount()}, 'ShortOffsetAmount'={self.getShortOffsetAmount()}, 'ExchOffsetAmount'={self.getExchOffsetAmount()}, 'LongExchOffsetAmount'={self.getLongExchOffsetAmount()}, 'ShortExchOffsetAmount'={self.getShortExchOffsetAmount()}, 'HedgeFlag'={self.getHedgeFlag()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}"
+        return f"'reserve1'={self.getreserve1()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'TradingDay'={self.getTradingDay()}, 'SettlementID'={self.getSettlementID()}, 'FrozenMargin'={self.getFrozenMargin()}, 'LongFrozenMargin'={self.getLongFrozenMargin()}, 'ShortFrozenMargin'={self.getShortFrozenMargin()}, 'UseMargin'={self.getUseMargin()}, 'LongUseMargin'={self.getLongUseMargin()}, 'ShortUseMargin'={self.getShortUseMargin()}, 'ExchMargin'={self.getExchMargin()}, 'LongExchMargin'={self.getLongExchMargin()}, 'ShortExchMargin'={self.getShortExchMargin()}, 'CloseProfit'={self.getCloseProfit()}, 'FrozenCommission'={self.getFrozenCommission()}, 'Commission'={self.getCommission()}, 'FrozenCash'={self.getFrozenCash()}, 'CashIn'={self.getCashIn()}, 'PositionProfit'={self.getPositionProfit()}, 'OffsetAmount'={self.getOffsetAmount()}, 'LongOffsetAmount'={self.getLongOffsetAmount()}, 'ShortOffsetAmount'={self.getShortOffsetAmount()}, 'ExchOffsetAmount'={self.getExchOffsetAmount()}, 'LongExchOffsetAmount'={self.getLongExchOffsetAmount()}, 'ShortExchOffsetAmount'={self.getShortExchOffsetAmount()}, 'HedgeFlag'={self.getHedgeFlag()}, 'ExchangeID'={self.getExchangeID()}, 'InvestUnitID'={self.getInvestUnitID()}, 'ProductGroupID'={self.getProductGroupID()}"
 
 
 class  CThostFtdcQueryCFMMCTradingAccountTokenField(Structure):
@@ -15922,44 +16927,59 @@ class  CThostFtdcCFMMCTradingAccountTokenField(Structure):
 class  CThostFtdcQryProductGroupField(Structure):
     """查询产品组"""
     _fields_ = [
-        ("ProductID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
+        ("ProductID", c_char*81),
     ]
 
-    def getProductID(self):
-        '''产品代码'''
-        return str(self.ProductID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
         return str(self.ExchangeID, 'GBK')
 
+    def getProductID(self):
+        '''产品代码'''
+        return str(self.ProductID, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'ProductID'={self.getProductID()}, 'ExchangeID'={self.getExchangeID()}"
+        return f"'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'ProductID'={self.getProductID()}"
 
 
 class  CThostFtdcProductGroupField(Structure):
     """投资者品种/跨品种保证金产品组"""
     _fields_ = [
-        ("ProductID", c_char*31),
+        ("reserve1", c_char*31),
         ("ExchangeID", c_char*9),
-        ("ProductGroupID", c_char*31),
+        ("reserve2", c_char*31),
+        ("ProductID", c_char*81),
+        ("ProductGroupID", c_char*81),
     ]
 
-    def getProductID(self):
-        '''产品代码'''
-        return str(self.ProductID, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getExchangeID(self):
         '''交易所代码'''
         return str(self.ExchangeID, 'GBK')
+
+    def getreserve2(self):
+        '''保留的无效字段'''
+        return str(self.reserve2, 'GBK')
+
+    def getProductID(self):
+        '''产品代码'''
+        return str(self.ProductID, 'GBK')
 
     def getProductGroupID(self):
         '''产品组代码'''
         return str(self.ProductGroupID, 'GBK')
 
     def __str__(self): # 可以直接print
-        return f"'ProductID'={self.getProductID()}, 'ExchangeID'={self.getExchangeID()}, 'ProductGroupID'={self.getProductGroupID()}"
+        return f"'reserve1'={self.getreserve1()}, 'ExchangeID'={self.getExchangeID()}, 'reserve2'={self.getreserve2()}, 'ProductID'={self.getProductID()}, 'ProductGroupID'={self.getProductGroupID()}"
 
 
 class  CThostFtdcBulletinField(Structure):
@@ -16063,6 +17083,98 @@ class  CThostFtdcQryBulletinField(Structure):
 
     def __str__(self): # 可以直接print
         return f"'ExchangeID'={self.getExchangeID()}, 'BulletinID'={self.getBulletinID()}, 'SequenceNo'={self.getSequenceNo()}, 'NewsType'={self.getNewsType()}, 'NewsUrgency'={self.getNewsUrgency()}"
+
+
+class  CThostFtdcMulticastInstrumentField(Structure):
+    """MulticastInstrument"""
+    _fields_ = [
+        ("TopicID", c_int32),
+        ("reserve1", c_char*31),
+        ("InstrumentNo", c_int32),
+        ("CodePrice", c_double),
+        ("VolumeMultiple", c_int32),
+        ("PriceTick", c_double),
+        ("InstrumentID", c_char*81),
+    ]
+
+    def getTopicID(self):
+        '''主题号'''
+        return self.TopicID
+
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
+
+    def getInstrumentNo(self):
+        '''合约编号'''
+        return self.InstrumentNo
+
+    def getCodePrice(self):
+        '''基准价'''
+        return self.CodePrice
+
+    def getVolumeMultiple(self):
+        '''合约数量乘数'''
+        return self.VolumeMultiple
+
+    def getPriceTick(self):
+        '''最小变动价位'''
+        return self.PriceTick
+
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def __str__(self): # 可以直接print
+        return f"'TopicID'={self.getTopicID()}, 'reserve1'={self.getreserve1()}, 'InstrumentNo'={self.getInstrumentNo()}, 'CodePrice'={self.getCodePrice()}, 'VolumeMultiple'={self.getVolumeMultiple()}, 'PriceTick'={self.getPriceTick()}, 'InstrumentID'={self.getInstrumentID()}"
+
+
+class  CThostFtdcQryMulticastInstrumentField(Structure):
+    """QryMulticastInstrument"""
+    _fields_ = [
+        ("TopicID", c_int32),
+        ("reserve1", c_char*31),
+        ("InstrumentID", c_char*81),
+    ]
+
+    def getTopicID(self):
+        '''主题号'''
+        return self.TopicID
+
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
+
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def __str__(self): # 可以直接print
+        return f"'TopicID'={self.getTopicID()}, 'reserve1'={self.getreserve1()}, 'InstrumentID'={self.getInstrumentID()}"
+
+
+class  CThostFtdcAppIDAuthAssignField(Structure):
+    """App客户端权限分配"""
+    _fields_ = [
+        ("BrokerID", c_char*11),
+        ("AppID", c_char*33),
+        ("DRIdentityID", c_int32),
+    ]
+
+    def getBrokerID(self):
+        '''经纪公司代码'''
+        return str(self.BrokerID, 'GBK')
+
+    def getAppID(self):
+        '''App代码'''
+        return str(self.AppID, 'GBK')
+
+    def getDRIdentityID(self):
+        '''交易中心代码'''
+        return self.DRIdentityID
+
+    def __str__(self): # 可以直接print
+        return f"'BrokerID'={self.getBrokerID()}, 'AppID'={self.getAppID()}, 'DRIdentityID'={self.getDRIdentityID()}"
 
 
 class  CThostFtdcReqOpenAccountField(Structure):
@@ -21274,7 +22386,8 @@ class  CThostFtdcLoginForbiddenUserField(Structure):
     _fields_ = [
         ("BrokerID", c_char*11),
         ("UserID", c_char*16),
-        ("IPAddress", c_char*16),
+        ("reserve1", c_char*16),
+        ("IPAddress", c_char*33),
     ]
 
     def getBrokerID(self):
@@ -21285,12 +22398,16 @@ class  CThostFtdcLoginForbiddenUserField(Structure):
         '''用户代码'''
         return str(self.UserID, 'GBK')
 
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
+
     def getIPAddress(self):
         '''IP地址'''
         return str(self.IPAddress, 'GBK')
 
     def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'UserID'={self.getUserID()}, 'IPAddress'={self.getIPAddress()}"
+        return f"'BrokerID'={self.getBrokerID()}, 'UserID'={self.getUserID()}, 'reserve1'={self.getreserve1()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcQryLoginForbiddenUserField(Structure):
@@ -21310,30 +22427,6 @@ class  CThostFtdcQryLoginForbiddenUserField(Structure):
 
     def __str__(self): # 可以直接print
         return f"'BrokerID'={self.getBrokerID()}, 'UserID'={self.getUserID()}"
-
-
-class  CThostFtdcMulticastGroupInfoField(Structure):
-    """UDP组播组信息"""
-    _fields_ = [
-        ("GroupIP", c_char*16),
-        ("GroupPort", c_int32),
-        ("SourceIP", c_char*16),
-    ]
-
-    def getGroupIP(self):
-        '''组播组IP地址'''
-        return str(self.GroupIP, 'GBK')
-
-    def getGroupPort(self):
-        '''组播组IP端口'''
-        return self.GroupPort
-
-    def getSourceIP(self):
-        '''源地址'''
-        return str(self.SourceIP, 'GBK')
-
-    def __str__(self): # 可以直接print
-        return f"'GroupIP'={self.getGroupIP()}, 'GroupPort'={self.getGroupPort()}, 'SourceIP'={self.getSourceIP()}"
 
 
 class  CThostFtdcTradingAccountReserveField(Structure):
@@ -21368,29 +22461,39 @@ class  CThostFtdcTradingAccountReserveField(Structure):
 class  CThostFtdcQryLoginForbiddenIPField(Structure):
     """查询禁止登录IP"""
     _fields_ = [
-        ("IPAddress", c_char*16),
+        ("reserve1", c_char*16),
+        ("IPAddress", c_char*33),
     ]
+
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getIPAddress(self):
         '''IP地址'''
         return str(self.IPAddress, 'GBK')
 
     def __str__(self): # 可以直接print
-        return f"'IPAddress'={self.getIPAddress()}"
+        return f"'reserve1'={self.getreserve1()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcQryIPListField(Structure):
     """查询IP列表"""
     _fields_ = [
-        ("IPAddress", c_char*16),
+        ("reserve1", c_char*16),
+        ("IPAddress", c_char*33),
     ]
+
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getIPAddress(self):
         '''IP地址'''
         return str(self.IPAddress, 'GBK')
 
     def __str__(self): # 可以直接print
-        return f"'IPAddress'={self.getIPAddress()}"
+        return f"'reserve1'={self.getreserve1()}, 'IPAddress'={self.getIPAddress()}"
 
 
 class  CThostFtdcQryUserRightsAssignField(Structure):
@@ -21965,55 +23068,6 @@ class  CThostFtdcQrySecAgentTradeInfoField(Structure):
         return f"'BrokerID'={self.getBrokerID()}, 'BrokerSecAgentID'={self.getBrokerSecAgentID()}"
 
 
-class  CThostFtdcUserSystemInfoField(Structure):
-    """用户系统信息"""
-    _fields_ = [
-        ("BrokerID", c_char*11),
-        ("UserID", c_char*16),
-        ("ClientSystemInfoLen", c_int32),
-        ("ClientSystemInfo", c_char*273),
-        ("ClientPublicIP", c_char*16),
-        ("ClientIPPort", c_int32),
-        ("ClientLoginTime", c_char*9),
-        ("ClientAppID", c_char*33),
-    ]
-
-    def getBrokerID(self):
-        '''经纪公司代码'''
-        return str(self.BrokerID, 'GBK')
-
-    def getUserID(self):
-        '''用户代码'''
-        return str(self.UserID, 'GBK')
-
-    def getClientSystemInfoLen(self):
-        '''用户端系统内部信息长度'''
-        return self.ClientSystemInfoLen
-
-    def getClientSystemInfo(self):
-        '''用户端系统内部信息'''
-        return str(self.ClientSystemInfo, 'GBK')
-
-    def getClientPublicIP(self):
-        '''用户公网IP'''
-        return str(self.ClientPublicIP, 'GBK')
-
-    def getClientIPPort(self):
-        '''终端IP端口'''
-        return self.ClientIPPort
-
-    def getClientLoginTime(self):
-        '''登录成功时间'''
-        return str(self.ClientLoginTime, 'GBK')
-
-    def getClientAppID(self):
-        '''App代码'''
-        return str(self.ClientAppID, 'GBK')
-
-    def __str__(self): # 可以直接print
-        return f"'BrokerID'={self.getBrokerID()}, 'UserID'={self.getUserID()}, 'ClientSystemInfoLen'={self.getClientSystemInfoLen()}, 'ClientSystemInfo'={self.getClientSystemInfo()}, 'ClientPublicIP'={self.getClientPublicIP()}, 'ClientIPPort'={self.getClientIPPort()}, 'ClientLoginTime'={self.getClientLoginTime()}, 'ClientAppID'={self.getClientAppID()}"
-
-
 class  CThostFtdcReqUserAuthMethodField(Structure):
     """用户发出获取安全安全登陆方法请求"""
     _fields_ = [
@@ -22154,10 +23208,11 @@ class  CThostFtdcReqUserLoginWithCaptchaField(Structure):
         ("InterfaceProductInfo", c_char*11),
         ("ProtocolInfo", c_char*11),
         ("MacAddress", c_char*21),
-        ("ClientIPAddress", c_char*16),
+        ("reserve1", c_char*16),
         ("LoginRemark", c_char*36),
         ("Captcha", c_char*41),
         ("ClientIPPort", c_int32),
+        ("ClientIPAddress", c_char*33),
     ]
 
     def getTradingDay(self):
@@ -22192,9 +23247,9 @@ class  CThostFtdcReqUserLoginWithCaptchaField(Structure):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
-    def getClientIPAddress(self):
-        '''终端IP地址'''
-        return str(self.ClientIPAddress, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getLoginRemark(self):
         '''登录备注'''
@@ -22208,8 +23263,12 @@ class  CThostFtdcReqUserLoginWithCaptchaField(Structure):
         '''终端IP端口'''
         return self.ClientIPPort
 
+    def getClientIPAddress(self):
+        '''终端IP地址'''
+        return str(self.ClientIPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'TradingDay'={self.getTradingDay()}, 'BrokerID'={self.getBrokerID()}, 'UserID'={self.getUserID()}, 'Password'={self.getPassword()}, 'UserProductInfo'={self.getUserProductInfo()}, 'InterfaceProductInfo'={self.getInterfaceProductInfo()}, 'ProtocolInfo'={self.getProtocolInfo()}, 'MacAddress'={self.getMacAddress()}, 'ClientIPAddress'={self.getClientIPAddress()}, 'LoginRemark'={self.getLoginRemark()}, 'Captcha'={self.getCaptcha()}, 'ClientIPPort'={self.getClientIPPort()}"
+        return f"'TradingDay'={self.getTradingDay()}, 'BrokerID'={self.getBrokerID()}, 'UserID'={self.getUserID()}, 'Password'={self.getPassword()}, 'UserProductInfo'={self.getUserProductInfo()}, 'InterfaceProductInfo'={self.getInterfaceProductInfo()}, 'ProtocolInfo'={self.getProtocolInfo()}, 'MacAddress'={self.getMacAddress()}, 'reserve1'={self.getreserve1()}, 'LoginRemark'={self.getLoginRemark()}, 'Captcha'={self.getCaptcha()}, 'ClientIPPort'={self.getClientIPPort()}, 'ClientIPAddress'={self.getClientIPAddress()}"
 
 
 class  CThostFtdcReqUserLoginWithTextField(Structure):
@@ -22223,10 +23282,11 @@ class  CThostFtdcReqUserLoginWithTextField(Structure):
         ("InterfaceProductInfo", c_char*11),
         ("ProtocolInfo", c_char*11),
         ("MacAddress", c_char*21),
-        ("ClientIPAddress", c_char*16),
+        ("reserve1", c_char*16),
         ("LoginRemark", c_char*36),
         ("Text", c_char*41),
         ("ClientIPPort", c_int32),
+        ("ClientIPAddress", c_char*33),
     ]
 
     def getTradingDay(self):
@@ -22261,9 +23321,9 @@ class  CThostFtdcReqUserLoginWithTextField(Structure):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
-    def getClientIPAddress(self):
-        '''终端IP地址'''
-        return str(self.ClientIPAddress, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getLoginRemark(self):
         '''登录备注'''
@@ -22277,8 +23337,12 @@ class  CThostFtdcReqUserLoginWithTextField(Structure):
         '''终端IP端口'''
         return self.ClientIPPort
 
+    def getClientIPAddress(self):
+        '''终端IP地址'''
+        return str(self.ClientIPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'TradingDay'={self.getTradingDay()}, 'BrokerID'={self.getBrokerID()}, 'UserID'={self.getUserID()}, 'Password'={self.getPassword()}, 'UserProductInfo'={self.getUserProductInfo()}, 'InterfaceProductInfo'={self.getInterfaceProductInfo()}, 'ProtocolInfo'={self.getProtocolInfo()}, 'MacAddress'={self.getMacAddress()}, 'ClientIPAddress'={self.getClientIPAddress()}, 'LoginRemark'={self.getLoginRemark()}, 'Text'={self.getText()}, 'ClientIPPort'={self.getClientIPPort()}"
+        return f"'TradingDay'={self.getTradingDay()}, 'BrokerID'={self.getBrokerID()}, 'UserID'={self.getUserID()}, 'Password'={self.getPassword()}, 'UserProductInfo'={self.getUserProductInfo()}, 'InterfaceProductInfo'={self.getInterfaceProductInfo()}, 'ProtocolInfo'={self.getProtocolInfo()}, 'MacAddress'={self.getMacAddress()}, 'reserve1'={self.getreserve1()}, 'LoginRemark'={self.getLoginRemark()}, 'Text'={self.getText()}, 'ClientIPPort'={self.getClientIPPort()}, 'ClientIPAddress'={self.getClientIPAddress()}"
 
 
 class  CThostFtdcReqUserLoginWithOTPField(Structure):
@@ -22292,10 +23356,11 @@ class  CThostFtdcReqUserLoginWithOTPField(Structure):
         ("InterfaceProductInfo", c_char*11),
         ("ProtocolInfo", c_char*11),
         ("MacAddress", c_char*21),
-        ("ClientIPAddress", c_char*16),
+        ("reserve1", c_char*16),
         ("LoginRemark", c_char*36),
         ("OTPPassword", c_char*41),
         ("ClientIPPort", c_int32),
+        ("ClientIPAddress", c_char*33),
     ]
 
     def getTradingDay(self):
@@ -22330,9 +23395,9 @@ class  CThostFtdcReqUserLoginWithOTPField(Structure):
         '''Mac地址'''
         return str(self.MacAddress, 'GBK')
 
-    def getClientIPAddress(self):
-        '''终端IP地址'''
-        return str(self.ClientIPAddress, 'GBK')
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
 
     def getLoginRemark(self):
         '''登录备注'''
@@ -22346,8 +23411,12 @@ class  CThostFtdcReqUserLoginWithOTPField(Structure):
         '''终端IP端口'''
         return self.ClientIPPort
 
+    def getClientIPAddress(self):
+        '''终端IP地址'''
+        return str(self.ClientIPAddress, 'GBK')
+
     def __str__(self): # 可以直接print
-        return f"'TradingDay'={self.getTradingDay()}, 'BrokerID'={self.getBrokerID()}, 'UserID'={self.getUserID()}, 'Password'={self.getPassword()}, 'UserProductInfo'={self.getUserProductInfo()}, 'InterfaceProductInfo'={self.getInterfaceProductInfo()}, 'ProtocolInfo'={self.getProtocolInfo()}, 'MacAddress'={self.getMacAddress()}, 'ClientIPAddress'={self.getClientIPAddress()}, 'LoginRemark'={self.getLoginRemark()}, 'OTPPassword'={self.getOTPPassword()}, 'ClientIPPort'={self.getClientIPPort()}"
+        return f"'TradingDay'={self.getTradingDay()}, 'BrokerID'={self.getBrokerID()}, 'UserID'={self.getUserID()}, 'Password'={self.getPassword()}, 'UserProductInfo'={self.getUserProductInfo()}, 'InterfaceProductInfo'={self.getInterfaceProductInfo()}, 'ProtocolInfo'={self.getProtocolInfo()}, 'MacAddress'={self.getMacAddress()}, 'reserve1'={self.getreserve1()}, 'LoginRemark'={self.getLoginRemark()}, 'OTPPassword'={self.getOTPPassword()}, 'ClientIPPort'={self.getClientIPPort()}, 'ClientIPAddress'={self.getClientIPAddress()}"
 
 
 class  CThostFtdcReqApiHandshakeField(Structure):
@@ -22448,4 +23517,275 @@ class  CThostFtdcQueryFreqField(Structure):
 
     def __str__(self): # 可以直接print
         return f"'QueryFreq'={self.getQueryFreq()}"
+
+
+class  CThostFtdcAuthForbiddenIPField(Structure):
+    """禁止认证IP"""
+    _fields_ = [
+        ("reserve1", c_char*16),
+        ("IPAddress", c_char*33),
+    ]
+
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
+    def __str__(self): # 可以直接print
+        return f"'reserve1'={self.getreserve1()}, 'IPAddress'={self.getIPAddress()}"
+
+
+class  CThostFtdcQryAuthForbiddenIPField(Structure):
+    """查询禁止认证IP"""
+    _fields_ = [
+        ("reserve1", c_char*16),
+        ("IPAddress", c_char*33),
+    ]
+
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
+
+    def getIPAddress(self):
+        '''IP地址'''
+        return str(self.IPAddress, 'GBK')
+
+    def __str__(self): # 可以直接print
+        return f"'reserve1'={self.getreserve1()}, 'IPAddress'={self.getIPAddress()}"
+
+
+class  CThostFtdcSyncDelaySwapFrozenField(Structure):
+    """换汇可提冻结"""
+    _fields_ = [
+        ("DelaySwapSeqNo", c_char*15),
+        ("BrokerID", c_char*11),
+        ("InvestorID", c_char*13),
+        ("FromCurrencyID", c_char*4),
+        ("FromRemainSwap", c_double),
+        ("IsManualSwap", c_int32),
+    ]
+
+    def getDelaySwapSeqNo(self):
+        '''换汇流水号'''
+        return str(self.DelaySwapSeqNo, 'GBK')
+
+    def getBrokerID(self):
+        '''经纪公司代码'''
+        return str(self.BrokerID, 'GBK')
+
+    def getInvestorID(self):
+        '''投资者代码'''
+        return str(self.InvestorID, 'GBK')
+
+    def getFromCurrencyID(self):
+        '''源币种'''
+        return str(self.FromCurrencyID, 'GBK')
+
+    def getFromRemainSwap(self):
+        '''源剩余换汇额度(可提冻结)'''
+        return self.FromRemainSwap
+
+    def getIsManualSwap(self):
+        '''是否手工换汇'''
+        return self.IsManualSwap
+
+    def __str__(self): # 可以直接print
+        return f"'DelaySwapSeqNo'={self.getDelaySwapSeqNo()}, 'BrokerID'={self.getBrokerID()}, 'InvestorID'={self.getInvestorID()}, 'FromCurrencyID'={self.getFromCurrencyID()}, 'FromRemainSwap'={self.getFromRemainSwap()}, 'IsManualSwap'={self.getIsManualSwap()}"
+
+
+class  CThostFtdcUserSystemInfoField(Structure):
+    """用户系统信息"""
+    _fields_ = [
+        ("BrokerID", c_char*11),
+        ("UserID", c_char*16),
+        ("ClientSystemInfoLen", c_int32),
+        ("ClientSystemInfo", c_char*273),
+        ("reserve1", c_char*16),
+        ("ClientIPPort", c_int32),
+        ("ClientLoginTime", c_char*9),
+        ("ClientAppID", c_char*33),
+        ("ClientPublicIP", c_char*33),
+    ]
+
+    def getBrokerID(self):
+        '''经纪公司代码'''
+        return str(self.BrokerID, 'GBK')
+
+    def getUserID(self):
+        '''用户代码'''
+        return str(self.UserID, 'GBK')
+
+    def getClientSystemInfoLen(self):
+        '''用户端系统内部信息长度'''
+        return self.ClientSystemInfoLen
+
+    def getClientSystemInfo(self):
+        '''用户端系统内部信息'''
+        return str(self.ClientSystemInfo, 'GBK')
+
+    def getreserve1(self):
+        '''保留的无效字段'''
+        return str(self.reserve1, 'GBK')
+
+    def getClientIPPort(self):
+        '''终端IP端口'''
+        return self.ClientIPPort
+
+    def getClientLoginTime(self):
+        '''登录成功时间'''
+        return str(self.ClientLoginTime, 'GBK')
+
+    def getClientAppID(self):
+        '''App代码'''
+        return str(self.ClientAppID, 'GBK')
+
+    def getClientPublicIP(self):
+        '''用户公网IP'''
+        return str(self.ClientPublicIP, 'GBK')
+
+    def __str__(self): # 可以直接print
+        return f"'BrokerID'={self.getBrokerID()}, 'UserID'={self.getUserID()}, 'ClientSystemInfoLen'={self.getClientSystemInfoLen()}, 'ClientSystemInfo'={self.getClientSystemInfo()}, 'reserve1'={self.getreserve1()}, 'ClientIPPort'={self.getClientIPPort()}, 'ClientLoginTime'={self.getClientLoginTime()}, 'ClientAppID'={self.getClientAppID()}, 'ClientPublicIP'={self.getClientPublicIP()}"
+
+
+class  CThostFtdcAuthUserIDField(Structure):
+    """终端用户绑定信息"""
+    _fields_ = [
+        ("BrokerID", c_char*11),
+        ("AppID", c_char*33),
+        ("UserID", c_char*16),
+        ("AuthType", c_char),
+    ]
+
+    def getBrokerID(self):
+        '''经纪公司代码'''
+        return str(self.BrokerID, 'GBK')
+
+    def getAppID(self):
+        '''App代码'''
+        return str(self.AppID, 'GBK')
+
+    def getUserID(self):
+        '''用户代码'''
+        return str(self.UserID, 'GBK')
+
+    def getAuthType(self):
+        '''校验类型'''
+        return TThostFtdcAuthTypeType(ord(self.AuthType)) if ord(self.AuthType) in [e.value for e in list(TThostFtdcAuthTypeType)] else list(TThostFtdcAuthTypeType)[0]
+
+    def __str__(self): # 可以直接print
+        return f"'BrokerID'={self.getBrokerID()}, 'AppID'={self.getAppID()}, 'UserID'={self.getUserID()}, 'AuthType'={self.getAuthType()}"
+
+
+class  CThostFtdcAuthIPField(Structure):
+    """用户IP绑定信息"""
+    _fields_ = [
+        ("BrokerID", c_char*11),
+        ("AppID", c_char*33),
+        ("IPAddress", c_char*33),
+    ]
+
+    def getBrokerID(self):
+        '''经纪公司代码'''
+        return str(self.BrokerID, 'GBK')
+
+    def getAppID(self):
+        '''App代码'''
+        return str(self.AppID, 'GBK')
+
+    def getIPAddress(self):
+        '''用户代码'''
+        return str(self.IPAddress, 'GBK')
+
+    def __str__(self): # 可以直接print
+        return f"'BrokerID'={self.getBrokerID()}, 'AppID'={self.getAppID()}, 'IPAddress'={self.getIPAddress()}"
+
+
+class  CThostFtdcQryClassifiedInstrumentField(Structure):
+    """查询分类合约"""
+    _fields_ = [
+        ("InstrumentID", c_char*81),
+        ("ExchangeID", c_char*9),
+        ("ExchangeInstID", c_char*81),
+        ("ProductID", c_char*81),
+        ("TradingType", c_char),
+        ("ClassType", c_char),
+    ]
+
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getExchangeID(self):
+        '''交易所代码'''
+        return str(self.ExchangeID, 'GBK')
+
+    def getExchangeInstID(self):
+        '''合约在交易所的代码'''
+        return str(self.ExchangeInstID, 'GBK')
+
+    def getProductID(self):
+        '''产品代码'''
+        return str(self.ProductID, 'GBK')
+
+    def getTradingType(self):
+        '''合约交易状态'''
+        return TThostFtdcTradingTypeType(ord(self.TradingType)) if ord(self.TradingType) in [e.value for e in list(TThostFtdcTradingTypeType)] else list(TThostFtdcTradingTypeType)[0]
+
+    def getClassType(self):
+        '''合约分类类型'''
+        return TThostFtdcClassTypeType(ord(self.ClassType)) if ord(self.ClassType) in [e.value for e in list(TThostFtdcClassTypeType)] else list(TThostFtdcClassTypeType)[0]
+
+    def __str__(self): # 可以直接print
+        return f"'InstrumentID'={self.getInstrumentID()}, 'ExchangeID'={self.getExchangeID()}, 'ExchangeInstID'={self.getExchangeInstID()}, 'ProductID'={self.getProductID()}, 'TradingType'={self.getTradingType()}, 'ClassType'={self.getClassType()}"
+
+
+class  CThostFtdcQryCombPromotionParamField(Structure):
+    """查询组合优惠比例"""
+    _fields_ = [
+        ("ExchangeID", c_char*9),
+        ("InstrumentID", c_char*81),
+    ]
+
+    def getExchangeID(self):
+        '''交易所代码'''
+        return str(self.ExchangeID, 'GBK')
+
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def __str__(self): # 可以直接print
+        return f"'ExchangeID'={self.getExchangeID()}, 'InstrumentID'={self.getInstrumentID()}"
+
+
+class  CThostFtdcCombPromotionParamField(Structure):
+    """组合优惠比例"""
+    _fields_ = [
+        ("ExchangeID", c_char*9),
+        ("InstrumentID", c_char*81),
+        ("CombHedgeFlag", c_char*5),
+        ("Xparameter", c_double),
+    ]
+
+    def getExchangeID(self):
+        '''交易所代码'''
+        return str(self.ExchangeID, 'GBK')
+
+    def getInstrumentID(self):
+        '''合约代码'''
+        return str(self.InstrumentID, 'GBK')
+
+    def getCombHedgeFlag(self):
+        '''投机套保标志'''
+        return str(self.CombHedgeFlag, 'GBK')
+
+    def getXparameter(self):
+        '''期权组合保证金比例'''
+        return self.Xparameter
+
+    def __str__(self): # 可以直接print
+        return f"'ExchangeID'={self.getExchangeID()}, 'InstrumentID'={self.getInstrumentID()}, 'CombHedgeFlag'={self.getCombHedgeFlag()}, 'Xparameter'={self.getXparameter()}"
 

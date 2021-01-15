@@ -19,7 +19,7 @@ Trade::Trade(void)
 	_RspParkedOrderInsert = NULL;
 	_RspParkedOrderAction = NULL;
 	_RspOrderAction = NULL;
-	_RspQueryMaxOrderVolume = NULL;
+	_RspQryMaxOrderVolume = NULL;
 	_RspSettlementInfoConfirm = NULL;
 	_RspRemoveParkedOrder = NULL;
 	_RspRemoveParkedOrderAction = NULL;
@@ -129,6 +129,8 @@ Trade::Trade(void)
 	_RtnOpenAccountByBank = NULL;
 	_RtnCancelAccountByBank = NULL;
 	_RtnChangeAccountByBank = NULL;
+	_RspQryClassifiedInstrument = NULL;
+	_RspQryCombPromotionParam = NULL;
 }
 
 DLL_EXPORT_C_DECL void WINAPI SetOnFrontConnected(Trade* spi, void* func){spi->_FrontConnected = func;}
@@ -146,7 +148,7 @@ DLL_EXPORT_C_DECL void WINAPI SetOnRspOrderInsert(Trade* spi, void* func){spi->_
 DLL_EXPORT_C_DECL void WINAPI SetOnRspParkedOrderInsert(Trade* spi, void* func){spi->_RspParkedOrderInsert = func;}
 DLL_EXPORT_C_DECL void WINAPI SetOnRspParkedOrderAction(Trade* spi, void* func){spi->_RspParkedOrderAction = func;}
 DLL_EXPORT_C_DECL void WINAPI SetOnRspOrderAction(Trade* spi, void* func){spi->_RspOrderAction = func;}
-DLL_EXPORT_C_DECL void WINAPI SetOnRspQueryMaxOrderVolume(Trade* spi, void* func){spi->_RspQueryMaxOrderVolume = func;}
+DLL_EXPORT_C_DECL void WINAPI SetOnRspQryMaxOrderVolume(Trade* spi, void* func){spi->_RspQryMaxOrderVolume = func;}
 DLL_EXPORT_C_DECL void WINAPI SetOnRspSettlementInfoConfirm(Trade* spi, void* func){spi->_RspSettlementInfoConfirm = func;}
 DLL_EXPORT_C_DECL void WINAPI SetOnRspRemoveParkedOrder(Trade* spi, void* func){spi->_RspRemoveParkedOrder = func;}
 DLL_EXPORT_C_DECL void WINAPI SetOnRspRemoveParkedOrderAction(Trade* spi, void* func){spi->_RspRemoveParkedOrderAction = func;}
@@ -256,6 +258,8 @@ DLL_EXPORT_C_DECL void WINAPI SetOnRspQueryBankAccountMoneyByFuture(Trade* spi, 
 DLL_EXPORT_C_DECL void WINAPI SetOnRtnOpenAccountByBank(Trade* spi, void* func){spi->_RtnOpenAccountByBank = func;}
 DLL_EXPORT_C_DECL void WINAPI SetOnRtnCancelAccountByBank(Trade* spi, void* func){spi->_RtnCancelAccountByBank = func;}
 DLL_EXPORT_C_DECL void WINAPI SetOnRtnChangeAccountByBank(Trade* spi, void* func){spi->_RtnChangeAccountByBank = func;}
+DLL_EXPORT_C_DECL void WINAPI SetOnRspQryClassifiedInstrument(Trade* spi, void* func){spi->_RspQryClassifiedInstrument = func;}
+DLL_EXPORT_C_DECL void WINAPI SetOnRspQryCombPromotionParam(Trade* spi, void* func){spi->_RspQryCombPromotionParam = func;}
 
 DLL_EXPORT_C_DECL void* WINAPI CreateApi(){return CThostFtdcTraderApi::CreateFtdcTraderApi("./log/");}
 DLL_EXPORT_C_DECL void* WINAPI CreateSpi(){return new Trade();}
@@ -287,7 +291,7 @@ DLL_EXPORT_C_DECL void* WINAPI ReqOrderInsert(CThostFtdcTraderApi *api, CThostFt
 DLL_EXPORT_C_DECL void* WINAPI ReqParkedOrderInsert(CThostFtdcTraderApi *api, CThostFtdcParkedOrderField *pParkedOrder, int nRequestID){api->ReqParkedOrderInsert(pParkedOrder, nRequestID); return 0;}
 DLL_EXPORT_C_DECL void* WINAPI ReqParkedOrderAction(CThostFtdcTraderApi *api, CThostFtdcParkedOrderActionField *pParkedOrderAction, int nRequestID){api->ReqParkedOrderAction(pParkedOrderAction, nRequestID); return 0;}
 DLL_EXPORT_C_DECL void* WINAPI ReqOrderAction(CThostFtdcTraderApi *api, CThostFtdcInputOrderActionField *pInputOrderAction, int nRequestID){api->ReqOrderAction(pInputOrderAction, nRequestID); return 0;}
-DLL_EXPORT_C_DECL void* WINAPI ReqQueryMaxOrderVolume(CThostFtdcTraderApi *api, CThostFtdcQueryMaxOrderVolumeField *pQueryMaxOrderVolume, int nRequestID){api->ReqQueryMaxOrderVolume(pQueryMaxOrderVolume, nRequestID); return 0;}
+DLL_EXPORT_C_DECL void* WINAPI ReqQryMaxOrderVolume(CThostFtdcTraderApi *api, CThostFtdcQryMaxOrderVolumeField *pQryMaxOrderVolume, int nRequestID){api->ReqQryMaxOrderVolume(pQryMaxOrderVolume, nRequestID); return 0;}
 DLL_EXPORT_C_DECL void* WINAPI ReqSettlementInfoConfirm(CThostFtdcTraderApi *api, CThostFtdcSettlementInfoConfirmField *pSettlementInfoConfirm, int nRequestID){api->ReqSettlementInfoConfirm(pSettlementInfoConfirm, nRequestID); return 0;}
 DLL_EXPORT_C_DECL void* WINAPI ReqRemoveParkedOrder(CThostFtdcTraderApi *api, CThostFtdcRemoveParkedOrderField *pRemoveParkedOrder, int nRequestID){api->ReqRemoveParkedOrder(pRemoveParkedOrder, nRequestID); return 0;}
 DLL_EXPORT_C_DECL void* WINAPI ReqRemoveParkedOrderAction(CThostFtdcTraderApi *api, CThostFtdcRemoveParkedOrderActionField *pRemoveParkedOrderAction, int nRequestID){api->ReqRemoveParkedOrderAction(pRemoveParkedOrderAction, nRequestID); return 0;}
@@ -354,3 +358,5 @@ DLL_EXPORT_C_DECL void* WINAPI ReqQueryCFMMCTradingAccountToken(CThostFtdcTrader
 DLL_EXPORT_C_DECL void* WINAPI ReqFromBankToFutureByFuture(CThostFtdcTraderApi *api, CThostFtdcReqTransferField *pReqTransfer, int nRequestID){api->ReqFromBankToFutureByFuture(pReqTransfer, nRequestID); return 0;}
 DLL_EXPORT_C_DECL void* WINAPI ReqFromFutureToBankByFuture(CThostFtdcTraderApi *api, CThostFtdcReqTransferField *pReqTransfer, int nRequestID){api->ReqFromFutureToBankByFuture(pReqTransfer, nRequestID); return 0;}
 DLL_EXPORT_C_DECL void* WINAPI ReqQueryBankAccountMoneyByFuture(CThostFtdcTraderApi *api, CThostFtdcReqQueryAccountField *pReqQueryAccount, int nRequestID){api->ReqQueryBankAccountMoneyByFuture(pReqQueryAccount, nRequestID); return 0;}
+DLL_EXPORT_C_DECL void* WINAPI ReqQryClassifiedInstrument(CThostFtdcTraderApi *api, CThostFtdcQryClassifiedInstrumentField *pQryClassifiedInstrument, int nRequestID){api->ReqQryClassifiedInstrument(pQryClassifiedInstrument, nRequestID); return 0;}
+DLL_EXPORT_C_DECL void* WINAPI ReqQryCombPromotionParam(CThostFtdcTraderApi *api, CThostFtdcQryCombPromotionParamField *pQryCombPromotionParam, int nRequestID){api->ReqQryCombPromotionParam(pQryCombPromotionParam, nRequestID); return 0;}

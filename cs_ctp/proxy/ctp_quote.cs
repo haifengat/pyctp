@@ -68,13 +68,13 @@ namespace HaiFeng
 			string curPath = Environment.CurrentDirectory;
             var dll_path = new FileInfo(this.GetType().Assembly.Location).DirectoryName;
             Environment.CurrentDirectory = dll_path;
-			dll_path = Path.Combine(dll_path, "lib64");
-			if (!Directory.Exists(dll_path))
-			{
-				File.WriteAllBytes("lib.zip", Properties.Resources.lib64);
-				ZipFile.ExtractToDirectory("lib.zip", ".");
-				File.Delete("lib.zip");
-			}
+            dll_path = Path.Combine(dll_path, "lib64");
+            if (!Directory.Exists(dll_path))
+            {
+                File.WriteAllBytes("lib.zip", Properties.Resources.lib64);
+                ZipFile.ExtractToDirectory("lib.zip", ".");
+                File.Delete("lib.zip");
+            }
 			Environment.CurrentDirectory = dll_path;
 			_handle = LoadLibrary(Path.Combine(dll_path, "ctp_quote.dll"));
 			if (_handle == IntPtr.Zero)
@@ -114,6 +114,8 @@ namespace HaiFeng
 		public delegate IntPtr DeleReqUserLogin(IntPtr api, ref CThostFtdcReqUserLoginField pReqUserLoginField, int nRequestID);
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]
 		public delegate IntPtr DeleReqUserLogout(IntPtr api, ref CThostFtdcUserLogoutField pUserLogout, int nRequestID);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]
+		public delegate IntPtr DeleReqQryMulticastInstrument(IntPtr api, ref CThostFtdcQryMulticastInstrumentField pQryMulticastInstrument, int nRequestID);
         public IntPtr Release()
         {
             return (Invoke(_handle, "Release", typeof(DeleRelease)) as DeleRelease)(_api);
@@ -190,7 +192,7 @@ namespace HaiFeng
         }
                     
 
-        public IntPtr ReqUserLogin(string TradingDay = "",string BrokerID = "",string UserID = "",string Password = "",string UserProductInfo = "",string InterfaceProductInfo = "",string ProtocolInfo = "",string MacAddress = "",string OneTimePassword = "",string ClientIPAddress = "",string LoginRemark = "",int ClientIPPort = 0)
+        public IntPtr ReqUserLogin(string TradingDay = "",string BrokerID = "",string UserID = "",string Password = "",string UserProductInfo = "",string InterfaceProductInfo = "",string ProtocolInfo = "",string MacAddress = "",string OneTimePassword = "",string reserve1 = "",string LoginRemark = "",int ClientIPPort = 0,string ClientIPAddress = "")
         {
 			CThostFtdcReqUserLoginField pReqUserLoginField = new CThostFtdcReqUserLoginField
 			{
@@ -203,9 +205,10 @@ namespace HaiFeng
 				ProtocolInfo = ProtocolInfo,
 				MacAddress = MacAddress,
 				OneTimePassword = OneTimePassword,
-				ClientIPAddress = ClientIPAddress,
+				reserve1 = reserve1,
 				LoginRemark = LoginRemark,
 				ClientIPPort = ClientIPPort,
+				ClientIPAddress = ClientIPAddress,
 			};
             return (Invoke(_handle, "ReqUserLogin", typeof(DeleReqUserLogin)) as DeleReqUserLogin)(_api, ref pReqUserLoginField, this.nRequestID++);
         }
@@ -221,6 +224,18 @@ namespace HaiFeng
             return (Invoke(_handle, "ReqUserLogout", typeof(DeleReqUserLogout)) as DeleReqUserLogout)(_api, ref pUserLogout, this.nRequestID++);
         }
                     
+
+        public IntPtr ReqQryMulticastInstrument(int TopicID = 0,string reserve1 = "",string InstrumentID = "")
+        {
+			CThostFtdcQryMulticastInstrumentField pQryMulticastInstrument = new CThostFtdcQryMulticastInstrumentField
+			{
+				TopicID = TopicID,
+				reserve1 = reserve1,
+				InstrumentID = InstrumentID,
+			};
+            return (Invoke(_handle, "ReqQryMulticastInstrument", typeof(DeleReqQryMulticastInstrument)) as DeleReqQryMulticastInstrument)(_api, ref pQryMulticastInstrument, this.nRequestID++);
+        }
+                    
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]
 		delegate void DeleSet(IntPtr spi, Delegate func);
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]
@@ -233,6 +248,8 @@ namespace HaiFeng
 		public delegate void DeleOnRspUserLogin(ref CThostFtdcRspUserLoginField pRspUserLogin,ref CThostFtdcRspInfoField pRspInfo,int nRequestID,bool bIsLast);
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]
 		public delegate void DeleOnRspUserLogout(ref CThostFtdcUserLogoutField pUserLogout,ref CThostFtdcRspInfoField pRspInfo,int nRequestID,bool bIsLast);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]
+		public delegate void DeleOnRspQryMulticastInstrument(ref CThostFtdcMulticastInstrumentField pMulticastInstrument,ref CThostFtdcRspInfoField pRspInfo,int nRequestID,bool bIsLast);
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]
 		public delegate void DeleOnRspError(ref CThostFtdcRspInfoField pRspInfo,int nRequestID,bool bIsLast);
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]
@@ -252,6 +269,7 @@ namespace HaiFeng
 		public void SetOnHeartBeatWarning(DeleOnHeartBeatWarning func) {(Invoke(_handle, "SetOnHeartBeatWarning", typeof(DeleSet)) as DeleSet)(_spi, func);}
 		public void SetOnRspUserLogin(DeleOnRspUserLogin func) {(Invoke(_handle, "SetOnRspUserLogin", typeof(DeleSet)) as DeleSet)(_spi, func);}
 		public void SetOnRspUserLogout(DeleOnRspUserLogout func) {(Invoke(_handle, "SetOnRspUserLogout", typeof(DeleSet)) as DeleSet)(_spi, func);}
+		public void SetOnRspQryMulticastInstrument(DeleOnRspQryMulticastInstrument func) {(Invoke(_handle, "SetOnRspQryMulticastInstrument", typeof(DeleSet)) as DeleSet)(_spi, func);}
 		public void SetOnRspError(DeleOnRspError func) {(Invoke(_handle, "SetOnRspError", typeof(DeleSet)) as DeleSet)(_spi, func);}
 		public void SetOnRspSubMarketData(DeleOnRspSubMarketData func) {(Invoke(_handle, "SetOnRspSubMarketData", typeof(DeleSet)) as DeleSet)(_spi, func);}
 		public void SetOnRspUnSubMarketData(DeleOnRspUnSubMarketData func) {(Invoke(_handle, "SetOnRspUnSubMarketData", typeof(DeleSet)) as DeleSet)(_spi, func);}

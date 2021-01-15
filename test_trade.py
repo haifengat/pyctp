@@ -27,10 +27,13 @@ class TestTrade(object):
         self.t.OnRtnNotice = lambda obj, time, msg: print(f'OnNotice: {time}:{msg}')
         self.t.OnErrRtnQuote = lambda obj, quote, info: None
         self.t.OnErrRtnQuoteInsert = lambda obj, o: None
-        self.t.OnOrder = lambda obj, o: print(o)
-        self.t.OnErrOrder = lambda obj, f, info: print(info)
-        self.t.OnTrade = lambda obj, o: print(o)
+        self.t.OnOrder = lambda obj, o: None
+        self.t.OnErrOrder = lambda obj, f, info: None # print(info)
+        self.t.OnTrade = lambda obj, o: None
+        self.t.OnCancel = lambda obj, o: None
         self.t.OnInstrumentStatus = lambda obj, inst, stat: None
+        self.t.OnRspError = lambda obj, info: print(info)
+        
 
     def on_connect(self, obj):
         self.t.ReqUserLogin(self.investor, self.pwd, self.broker, self.proc, self.appid, self.authcode)
@@ -78,9 +81,11 @@ if __name__ == "__main__":
     
     tt = TestTrade(front_trade, broker, investor, pwd, appid, auth_code)
     tt.run()
-    time.sleep(10)
+    while not tt.t.logined:
+        time.sleep(3)
     print('account info')
     print(tt.t.account)
+    print(len(tt.t.instruments))
     # tt.t.ReqOrderInsert('rb2101', DirectType.Buy, OffsetType.Open, 4000, 3)
 
     qq = TestQuote(front_quote, broker, investor, pwd)

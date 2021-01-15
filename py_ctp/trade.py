@@ -115,7 +115,12 @@ class CtpTrade():
             bIsLast: bool):
         if not self.logined:
             time.sleep(0.5)
-            self.t.ReqQryInstrument()
+            if self.broker == '9999':
+                print("qry instrument")
+                self.t.ReqQryInstrument()
+            else:
+                print("qry classified instrument")
+                self.t.ReqQryClassifiedInstrument()
 
     def _qry(self):
         """查询帐号相关信息"""
@@ -134,6 +139,7 @@ class CtpTrade():
         self.t.ReqQryTradingAccount(self.broker, self.investor)
         time.sleep(1.1)
 
+        print('logged')
         self.logined = True
         info = InfoField()
         info.ErrorID = 0
@@ -174,7 +180,13 @@ class CtpTrade():
         if bIsLast:
             sleep(1.1)
             """查询合约/持仓/权益"""
+            print('start qry thread')
             threading.Thread(target=self._qry).start()  # 开启查询
+
+    def _OnRspQryClassifiedInstrument(self, pInstrument: CThostFtdcInstrumentField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
+        """"""
+        self._OnRspQryInstrument(pInstrument, pRspInfo, nRequestID, bIsLast)
+        
 
     def _OnRspQryPosition(self, pInvestorPosition: CThostFtdcInvestorPositionField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
         """"""
@@ -433,6 +445,12 @@ class CtpTrade():
         info.ErrorMsg = pRspInfo.getErrorMsg()
         threading.Thread(target=self.OnErrRtnForQuoteInsert, args=(self, pInputForQuote, info)).start()
 
+    def _OnRspError(self, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
+        info = InfoField()
+        info.ErrorID = pRspInfo.getErrorID()
+        info.ErrorMsg = pRspInfo.getErrorMsg()
+        threading.Thread(target=self.OnRspError, args=(self, info)).start()
+
     def GetVersion(self):
         return self.t.GetVersion()
 
@@ -458,6 +476,7 @@ class CtpTrade():
         self.t.OnRspOrderAction = self._OnRspOrderAction
         self.t.OnRtnInstrumentStatus = self._OnRtnInstrumentStatus
         self.t.OnRspQryInstrument = self._OnRspQryInstrument
+        self.t.OnRspClassifiedInstrument = self._OnRspQryClassifiedInstrument
         self.t.OnRspQryTradingAccount = self._OnRspQryAccount
         self.t.OnRspQryInvestorPosition = self._OnRspQryPosition
         self.t.OnRspQryInvestorPositionDetail = self._OnRspQryPositionDetail
@@ -465,6 +484,7 @@ class CtpTrade():
         self.t.OnRtnQuote = self._OnRtnQuote
         self.t.OnErrRtnQuoteInsert = self._OnErrRtnQuote
         self.t.OnErrRtnForQuoteInsert = self._OnErrForQuoteInsert
+        self.t.OnRspError = self._OnRspError
 
         self.front_address = front
         self.t.RegCB()
@@ -636,6 +656,17 @@ class CtpTrade():
         """
         print('=== [TRADE] OnErrCancel ===\n{0}'.format(f.__dict__))
         print(info)
+
+
+    def OnRspError(self, obj, info: InfoField):
+        """
+        撤单失败
+            :param self:
+            :param obj:
+            :param f:OrderField:
+            :param info:InfoField:
+        """
+        print('=== [TRADE] OnRspError ===\n{0}'.format(info.__dict__))
 
     def OnErrOrder(self, obj, f: OrderField, info: InfoField):
         """

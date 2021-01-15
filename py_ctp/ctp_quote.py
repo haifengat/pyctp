@@ -82,6 +82,9 @@ class Quote:
 
         self.h.ReqUserLogout.argtypes = [c_void_p, c_void_p, c_int32]
         self.h.ReqUserLogout.restype = c_void_p
+
+        self.h.ReqQryMulticastInstrument.argtypes = [c_void_p, c_void_p, c_int32]
+        self.h.ReqQryMulticastInstrument.restype = c_void_p
         os.chdir(cur_path)
 
 
@@ -139,7 +142,7 @@ class Quote:
         ca1[0] = bytes(ppInstrumentID, encoding='ascii')
         self.h.UnSubscribeForQuoteRsp(self.api, ca1, nCount)
 
-    def ReqUserLogin(self, TradingDay: str = '', BrokerID: str = '', UserID: str = '', Password: str = '', UserProductInfo: str = '', InterfaceProductInfo: str = '', ProtocolInfo: str = '', MacAddress: str = '', OneTimePassword: str = '', ClientIPAddress: str = '', LoginRemark: str = '', ClientIPPort: int = 0):
+    def ReqUserLogin(self, TradingDay: str = '', BrokerID: str = '', UserID: str = '', Password: str = '', UserProductInfo: str = '', InterfaceProductInfo: str = '', ProtocolInfo: str = '', MacAddress: str = '', OneTimePassword: str = '', reserve1: str = '', LoginRemark: str = '', ClientIPPort: int = 0, ClientIPAddress: str = ''):
         pReqUserLoginField = CThostFtdcReqUserLoginField()
         pReqUserLoginField.TradingDay = bytes(TradingDay, encoding='ascii')
         pReqUserLoginField.BrokerID = bytes(BrokerID, encoding='ascii')
@@ -150,9 +153,10 @@ class Quote:
         pReqUserLoginField.ProtocolInfo = bytes(ProtocolInfo, encoding='ascii')
         pReqUserLoginField.MacAddress = bytes(MacAddress, encoding='ascii')
         pReqUserLoginField.OneTimePassword = bytes(OneTimePassword, encoding='ascii')
-        pReqUserLoginField.ClientIPAddress = bytes(ClientIPAddress, encoding='ascii')
+        pReqUserLoginField.reserve1 = bytes(reserve1, encoding='ascii')
         pReqUserLoginField.LoginRemark = bytes(LoginRemark, encoding='ascii')
         pReqUserLoginField.ClientIPPort = ClientIPPort
+        pReqUserLoginField.ClientIPAddress = bytes(ClientIPAddress, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqUserLogin(self.api, byref(pReqUserLoginField), self.nRequestID)
 
@@ -162,6 +166,14 @@ class Quote:
         pUserLogout.UserID = bytes(UserID, encoding='ascii')
         self.nRequestID += 1
         self.h.ReqUserLogout(self.api, byref(pUserLogout), self.nRequestID)
+
+    def ReqQryMulticastInstrument(self, TopicID: int = 0, reserve1: str = '', InstrumentID: str = ''):
+        pQryMulticastInstrument = CThostFtdcQryMulticastInstrumentField()
+        pQryMulticastInstrument.TopicID = TopicID
+        pQryMulticastInstrument.reserve1 = bytes(reserve1, encoding='ascii')
+        pQryMulticastInstrument.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        self.nRequestID += 1
+        self.h.ReqQryMulticastInstrument(self.api, byref(pQryMulticastInstrument), self.nRequestID)
 
     def RegCB(self):
         self.h.SetOnFrontConnected.argtypes = [c_void_p, c_void_p]
@@ -188,6 +200,11 @@ class Quote:
         self.h.SetOnRspUserLogout.restype = None
         self.evOnRspUserLogout = CFUNCTYPE(None, POINTER(CThostFtdcUserLogoutField), POINTER(CThostFtdcRspInfoField), c_int32, c_bool)(self.__OnRspUserLogout)
         self.h.SetOnRspUserLogout(self.spi, self.evOnRspUserLogout)
+
+        self.h.SetOnRspQryMulticastInstrument.argtypes = [c_void_p, c_void_p]
+        self.h.SetOnRspQryMulticastInstrument.restype = None
+        self.evOnRspQryMulticastInstrument = CFUNCTYPE(None, POINTER(CThostFtdcMulticastInstrumentField), POINTER(CThostFtdcRspInfoField), c_int32, c_bool)(self.__OnRspQryMulticastInstrument)
+        self.h.SetOnRspQryMulticastInstrument(self.spi, self.evOnRspQryMulticastInstrument)
 
         self.h.SetOnRspError.argtypes = [c_void_p, c_void_p]
         self.h.SetOnRspError.restype = None
@@ -239,6 +256,9 @@ class Quote:
     def __OnRspUserLogout(self, pUserLogout, pRspInfo, nRequestID, bIsLast):
         self.OnRspUserLogout(copy.deepcopy(POINTER(CThostFtdcUserLogoutField).from_param(pUserLogout).contents), copy.deepcopy(POINTER(CThostFtdcRspInfoField).from_param(pRspInfo).contents), nRequestID, bIsLast)
 
+    def __OnRspQryMulticastInstrument(self, pMulticastInstrument, pRspInfo, nRequestID, bIsLast):
+        self.OnRspQryMulticastInstrument(copy.deepcopy(POINTER(CThostFtdcMulticastInstrumentField).from_param(pMulticastInstrument).contents), copy.deepcopy(POINTER(CThostFtdcRspInfoField).from_param(pRspInfo).contents), nRequestID, bIsLast)
+
     def __OnRspError(self, pRspInfo, nRequestID, bIsLast):
         self.OnRspError(copy.deepcopy(POINTER(CThostFtdcRspInfoField).from_param(pRspInfo).contents), nRequestID, bIsLast)
 
@@ -274,6 +294,9 @@ class Quote:
 
     def OnRspUserLogout(self, pUserLogout: CThostFtdcUserLogoutField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
         print('===OnRspUserLogout===: pUserLogout: CThostFtdcUserLogoutField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool')
+
+    def OnRspQryMulticastInstrument(self, pMulticastInstrument: CThostFtdcMulticastInstrumentField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
+        print('===OnRspQryMulticastInstrument===: pMulticastInstrument: CThostFtdcMulticastInstrumentField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool')
 
     def OnRspError(self, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
         print('===OnRspError===: pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool')

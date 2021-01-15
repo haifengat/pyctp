@@ -62,6 +62,10 @@ class TThostFtdcIdCardTypeType(Enum):
     """外国人永久居留证"""
     THOST_FTDC_ICT_CptMngPrdLetter = 76
     """资管产品备案函"""
+    THOST_FTDC_ICT_UniformSocialCreditCode = 78
+    """统一社会信用代码"""
+    THOST_FTDC_ICT_CorporationCertNo = 79
+    """机构成立证明文件"""
     THOST_FTDC_ICT_OtherCard = 120
     """其他证件"""
 
@@ -364,6 +368,30 @@ class TThostFtdcProductClassType(Enum):
     """期转现"""
     THOST_FTDC_PC_SpotOption = 54
     """现货期权"""
+    THOST_FTDC_PC_TAS = 55
+    """TAS合约"""
+    THOST_FTDC_PC_MI = 73
+    """金属指数"""
+
+
+class TThostFtdcAPIProductClassType(Enum):
+    """产品类型类型"""
+    THOST_FTDC_APC_FutureSingle = 49
+    """期货单一合约"""
+    THOST_FTDC_APC_OptionSingle = 50
+    """期权单一合约"""
+    THOST_FTDC_APC_Futures = 51
+    """可交易期货(含期货组合和期货单一合约)"""
+    THOST_FTDC_APC_Options = 52
+    """可交易期权(含期权组合和期权单一合约)"""
+    THOST_FTDC_APC_TradingComb = 53
+    """可下单组合（目前包含DCE和ZCE的期货组合）"""
+    THOST_FTDC_APC_UnTradingComb = 54
+    """可申请的组合（dce可以申请的组合合约 包含dce可以交易的合约）"""
+    THOST_FTDC_APC_AllTrading = 55
+    """所有可以交易合约"""
+    THOST_FTDC_APC_All = 56
+    """所有合约（包含不能交易合约 慎用）"""
 
 
 class TThostFtdcInstLifePhaseType(Enum):
@@ -662,6 +690,14 @@ class TThostFtdcTradeTypeType(Enum):
     """组合衍生成交"""
     THOST_FTDC_TRDT_BlockTrade = 53
     """大宗交易成交"""
+
+
+class TThostFtdcSpecPosiTypeType(Enum):
+    """特殊持仓明细标识类型"""
+    THOST_FTDC_SPOST_Commo = 110
+    """普通持仓明细"""
+    THOST_FTDC_SPOST_Tas = 48
+    """TAS合约成交产生的标的合约持仓明细"""
 
 
 class TThostFtdcPriceSourceType(Enum):
@@ -1404,6 +1440,10 @@ class TThostFtdcUserEventTypeType(Enum):
     """修改密码"""
     THOST_FTDC_UET_Authenticate = 54
     """客户端认证"""
+    THOST_FTDC_UET_SubmitSysInfo = 55
+    """终端信息上报"""
+    THOST_FTDC_UET_Transfer = 56
+    """转账"""
     THOST_FTDC_UET_Other = 57
     """其他"""
 
@@ -3386,8 +3426,16 @@ class TThostFtdcCombinationTypeType(Enum):
     """宽跨式组合"""
     THOST_FTDC_COMBT_PRT = 53
     """备兑组合"""
-    THOST_FTDC_COMBT_CLD = 54
+    THOST_FTDC_COMBT_CAS = 54
     """时间价差组合"""
+    THOST_FTDC_COMBT_OPL = 55
+    """期权对锁组合"""
+    THOST_FTDC_COMBT_BFO = 56
+    """买备兑组合"""
+    THOST_FTDC_COMBT_BLS = 57
+    """买入期权垂直价差组合"""
+    THOST_FTDC_COMBT_BES = 97
+    """卖出期权垂直价差组合"""
 
 
 class TThostFtdcDceCombinationTypeType(Enum):
@@ -3554,6 +3602,8 @@ class TThostFtdcCombDirectionType(Enum):
     """申请组合"""
     THOST_FTDC_CMDR_UnComb = 49
     """申请拆分"""
+    THOST_FTDC_CMDR_DelComb = 50
+    """操作员删组合单"""
 
 
 class TThostFtdcStrikeOffsetTypeType(Enum):
@@ -3646,5 +3696,35 @@ class TThostFtdcMatchTypeType(Enum):
     """基点价值"""
     THOST_FTDC_OTC_MT_ParValue = 50
     """面值"""
+
+
+class TThostFtdcAuthTypeType(Enum):
+    """用户终端认证方式类型"""
+    THOST_FTDC_AU_WHITE = 48
+    """白名单校验"""
+    THOST_FTDC_AU_BLACK = 49
+    """黑名单校验"""
+
+
+class TThostFtdcClassTypeType(Enum):
+    """合约分类方式类型"""
+    THOST_FTDC_INS_ALL = 48
+    """所有合约"""
+    THOST_FTDC_INS_FUTURE = 49
+    """期货、即期、期转现、Tas、金属指数合约"""
+    THOST_FTDC_INS_OPTION = 50
+    """期货、现货期权合约"""
+    THOST_FTDC_INS_COMB = 51
+    """组合合约"""
+
+
+class TThostFtdcTradingTypeType(Enum):
+    """合约交易状态分类方式类型"""
+    THOST_FTDC_TD_ALL = 48
+    """所有状态"""
+    THOST_FTDC_TD_TRADE = 49
+    """交易"""
+    THOST_FTDC_TD_UNTRADE = 50
+    """非交易"""
 
 

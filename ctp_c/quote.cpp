@@ -9,6 +9,7 @@ Quote::Quote(void)
 	_HeartBeatWarning = NULL;
 	_RspUserLogin = NULL;
 	_RspUserLogout = NULL;
+	_RspQryMulticastInstrument = NULL;
 	_RspError = NULL;
 	_RspSubMarketData = NULL;
 	_RspUnSubMarketData = NULL;
@@ -23,6 +24,7 @@ DLL_EXPORT_C_DECL void WINAPI SetOnFrontDisconnected(Quote* spi, void* func){spi
 DLL_EXPORT_C_DECL void WINAPI SetOnHeartBeatWarning(Quote* spi, void* func){spi->_HeartBeatWarning = func;}
 DLL_EXPORT_C_DECL void WINAPI SetOnRspUserLogin(Quote* spi, void* func){spi->_RspUserLogin = func;}
 DLL_EXPORT_C_DECL void WINAPI SetOnRspUserLogout(Quote* spi, void* func){spi->_RspUserLogout = func;}
+DLL_EXPORT_C_DECL void WINAPI SetOnRspQryMulticastInstrument(Quote* spi, void* func){spi->_RspQryMulticastInstrument = func;}
 DLL_EXPORT_C_DECL void WINAPI SetOnRspError(Quote* spi, void* func){spi->_RspError = func;}
 DLL_EXPORT_C_DECL void WINAPI SetOnRspSubMarketData(Quote* spi, void* func){spi->_RspSubMarketData = func;}
 DLL_EXPORT_C_DECL void WINAPI SetOnRspUnSubMarketData(Quote* spi, void* func){spi->_RspUnSubMarketData = func;}
@@ -47,3 +49,4 @@ DLL_EXPORT_C_DECL void* WINAPI SubscribeForQuoteRsp(CThostFtdcMdApi *api, char *
 DLL_EXPORT_C_DECL void* WINAPI UnSubscribeForQuoteRsp(CThostFtdcMdApi *api, char *ppInstrumentID[], int nCount){api->UnSubscribeForQuoteRsp(ppInstrumentID, nCount); return 0;}
 DLL_EXPORT_C_DECL void* WINAPI ReqUserLogin(CThostFtdcMdApi *api, CThostFtdcReqUserLoginField *pReqUserLoginField, int nRequestID){api->ReqUserLogin(pReqUserLoginField, nRequestID); return 0;}
 DLL_EXPORT_C_DECL void* WINAPI ReqUserLogout(CThostFtdcMdApi *api, CThostFtdcUserLogoutField *pUserLogout, int nRequestID){api->ReqUserLogout(pUserLogout, nRequestID); return 0;}
+DLL_EXPORT_C_DECL void* WINAPI ReqQryMulticastInstrument(CThostFtdcMdApi *api, CThostFtdcQryMulticastInstrumentField *pQryMulticastInstrument, int nRequestID){api->ReqQryMulticastInstrument(pQryMulticastInstrument, nRequestID); return 0;}

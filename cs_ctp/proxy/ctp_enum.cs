@@ -43,6 +43,14 @@ public enum TThostFtdcIdCardTypeType : byte
 	///</summary>
 	THOST_FTDC_ICT_OtherCard = (byte)'x',
 	/// <summary>
+	/// 机构成立证明文件
+	///</summary>
+	THOST_FTDC_ICT_CorporationCertNo = (byte)'O',
+	/// <summary>
+	/// 统一社会信用代码
+	///</summary>
+	THOST_FTDC_ICT_UniformSocialCreditCode = (byte)'N',
+	/// <summary>
 	/// 资管产品备案函
 	///</summary>
 	THOST_FTDC_ICT_CptMngPrdLetter = (byte)'L',
@@ -688,6 +696,14 @@ public enum TThostFtdcTradingRoleType : byte
 public enum TThostFtdcProductClassType : byte
 {
 	/// <summary>
+	/// 金属指数
+	///</summary>
+	THOST_FTDC_PC_MI = (byte)'I',
+	/// <summary>
+	/// TAS合约
+	///</summary>
+	THOST_FTDC_PC_TAS = (byte)'7',
+	/// <summary>
 	/// 现货期权
 	///</summary>
 	THOST_FTDC_PC_SpotOption = (byte)'6',
@@ -711,6 +727,45 @@ public enum TThostFtdcProductClassType : byte
 	/// 期货
 	///</summary>
 	THOST_FTDC_PC_Futures = (byte)'1',
+}
+
+/// <summary>
+/// 产品类型类型
+///</summary>
+public enum TThostFtdcAPIProductClassType : byte
+{
+	/// <summary>
+	/// 所有合约（包含不能交易合约 慎用）
+	///</summary>
+	THOST_FTDC_APC_All = (byte)'8',
+	/// <summary>
+	/// 所有可以交易合约
+	///</summary>
+	THOST_FTDC_APC_AllTrading = (byte)'7',
+	/// <summary>
+	/// 可申请的组合（dce可以申请的组合合约 包含dce可以交易的合约）
+	///</summary>
+	THOST_FTDC_APC_UnTradingComb = (byte)'6',
+	/// <summary>
+	/// 可下单组合（目前包含DCE和ZCE的期货组合）
+	///</summary>
+	THOST_FTDC_APC_TradingComb = (byte)'5',
+	/// <summary>
+	/// 可交易期权(含期权组合和期权单一合约)
+	///</summary>
+	THOST_FTDC_APC_Options = (byte)'4',
+	/// <summary>
+	/// 可交易期货(含期货组合和期货单一合约)
+	///</summary>
+	THOST_FTDC_APC_Futures = (byte)'3',
+	/// <summary>
+	/// 期权单一合约
+	///</summary>
+	THOST_FTDC_APC_OptionSingle = (byte)'2',
+	/// <summary>
+	/// 期货单一合约
+	///</summary>
+	THOST_FTDC_APC_FutureSingle = (byte)'1',
 }
 
 /// <summary>
@@ -1287,6 +1342,21 @@ public enum TThostFtdcTradeTypeType : byte
 	/// 组合持仓拆分为单一持仓,初始化不应包含该类型的持仓
 	///</summary>
 	THOST_FTDC_TRDT_SplitCombinatio = (byte)'n',
+}
+
+/// <summary>
+/// 特殊持仓明细标识类型
+///</summary>
+public enum TThostFtdcSpecPosiTypeType : byte
+{
+	/// <summary>
+	/// TAS合约成交产生的标的合约持仓明细
+	///</summary>
+	THOST_FTDC_SPOST_Tas = (byte)'0',
+	/// <summary>
+	/// 普通持仓明细
+	///</summary>
+	THOST_FTDC_SPOST_Commo = (byte)'n',
 }
 
 /// <summary>
@@ -2693,6 +2763,14 @@ public enum TThostFtdcUserEventTypeType : byte
 	/// 其他
 	///</summary>
 	THOST_FTDC_UET_Other = (byte)'9',
+	/// <summary>
+	/// 转账
+	///</summary>
+	THOST_FTDC_UET_Transfer = (byte)'8',
+	/// <summary>
+	/// 终端信息上报
+	///</summary>
+	THOST_FTDC_UET_SubmitSysInfo = (byte)'7',
 	/// <summary>
 	/// 客户端认证
 	///</summary>
@@ -6475,9 +6553,25 @@ public enum TThostFtdcExecResultType : byte
 public enum TThostFtdcCombinationTypeType : byte
 {
 	/// <summary>
+	/// 卖出期权垂直价差组合
+	///</summary>
+	THOST_FTDC_COMBT_BES = (byte)'a',
+	/// <summary>
+	/// 买入期权垂直价差组合
+	///</summary>
+	THOST_FTDC_COMBT_BLS = (byte)'9',
+	/// <summary>
+	/// 买备兑组合
+	///</summary>
+	THOST_FTDC_COMBT_BFO = (byte)'8',
+	/// <summary>
+	/// 期权对锁组合
+	///</summary>
+	THOST_FTDC_COMBT_OPL = (byte)'7',
+	/// <summary>
 	/// 时间价差组合
 	///</summary>
-	THOST_FTDC_COMBT_CLD = (byte)'6',
+	THOST_FTDC_COMBT_CAS = (byte)'6',
 	/// <summary>
 	/// 备兑组合
 	///</summary>
@@ -6813,6 +6907,10 @@ public enum TThostFtdcCFFEXUploadFileNameType : byte
 public enum TThostFtdcCombDirectionType : byte
 {
 	/// <summary>
+	/// 操作员删组合单
+	///</summary>
+	THOST_FTDC_CMDR_DelComb = (byte)'2',
+	/// <summary>
 	/// 申请拆分
 	///</summary>
 	THOST_FTDC_CMDR_UnComb = (byte)'1',
@@ -6994,5 +7092,62 @@ public enum TThostFtdcMatchTypeType : byte
 	/// 基点价值
 	///</summary>
 	THOST_FTDC_OTC_MT_DV01 = (byte)'1',
+}
+
+/// <summary>
+/// 用户终端认证方式类型
+///</summary>
+public enum TThostFtdcAuthTypeType : byte
+{
+	/// <summary>
+	/// 黑名单校验
+	///</summary>
+	THOST_FTDC_AU_BLACK = (byte)'1',
+	/// <summary>
+	/// 白名单校验
+	///</summary>
+	THOST_FTDC_AU_WHITE = (byte)'0',
+}
+
+/// <summary>
+/// 合约分类方式类型
+///</summary>
+public enum TThostFtdcClassTypeType : byte
+{
+	/// <summary>
+	/// 组合合约
+	///</summary>
+	THOST_FTDC_INS_COMB = (byte)'3',
+	/// <summary>
+	/// 期货、现货期权合约
+	///</summary>
+	THOST_FTDC_INS_OPTION = (byte)'2',
+	/// <summary>
+	/// 期货、即期、期转现、Tas、金属指数合约
+	///</summary>
+	THOST_FTDC_INS_FUTURE = (byte)'1',
+	/// <summary>
+	/// 所有合约
+	///</summary>
+	THOST_FTDC_INS_ALL = (byte)'0',
+}
+
+/// <summary>
+/// 合约交易状态分类方式类型
+///</summary>
+public enum TThostFtdcTradingTypeType : byte
+{
+	/// <summary>
+	/// 非交易
+	///</summary>
+	THOST_FTDC_TD_UNTRADE = (byte)'2',
+	/// <summary>
+	/// 交易
+	///</summary>
+	THOST_FTDC_TD_TRADE = (byte)'1',
+	/// <summary>
+	/// 所有状态
+	///</summary>
+	THOST_FTDC_TD_ALL = (byte)'0',
 }
 
