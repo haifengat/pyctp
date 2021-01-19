@@ -1560,12 +1560,12 @@ class Trade:
 
     def ReqQryClassifiedInstrument(self, InstrumentID: str = '', ExchangeID: str = '', ExchangeInstID: str = '', ProductID: str = '', TradingType: TThostFtdcTradingTypeType = list(TThostFtdcTradingTypeType)[0], ClassType: TThostFtdcClassTypeType = list(TThostFtdcClassTypeType)[0]):
         pQryClassifiedInstrument = CThostFtdcQryClassifiedInstrumentField()
-        # pQryClassifiedInstrument.InstrumentID = bytes(InstrumentID, encoding='ascii')
-        # pQryClassifiedInstrument.ExchangeID = bytes(ExchangeID, encoding='ascii')
-        # pQryClassifiedInstrument.ExchangeInstID = bytes(ExchangeInstID, encoding='ascii')
-        # pQryClassifiedInstrument.ProductID = bytes(ProductID, encoding='ascii')
-        # pQryClassifiedInstrument.TradingType = TradingType.value
-        # pQryClassifiedInstrument.ClassType = ClassType.value
+        pQryClassifiedInstrument.InstrumentID = bytes(InstrumentID, encoding='ascii')
+        pQryClassifiedInstrument.ExchangeID = bytes(ExchangeID, encoding='ascii')
+        pQryClassifiedInstrument.ExchangeInstID = bytes(ExchangeInstID, encoding='ascii')
+        pQryClassifiedInstrument.ProductID = bytes(ProductID, encoding='ascii')
+        pQryClassifiedInstrument.TradingType = TradingType.value
+        pQryClassifiedInstrument.ClassType = ClassType.value
         self.nRequestID += 1
         self.h.ReqQryClassifiedInstrument(self.api, byref(pQryClassifiedInstrument), self.nRequestID)
 

@@ -178,7 +178,7 @@ namespace HaiFeng
             if (this.Broker == "9999")
                 _t.ReqQryInstrument();
             else
-                _t.ReqQryClassifiedInstrument();
+                _t.ReqQryClassifiedInstrument(TradingType: TThostFtdcTradingTypeType.THOST_FTDC_TD_TRADE, ClassType: TThostFtdcClassTypeType.THOST_FTDC_INS_ALL);
         }
 
         private void CTPOnRtnInstrumentStatus(ref CThostFtdcInstrumentStatusField pInstrumentStatus)

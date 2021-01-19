@@ -17,7 +17,7 @@ from .enums import OrderType, InstrumentStatus, DirectType, OffsetType, HedgeTyp
 from .structs import InfoField, InstrumentField, OrderField, OrderStatus, PositionField, TradeField, TradingAccount, PositionDetail
 from .ctp_trade import Trade
 from .ctp_struct import CThostFtdcInputOrderActionField, CThostFtdcInputOrderField, CThostFtdcInstrumentField, CThostFtdcInstrumentStatusField, CThostFtdcInvestorPositionField, CThostFtdcOrderField, CThostFtdcRspInfoField, CThostFtdcRspUserLoginField, CThostFtdcSettlementInfoConfirmField, CThostFtdcTradingAccountField, CThostFtdcTradingNoticeInfoField, CThostFtdcQuoteField, CThostFtdcInputQuoteField, CThostFtdcInputForQuoteField, CThostFtdcInvestorPositionDetailField, CThostFtdcRspAuthenticateField
-from .ctp_enum import TThostFtdcActionFlagType, TThostFtdcContingentConditionType, TThostFtdcDirectionType, TThostFtdcOffsetFlagType, TThostFtdcForceCloseReasonType, TThostFtdcHedgeFlagType, TThostFtdcOrderPriceTypeType, TThostFtdcPosiDirectionType, TThostFtdcTimeConditionType, TThostFtdcVolumeConditionType, TThostFtdcOrderStatusType, TThostFtdcInstrumentStatusType, TThostFtdcTradeTypeType, TThostFtdcAppTypeType
+from .ctp_enum import TThostFtdcActionFlagType, TThostFtdcClassTypeType, TThostFtdcContingentConditionType, TThostFtdcDirectionType, TThostFtdcOffsetFlagType, TThostFtdcForceCloseReasonType, TThostFtdcHedgeFlagType, TThostFtdcOrderPriceTypeType, TThostFtdcPosiDirectionType, TThostFtdcTimeConditionType, TThostFtdcTradingTypeType, TThostFtdcVolumeConditionType, TThostFtdcOrderStatusType, TThostFtdcInstrumentStatusType, TThostFtdcTradeTypeType, TThostFtdcAppTypeType
 
 
 class CtpTrade():
@@ -120,7 +120,7 @@ class CtpTrade():
                 self.t.ReqQryInstrument()
             else:
                 print("qry classified instrument")
-                self.t.ReqQryClassifiedInstrument()
+                self.t.ReqQryClassifiedInstrument(TradingType=TThostFtdcTradingTypeType.THOST_FTDC_TD_TRADE, ClassType=TThostFtdcClassTypeType.THOST_FTDC_INS_ALL)
 
     def _qry(self):
         """查询帐号相关信息"""
@@ -476,7 +476,7 @@ class CtpTrade():
         self.t.OnRspOrderAction = self._OnRspOrderAction
         self.t.OnRtnInstrumentStatus = self._OnRtnInstrumentStatus
         self.t.OnRspQryInstrument = self._OnRspQryInstrument
-        self.t.OnRspClassifiedInstrument = self._OnRspQryClassifiedInstrument
+        self.t.OnRspQryClassifiedInstrument = self._OnRspQryClassifiedInstrument
         self.t.OnRspQryTradingAccount = self._OnRspQryAccount
         self.t.OnRspQryInvestorPosition = self._OnRspQryPosition
         self.t.OnRspQryInvestorPositionDetail = self._OnRspQryPositionDetail
