@@ -19,6 +19,7 @@ def run():
     f_src = open(os.path.join(cur_dir, src_dir, f'{struct_file_name}.h'), 'r', encoding='gbk')
     f_py_struct = open(os.path.join(cur_dir, '..', 'py_ctp', 'ctp_struct.py'), 'w', encoding='utf-8')
     f_cs_struct = open(os.path.join(cur_dir, '..', 'cs_ctp', 'proxy', 'ctp_struct.cs'), 'w', encoding='utf-8')
+    f_core5_struct = open(os.path.join(cur_dir, '..', 'core5_ctp', 'proxy', 'ctp_struct.cs'), 'w', encoding='utf-8')
 
     f_py_struct.write('''#!/usr/bin/env python
 # -*- coding: utf-8 -*-
@@ -32,6 +33,7 @@ from .ctp_enum import *
 ''')
 
     f_cs_struct.write('using System.Runtime.InteropServices;\n\n\n')
+    f_core5_struct.write('using System.Runtime.InteropServices;\nusing PureCode.CtpCSharp;\n\n')
 
     line = f_src.read()
     ss = re.findall(r'///(.*)\s*\n\s*struct([^}]*)', line)  # 找到
@@ -43,6 +45,8 @@ from .ctp_enum import *
         fields_get = []
         fields_dic = []
         cs_def = [f"/// <summary>\n/// {remark}\n/// </summary>\n[StructLayout(LayoutKind.Sequential)]\npublic struct {s_name}\n{{"]
+        core5_def = [f"/// <summary>\n/// {remark}\n/// </summary>\n[StructLayout(LayoutKind.Sequential)]\npublic struct {s_name}\n{{"]
+
         for f in fields:
             # 注释 类型 变量名
             f_remark = f[0]
@@ -54,13 +58,18 @@ from .ctp_enum import *
                 # TThostFtdcInstrumentStatusType(ord(self.InstrumentStatus)) ord(self.InstrumentStatus) in  [e.value for e in list(TThostFtdcInstrumentStatusType)]
                 get_value = f"{f_type}(ord(self.{f_name})) if ord(self.{f_name}) in [e.value for e in list({f_type})] else list({f_type})[0]"
                 cs_def.append(f"\t/// <summary>\n\t/// {f_remark}\n\t/// </summary>\n\tpublic {f_type} {f_name};")
+                core5_def.append(f"\n\t/// <summary>\n\t/// {f_remark}\n\t/// </summary>\n\tpublic {f_type} {f_name};")
             else:
                 get_value = f"str(self.{f_name}, 'GBK')" if 'char*' in type_name else f"self.{f_name}"
                 if 'char*' in type_name:
-                    cs_def.append(f"\t/// <summary>\n\t/// {f_remark}\n\t/// </summary>\n\t[MarshalAs(UnmanagedType.ByValTStr, SizeConst={type_name.split('*')[-1]})]\n\tpublic string {f_name};")
+                    cs_def.append(f"\t/// <summary>\n\t/// {f_remark}\n\t/// </summary>\n\t[MarshalAs(UnmanagedType.ByValArray, SizeConst={type_name.split('*')[-1]})]\n\tpublic string {f_name};")
+                    # 字符串再 .net core 下，使用结构体使用数组，然后再额外用一个属性来对这个数组进行字符串编码
+                    core5_def.append(f"\n\t[MarshalAs(UnmanagedType.ByValArray, SizeConst={type_name.split('*')[-1]})]\n\tprivate byte[] _{f_name};")
+                    core5_def.append(f"\n\t/// <summary>\n\t/// {f_remark}\n\t/// </summary>\n\tpublic string {f_name}\n\t{{\n\t\tget {{ return StringExtend.GetString(_{f_name}); }}\n\t\tset {{ _{f_name} = StringExtend.GetBytes(value, {type_name.split('*')[-1]}); }}\n\t}}")                    
                 else:
                     t = re.search(r'\D+', type_name.split('_')[-1]).group(0) # int32=>int
                     cs_def.append(f"\t/// <summary>\n\t/// {f_remark}\n\t/// </summary>\n\tpublic {t} {f_name};")
+                    core5_def.append(f"\n\t/// <summary>\n\t/// {f_remark}\n\t/// </summary>\n\tpublic {t} {f_name};")
             fields_get.append(f"""
     def get{f_name}(self):
         '''{f_remark}'''
@@ -83,6 +92,9 @@ class {s_name}(Structure):
 
         cs_def = '\n'.join(cs_def)
         f_cs_struct.write(f"{cs_def}\n}}\n\n")
+
+        core5_def = '\n'.join(core5_def)
+        f_core5_struct.write(f"{core5_def}\n}}\n\n")
 
 
 if __name__ == '__main__':
