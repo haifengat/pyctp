@@ -44,6 +44,7 @@ def run(generate_c: bool, generate_py: bool, generate_cs: bool = True):
         f_py = open(os.path.join(cur_dir, '..', 'py_ctp', f'ctp_{spi_class_name}.py'), 'w', encoding='utf-8')
     if generate_cs:
         f_cs = open(os.path.join(cur_dir, '..', 'cs_ctp', 'proxy', f'ctp_{spi_class_name}.cs'), 'w', encoding='utf-8')
+        f_core5 = open(os.path.join(cur_dir, '..', 'core5_ctp', 'proxy', f'ctp_{spi_class_name}.cs'), 'w', encoding='utf-8')
 
     lines = f_src.read()
     lines = re.sub(r'\n\s*([iC])', '\g<1>', lines)  # 多行参数变为一行
@@ -71,6 +72,8 @@ def run(generate_c: bool, generate_py: bool, generate_cs: bool = True):
     import inspect
     sys.path.append('..')
     ctp_struct = getattr(__import__('py_ctp.ctp_struct'), 'ctp_struct')
+
+    preline = '' # 上一行
 
     for line in lines:
         no += 1
@@ -280,8 +283,76 @@ namespace HaiFeng
 			this.RegisterSpi(_spi);
 		}}
 ''')
+                f_core5.write(f'''using System;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.IO.Compression;
+using PureCode.CtpCSharp;
+
+namespace HaiFeng
+{{
+	public class ctp_{spi_class_name}
+	{{
+		#region Dll Load /UnLoad
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <param name="pHModule"></param>
+		/// <param name="lpProcName"></param>
+		/// <param name="t"></param>
+		/// <returns></returns>
+		/// <exception cref="Exception"></exception>
+		private static Delegate Invoke(IntPtr pHModule, string lpProcName, Type t)
+		{{
+            return loader.Invoke(pHModule, lpProcName, t);
+		}}
+		#endregion
+
+        private static readonly AssembyLoader loader;
+		IntPtr _handle = IntPtr.Zero, _api = IntPtr.Zero, _spi = IntPtr.Zero;
+		private int nRequestID = 0;
+		delegate IntPtr Create();
+
+		static ctp_{spi_class_name}()
+        {{
+            string curPath = Environment.CurrentDirectory;
+            var dll_path = new FileInfo(typeof(ctp_{spi_class_name}).Assembly.Location).DirectoryName;
+            Environment.CurrentDirectory = dll_path;
+            string dllFileName = Path.Combine(dll_path, "ctp_{spi_class_name}.dll");
+			
+            loader = new AssembyLoader(dllFileName);
+            var _handle = loader.GetDllHandle();
+
+			if (_handle == IntPtr.Zero)
+			{{
+				throw (new Exception(String.Format("没有找到:", dll_path)));
+			}}
+
+			Environment.CurrentDirectory = curPath;
+			Directory.CreateDirectory("log");
+        }}
+        
+		public ctp_{spi_class_name}()
+		{{
+            _handle = loader.GetDllHandle();
+
+			_api = (Invoke(_handle, "CreateApi", typeof(Create)) as Create)();
+			_spi = (Invoke(_handle, "CreateSpi", typeof(Create)) as Create)();
+			this.RegisterSpi(_spi);
+		}}
+''')
                 if spi_class_name.lower().endswith('trade'):
                     f_cs.write('''
+        #region SE版本增加
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]
+        public delegate IntPtr DeleGetVersion();
+        public string GetVersion()
+        {
+            return Marshal.PtrToStringAnsi((Invoke(_handle, "GetVersion", typeof(DeleGetVersion)) as DeleGetVersion)());
+        }
+        #endregion\n''')
+                    f_core5.write('''
         #region SE版本增加
         [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]
         public delegate IntPtr DeleGetVersion();
@@ -294,9 +365,10 @@ namespace HaiFeng
             g_on = re.search(r'virtual void\s*On(\w+)[(](.*)[)]', line)  # virtual void RegisterFront(char *pszFrontAddress) = 0;
             if g_on is not None:
                 # 写入注释
+                
                 lines_comment = []
                 for i in range(no, 0, -1):
-                    g_comment = re.search(r'///(.*)$', lines[i - 1])
+                    g_comment = re.search(r'//(.*)$', lines[i - 1])
                     if g_comment is None:
                         break
                     lines_comment.insert(0, '\t' + g_comment.group())
@@ -380,12 +452,23 @@ namespace HaiFeng
                     else:
                         cs_params.append(f"{type_dict[t].replace('c_', '').replace('32','')} {n}")
                 # 处理32位调用
+                
+                cs_on_dele.append(f"\n\t\t/// <summary>\n\t{lines_comment}\n\t\t/// </summary>")
                 cs_on_dele.append(f'[UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]')
                 cs_on_dele.append(f"public delegate void DeleOn{on_name}({','.join(cs_params)});")
+                cs_on_set.append(f"\n\t\t/// <summary>\n\t{lines_comment}\n\t\t/// </summary>")
                 cs_on_set.append(f'public void SetOn{on_name}(DeleOn{on_name} func) {{(Invoke(_handle, "SetOn{on_name}", typeof(DeleSet)) as DeleSet)(_spi, func);}}')
             else:  # req
                 g_req = re.search(r'virtual\s+(\w+)\s+(\w+)[(](.*)[)].*0;', line)
                 if g_req is not None and '//' not in line:  # 过滤一个之前有但现在不支持的函数
+                    lines_comment = []
+                    for i in range(no, 0, -1):
+                        g_comment = re.search(r'//(.*)$', lines[i - 1])
+                        if g_comment is None:
+                            break
+                        lines_comment.insert(0, '\t' + g_comment.group())
+                    lines_comment = '\n\t'.join(lines_comment)
+
                     req_type = g_req.group(1)
                     req_name = g_req.group(2)
                     req_params = g_req.group(3)
@@ -510,11 +593,12 @@ namespace HaiFeng
                         # 转换参数类型为c_xxxx
                         argtypes = ', ' + ', '.join([type_dict[t] if t in type_dict else 'c_void_p' for t in params_type])
                     # 处理32位
+                    cs_req_type_def.append(f"\n\t\t/// <summary>\n\t{lines_comment}\n\t\t/// </summary>")
                     cs_req_type_def.append('\t\t[UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]')
                     cs_req_type_def.append(f'\t\tpublic delegate IntPtr Dele{req_name}(IntPtr api{cs_argtypes});')
                     cs_params_stru = ('\n\t\t\t' + '\n\t\t\t'.join(cs_params_stru)) if len(py_params_stru) > 0 else ''
-                    cs_req_def_body.append(f'''
-        public IntPtr {req_name}({','.join(cs_params)})
+                    cs_req_def_body.append(f"\n\t\t/// <summary>\n\t{lines_comment}\n\t\t/// </summary>")
+                    cs_req_def_body.append(f'''        public IntPtr {req_name}({','.join(cs_params)})
         {{{cs_params_stru}
             return (Invoke(_handle, "{req_name}", typeof(Dele{req_name})) as Dele{req_name})(_api{cs_params_name});
         }}
@@ -586,6 +670,19 @@ namespace HaiFeng
         f_cs.write('\n\t\t'.join(cs_on_set))
 
         f_cs.write('\n\t}\n}')
+        
+        f_core5.write('\n'.join(cs_req_type_def))
+        f_core5.write('\n'.join(cs_req_def_body))
+        f_core5.write('\n\t\t[UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi, SetLastError = true)]')
+        f_core5.write('\n\t\tdelegate void DeleSet(IntPtr spi, Delegate func);')
+        f_core5.write('\n\t\t')
+        f_core5.write('\n\t\t'.join(cs_on_dele))
+        f_core5.write('\n\t\t')
+        f_core5.write('\n\t\t'.join(cs_on_set))
+
+        f_core5.write('\n\t}\n}')
+
+        preline = line
 
 if __name__ == '__main__':
     src_dir = '../ctp_20180109_x86'

@@ -19,6 +19,7 @@ def run():
     f_src = open(os.path.join(cur_dir, src_dir, f'{data_type_file_name}.h'), 'r', encoding='gbk')
     f_py_enum = open(os.path.join(cur_dir, '..', 'py_ctp', 'ctp_enum.py'), 'w', encoding='utf-8')
     f_cs_enum = open(os.path.join(cur_dir, '..', 'cs_ctp', 'proxy', 'ctp_enum.cs'), 'w', encoding='utf-8')
+    f_core5_enum = open(os.path.join(cur_dir, '..', 'core5_ctp', 'proxy', 'ctp_enum.cs'), 'w', encoding='utf-8')
     f_py_type = open(os.path.join(cur_dir, 'data_type.py'), 'w', encoding='utf-8')
 
     f_py_type.write(r'''#!/usr/bin/env python
@@ -57,6 +58,25 @@ public enum THOST_TE_RESUME_TYPE
 	THOST_TERT_QUICK
 }\n\n''')
 
+    f_core5_enum.write('''
+/// <summary>
+/// 
+/// </summary>
+public enum THOST_TE_RESUME_TYPE
+{
+    /// <summary>
+    /// 
+    /// </summary>
+	THOST_TERT_RESTART = 0,
+	/// <summary>
+    /// 
+    /// </summary>
+	THOST_TERT_RESUME,
+	/// <summary>
+    /// 
+    /// </summary>
+	THOST_TERT_QUICK
+}\n\n''')
     line: str = ''
     lines = [l.strip() for l in f_src.readlines()]
     no = -1
@@ -84,7 +104,7 @@ public enum THOST_TE_RESUME_TYPE
                         g1 = re.search(r'///(.*)$', lines[i - 1])
                         if g1 is not None:
                             py_lines.append(f'"""{g1.group(1)}"""') # """收盘"""
-                            cs_lines.append(f'\t/// <summary>\n\t/// {g1.group(1)}\n\t///</summary>')
+                            cs_lines.append(f'\n\t/// <summary>\n\t/// {g1.group(1)}\n\t///</summary>')
                         py_lines.append(f"{g.group(1)} = {ord(g.group(2))}") # THOST_FTDC_IS_Closed = 54
                         cs_lines.append(f"\t{g.group(1)} = (byte)'{g.group(2)}',")
 
@@ -96,6 +116,7 @@ public enum THOST_TE_RESUME_TYPE
                 # cs_lines.reverse()
                 cs_lines = '\n'.join(cs_lines)
                 f_cs_enum.write(f"{cs_lines}\n}}\n\n")
+                f_core5_enum.write(f"{cs_lines}\n}}\n\n")
             else:
                 g_n = re.search(r'\[(\d+)\]', param)
                 if g_n is not None:  # char TShfeFtdcTraderIDType[21];
