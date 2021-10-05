@@ -6,7 +6,7 @@
 * python 3.6+
 
 ## 使用说明
-* 运行 `pyton generate\\run.py` 生成所有文件
+* 运行 `python generate\\run.py` 生成所有文件
 * C++编译
     * Windows
         * 环境要求 `vs2017`
