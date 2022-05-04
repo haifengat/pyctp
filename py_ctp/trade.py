@@ -494,7 +494,7 @@ class CtpTrade():
         self.t.Init()
         # self.t.Join()
 
-    def ReqUserLogin(self, user: str, pwd: str, broker: str, proc_info: str, appid: str, auth_code: str):
+    def ReqUserLogin(self, user: str, pwd: str, broker: str, appid: str, auth_code: str):
         """登录
 
         :param user:
@@ -504,7 +504,7 @@ class CtpTrade():
         self.broker = broker
         self.investor = user
         self.password = pwd
-        self.t.ReqAuthenticate(broker, user, proc_info, auth_code, appid)
+        self.t.ReqAuthenticate(broker, user, 'haifeng', auth_code, appid)
 
     def ReqOrderInsert(self, pInstrument: str, pDirection: DirectType, pOffset: OffsetType, pPrice: float = 0.0, pVolume: int = 1, pType: OrderType = OrderType.Limit, pCustom: int = 0):
         """委托

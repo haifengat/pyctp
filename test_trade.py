@@ -18,7 +18,6 @@ class TestTrade(object):
         self.pwd = pwd
         self.appid = appid
         self.authcode = auth_code
-        self.proc = '@haifeng'
 
         self.t = CtpTrade()
         self.t.OnConnected = self.on_connect
@@ -36,7 +35,7 @@ class TestTrade(object):
         
 
     def on_connect(self, obj):
-        self.t.ReqUserLogin(self.investor, self.pwd, self.broker, self.proc, self.appid, self.authcode)
+        self.t.ReqUserLogin(self.investor, self.pwd, self.broker, self.appid, self.authcode)
 
     def run(self):
         print(self.t.GetVersion())
@@ -60,7 +59,7 @@ class TestQuote(object):
         self.q = CtpQuote()
         self.q.OnTick = lambda o, x: print(x)
         self.q.OnConnected = lambda x: self.q.ReqUserLogin(self.investor, self.pwd, self.broker)
-        self.q.OnUserLogin = lambda o, i: self.q.ReqSubscribeMarketData('rb2101')
+        self.q.OnUserLogin = lambda o, i: self.q.ReqSubscribeMarketData('rb2210')
 
     def run(self):
         print('quote connecting...')
@@ -71,10 +70,10 @@ class TestQuote(object):
 
 
 if __name__ == "__main__":
-    front_trade = 'tcp://180.168.146.187:10101'
-    front_quote = 'tcp://180.168.146.187:10111'
+    front_trade = 'tcp://180.168.146.187:10130'
+    front_quote = 'tcp://180.168.146.187:10131'
     broker = '9999'
-    investor = '008107'
+    investor = '008105'
     pwd = '1'
     appid = 'simnow_client_test'
     auth_code = '0000000000000000'
