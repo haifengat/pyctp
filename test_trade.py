@@ -38,7 +38,6 @@ class TestTrade(object):
         self.t.ReqUserLogin(self.investor, self.pwd, self.broker, self.appid, self.authcode)
 
     def run(self):
-        print(self.t.GetVersion())
         print('trade connect...')
         self.t.ReqConnect(self.front)
 
@@ -59,7 +58,7 @@ class TestQuote(object):
         self.q = CtpQuote()
         self.q.OnTick = lambda o, x: print(x)
         self.q.OnConnected = lambda x: self.q.ReqUserLogin(self.investor, self.pwd, self.broker)
-        self.q.OnUserLogin = lambda o, i: self.q.ReqSubscribeMarketData('rb2210')
+        self.q.OnUserLogin = self.onlogin
 
     def run(self):
         print('quote connecting...')
@@ -68,10 +67,13 @@ class TestQuote(object):
     def release(self):
         self.q.ReqUserLogout()
 
+    def onlogin(self, obj, info):
+        print(info)
+        self.q.ReqSubscribeMarketData('rb2301')
 
 if __name__ == "__main__":
-    front_trade = 'tcp://180.168.146.187:10130'
-    front_quote = 'tcp://180.168.146.187:10131'
+    front_trade = 'tcp://180.168.146.187:10202'
+    front_quote = 'tcp://180.168.146.187:10212'
     broker = '9999'
     investor = '008105'
     pwd = '1'

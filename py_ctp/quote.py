@@ -6,13 +6,16 @@ __author__ = 'HaiFeng'
 __mtime__ = '2016/9/23'
 """
 
+from ast import Lambda
 import threading
 import platform
 import os
 
 from .structs import InfoField, Tick
-from .ctp_quote import Quote
-from .ctp_struct import CThostFtdcRspUserLoginField, CThostFtdcRspInfoField, CThostFtdcDepthMarketDataField, CThostFtdcSpecificInstrumentField
+from .quote_ctp import Quote
+from .struct import *
+import ctypes
+#CThostFtdcRspUserLoginField, CThostFtdcRspInfoField, CThostFtdcDepthMarketDataField, CThostFtdcSpecificInstrumentField
 
 
 class CtpQuote(object):
@@ -22,6 +25,7 @@ class CtpQuote(object):
         self.q = Quote()
         self.inst_tick = {}
         self.logined = False
+        self.nRequestID = 0
 
     def ReqConnect(self, pAddress: str):
         """连接行情前置
@@ -38,10 +42,16 @@ class CtpQuote(object):
         self.q.OnRtnDepthMarketData = self._OnRtnDepthMarketData
         self.q.OnRspSubMarketData = self._OnRspSubMarketData
 
-        self.q.RegCB()
-
         self.q.RegisterFront(pAddress)
         self.q.Init()
+
+    def ReqUserLogout(self):
+        """退出接口(正常退出,不会触发OnFrontDisconnected)"""
+        self.q.Release()
+        # 确保隔夜或重新登录时的第1个tick不被发送到客户端
+        self.inst_tick.clear()
+        self.logined = False
+        threading.Thread(target=self.OnDisConnected, args=(self, 0)).start()
 
     def ReqUserLogin(self, user: str, pwd: str, broker: str):
         """登录
@@ -50,23 +60,23 @@ class CtpQuote(object):
         :param pwd:
         :param broker:
         """
-        self.q.ReqUserLogin(BrokerID=broker, UserID=user, Password=pwd)
+        f = CThostFtdcReqUserLoginField()
+        f.BrokerID = bytes(broker, encoding='ascii')
+        f.UserID = bytes(user, encoding='ascii')
+        f.Password = bytes(pwd, encoding='ascii')
+        f.UserProductInfo = bytes("@hf", encoding='ascii')
+        self.nRequestID += 1
+        self.q.ReqUserLogin(f, self.nRequestID)
 
-    def ReqSubscribeMarketData(self, pInstrument: str):
+    def ReqSubscribeMarketData(self, pInstrument: list):
         """订阅合约行情
 
-        :param pInstrument:
+        :param pInstrument: 行情列表
         """
-        self.q.SubscribeMarketData(pInstrument)
-
-    def ReqUserLogout(self):
-        """退出接口(正常退出,不会触发OnFrontDisconnected)"""
-
-        self.q.Release()
-        # 确保隔夜或重新登录时的第1个tick不被发送到客户端
-        self.inst_tick.clear()
-        self.logined = False
-        threading.Thread(target=self.OnDisConnected, args=(self, 0)).start()
+        inst_p = (ctypes.c_char_p * len(pInstrument))()
+        for x in range(len(pInstrument)):
+            inst_p[x] = bytes(pInstrument[x], encoding='ascii')
+        self.q.SubscribeMarketData(inst_p, len(pInstrument))
 
     def _OnFrontConnected(self):
         """"""
@@ -154,16 +164,3 @@ def logged(obj, info):
     print(info)
 
 
-def main():
-    q = CtpQuote()
-    q.OnConnected = connected
-    q.OnUserLogin = logged
-    q.ReqConnect('tcp://180.168.146.187:10010')
-
-    input()
-    q.Release()
-    input()
-
-
-if __name__ == '__main__':
-    main()

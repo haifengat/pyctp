@@ -15,9 +15,11 @@ from time import sleep
 
 from .enums import OrderType, InstrumentStatus, DirectType, OffsetType, HedgeType, TradeTypeType
 from .structs import InfoField, InstrumentField, OrderField, OrderStatus, PositionField, TradeField, TradingAccount, PositionDetail
-from .ctp_trade import Trade
-from .ctp_struct import CThostFtdcInputOrderActionField, CThostFtdcInputOrderField, CThostFtdcInstrumentField, CThostFtdcInstrumentStatusField, CThostFtdcInvestorPositionField, CThostFtdcOrderField, CThostFtdcRspInfoField, CThostFtdcRspUserLoginField, CThostFtdcSettlementInfoConfirmField, CThostFtdcTradingAccountField, CThostFtdcTradingNoticeInfoField, CThostFtdcQuoteField, CThostFtdcInputQuoteField, CThostFtdcInputForQuoteField, CThostFtdcInvestorPositionDetailField, CThostFtdcRspAuthenticateField
-from .ctp_enum import TThostFtdcActionFlagType, TThostFtdcClassTypeType, TThostFtdcContingentConditionType, TThostFtdcDirectionType, TThostFtdcOffsetFlagType, TThostFtdcForceCloseReasonType, TThostFtdcHedgeFlagType, TThostFtdcOrderPriceTypeType, TThostFtdcPosiDirectionType, TThostFtdcTimeConditionType, TThostFtdcTradingTypeType, TThostFtdcVolumeConditionType, TThostFtdcOrderStatusType, TThostFtdcInstrumentStatusType, TThostFtdcTradeTypeType, TThostFtdcAppTypeType
+from .trade_ctp import Trade
+from .struct import *
+#CThostFtdcInputOrderActionField, CThostFtdcInputOrderField, CThostFtdcInstrumentField, CThostFtdcInstrumentStatusField, CThostFtdcInvestorPositionField, CThostFtdcOrderField, CThostFtdcRspInfoField, CThostFtdcRspUserLoginField, CThostFtdcSettlementInfoConfirmField, CThostFtdcTradingAccountField, CThostFtdcTradingNoticeInfoField, CThostFtdcQuoteField, CThostFtdcInputQuoteField, CThostFtdcInputForQuoteField, CThostFtdcInvestorPositionDetailField, CThostFtdcRspAuthenticateField
+from .datatype import *
+#TThostFtdcActionFlagType, TThostFtdcClassTypeType, TThostFtdcContingentConditionType, TThostFtdcDirectionType, TThostFtdcOffsetFlagType, TThostFtdcForceCloseReasonType, TThostFtdcHedgeFlagType, TThostFtdcOrderPriceTypeType, TThostFtdcPosiDirectionType, TThostFtdcTimeConditionType, TThostFtdcTradingTypeType, TThostFtdcVolumeConditionType, TThostFtdcOrderStatusType, TThostFtdcInstrumentStatusType, TThostFtdcTradeTypeType, TThostFtdcAppTypeType
 
 
 class CtpTrade():
@@ -29,9 +31,7 @@ class CtpTrade():
         self.password = ''
         self.broker = ''
         self.pub_ip = ''
-        '''公网IP'''
         self.port = ''
-        '''公网端口'''
         self.logined = False
         self.tradingday = ''
 
@@ -42,12 +42,20 @@ class CtpTrade():
         self.positions = {}
         self.instrument_status = {}
 
-        self._req = 0
         self._session = ''
         self._orderid_sysid = {}
         self._posi = []
 
         self.t = Trade()
+        self.nRequestID = 0
+        print(self.t.GetVersion())
+
+    def getReqID(self):
+        self.nRequestID += 1
+        return self.nRequestID
+
+    def strToBytes(self, msg:str):
+        return bytes(msg, encoding='ascii')
 
     def _OnFrontConnected(self):
         threading.Thread(target=self.OnConnected, args=(self,)).start()
@@ -68,16 +76,18 @@ class CtpTrade():
             time.sleep(600)
             self.ReqConnect(self.front_address)
 
-    # def _OnRspUserLogout(self, pUserLogout: CThostFtdcUserLogoutField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
-    #     pass
-
     def _OnRspAuthenticate(self, pRspAuthenticateField: CThostFtdcRspAuthenticateField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
         if pRspInfo.getErrorID() == 0:
             if pRspAuthenticateField.getAppType() == TThostFtdcAppTypeType.THOST_FTDC_APP_TYPE_InvestorRelay:
                 self.t.RegisterUserSystemInfo(self.broker, self.investor, 0, '', self.pub_ip, self.port, time.strftime('%H:%M:%S', time.localtime()))
             elif pRspAuthenticateField.getAppType() == TThostFtdcAppTypeType.THOST_FTDC_APP_TYPE_OperatorRelay:
                 self.t.SubmitUserSystemInfo(self.broker, self.investor, 0, '', self.pub_ip, self.port, time.strftime('%H:%M:%S', time.localtime()))
-            self.t.ReqUserLogin(BrokerID=self.broker, UserID=self.investor, Password=self.password, UserProductInfo=pRspAuthenticateField.getUserProductInfo())
+            f = CThostFtdcReqUserLoginField()
+            f.BrokerID = self.strToBytes(self.broker)
+            f.UserID = self.strToBytes(self.investor)
+            f.Password = self.strToBytes(self.password)
+            f.UserProductInfo = self.strToBytes("@hf")
+            self.t.ReqUserLogin(f, self.getReqID())
         else:
             info = InfoField()
             info.ErrorID = pRspInfo.getErrorID()
@@ -89,7 +99,10 @@ class CtpTrade():
         if pRspInfo.getErrorID() == 0:
             self.session = pRspUserLogin.getSessionID()
             self.tradingday = pRspUserLogin.getTradingDay()
-            self.t.ReqSettlementInfoConfirm(self.broker, self.investor)
+            f = CThostFtdcSettlementInfoConfirmField()
+            f.BrokerID = self.strToBytes(self.broker)
+            f.InvestorID = self.strToBytes(self.investor)
+            self.t.ReqSettlementInfoConfirm(f, self.getReqID())
         elif self.logined:
             threading.Thread(target=self._relogin).start()
         else:
@@ -101,26 +114,20 @@ class CtpTrade():
     def _relogin(self):
         # 隔夜重连=>处理'初始化'错误
         time.sleep(60 * 10)
-        self.t.ReqUserLogin(
-            BrokerID=self.broker,
-            UserID=self.investor,
-            Password=self.password,
-            UserProductInfo='@haifeng')
+        f = CThostFtdcReqUserLoginField()
+        f.BrokerID = self.strToBytes(self.broker)
+        f.UserID = self.strToBytes(self.investor)
+        f.Password = self.strToBytes(self.password)
+        f.UserProductInfo = self.strToBytes("@hf")
+        self.t.ReqUserLogin(f, self.getReqID())
 
-    def _OnRspSettlementInfoConfirm(
-            self,
-            pSettlementInfoConfirm: CThostFtdcSettlementInfoConfirmField,
-            pRspInfo: CThostFtdcRspInfoField,
-            nRequestID: int,
-            bIsLast: bool):
+    def _OnRspSettlementInfoConfirm(self, pSettlementInfoConfirm: CThostFtdcSettlementInfoConfirmField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
         if not self.logined:
             time.sleep(0.5)
-            if self.broker == '9999':
-                print("qry instrument")
-                self.t.ReqQryInstrument()
-            else:
-                print("qry classified instrument")
-                self.t.ReqQryClassifiedInstrument(TradingType=TThostFtdcTradingTypeType.THOST_FTDC_TD_TRADE, ClassType=TThostFtdcClassTypeType.THOST_FTDC_INS_ALL)
+            f = CThostFtdcQryClassifiedInstrumentField()
+            f.TradingType = TThostFtdcTradingTypeType.THOST_FTDC_TD_TRADE.value
+            f.ClassType = TThostFtdcClassTypeType.THOST_FTDC_INS_ALL.value
+            self.t.ReqQryClassifiedInstrument(f, self.getReqID())
 
     def _qry(self):
         """查询帐号相关信息"""
@@ -134,9 +141,9 @@ class CtpTrade():
             ord_cnt = len(self.orders)
             trd_cnt = len(self.trades)
         time.sleep(1.1)
-        self.t.ReqQryInvestorPosition(self.broker, self.investor)
+        self.t.ReqQryInvestorPosition(CThostFtdcQryInvestorPositionField(), self.getReqID())
         time.sleep(1.1)
-        self.t.ReqQryTradingAccount(self.broker, self.investor)
+        self.t.ReqQryTradingAccount(CThostFtdcQryTradingAccountField(), self.getReqID())
         time.sleep(1.1)
 
         print('logged')
@@ -148,7 +155,7 @@ class CtpTrade():
         # 调用Release后程序异常退出,但不报错误:接口断开了仍然调用了查询指令
         # while self.logined:
         """查询持仓与权益"""
-        self.t.ReqQryInvestorPosition(self.broker, self.investor)
+        self.t.ReqQryInvestorPosition(CThostFtdcQryInvestorPositionField(), self.getReqID())
 
     def _OnRtnInstrumentStatus(self, pInstrumentStatus: CThostFtdcInstrumentStatusField):
         if pInstrumentStatus.getInstrumentID() == '':
@@ -175,7 +182,7 @@ class CtpTrade():
         inst.VolumeMultiple = pInstrument.getVolumeMultiple()
         inst.PriceTick = pInstrument.getPriceTick()
         inst.MaxOrderVolume = pInstrument.getMaxLimitOrderVolume()
-        inst.ProductType = pInstrument.getProductClass().name  # ProductClassType.Futures -> Futures
+        inst.ProductType = pInstrument.getProductClass()  # ProductClassType.Futures -> Futures
         self.instruments[inst.InstrumentID] = inst
         if bIsLast:
             sleep(1.1)
@@ -234,7 +241,7 @@ class CtpTrade():
             if not self.logined:
                 return
             time.sleep(1.1)
-            self.t.ReqQryTradingAccount(self.broker, self.investor)
+            self.t.ReqQryTradingAccount(CThostFtdcQryTradingAccountField(), self.getReqID())
 
     def _OnRspQryPositionDetail(self, pInvestorPositionDetail: CThostFtdcInvestorPositionDetailField, pRspInfo: CThostFtdcRspInfoField, nRequestID: int, bIsLast: bool):
         """持仓明细"""
@@ -270,7 +277,7 @@ class CtpTrade():
             if not self.logined:
                 return
             time.sleep(1.1)
-            self.t.ReqQryInvestorPosition(self.broker, self.investor)
+            self.t.ReqQryInvestorPosition(CThostFtdcQryInvestorPositionField(), self.getReqID())
 
     def _OnRtnOrder(self, pOrder: CThostFtdcOrderField):
         """"""
@@ -487,7 +494,7 @@ class CtpTrade():
         self.t.OnRspError = self._OnRspError
 
         self.front_address = front
-        self.t.RegCB()
+        
         self.t.RegisterFront(front)
         self.t.SubscribePrivateTopic(0)  # restart 同步处理order trade
         self.t.SubscribePublicTopic(0)
@@ -504,7 +511,13 @@ class CtpTrade():
         self.broker = broker
         self.investor = user
         self.password = pwd
-        self.t.ReqAuthenticate(broker, user, 'haifeng', auth_code, appid)
+        f = CThostFtdcReqAuthenticateField()
+        f.UserID = self.strToBytes(user)
+        f.AppID = self.strToBytes(appid)
+        f.BrokerID = self.strToBytes(broker)
+        f.AuthCode = self.strToBytes(auth_code)
+        print(f.getBrokerID(), f.getAppID(), f.getAuthCode())
+        self.t.ReqAuthenticate(f, self.getReqID())
 
     def ReqOrderInsert(self, pInstrument: str, pDirection: DirectType, pOffset: OffsetType, pPrice: float = 0.0, pVolume: int = 1, pType: OrderType = OrderType.Limit, pCustom: int = 0):
         """委托
@@ -544,29 +557,28 @@ class CtpTrade():
             LimitPrice = pPrice
             VolumeCondition = TThostFtdcVolumeConditionType.THOST_FTDC_VC_CV  # 全部数量
 
-        self._req += 1
-        self.t.ReqOrderInsert(
-            BrokerID=self.broker,
-            InvestorID=self.investor,
-            InstrumentID=pInstrument,
-            OrderRef="%06d%06d" % (self._req, pCustom % 1000000),
-            UserID=self.investor,
-            ExchangeID=self.instruments[pInstrument].ExchangeID,
-            # 此处ctp_enum与at_struct名称冲突
-            Direction=TThostFtdcDirectionType.THOST_FTDC_D_Buy if pDirection == DirectType.Buy else TThostFtdcDirectionType.THOST_FTDC_D_Sell,
-            CombOffsetFlag=chr(TThostFtdcOffsetFlagType.THOST_FTDC_OF_Open.value if pOffset == OffsetType.Open else TThostFtdcOffsetFlagType.THOST_FTDC_OF_CloseToday.value if pOffset == OffsetType.CloseToday else TThostFtdcOffsetFlagType.THOST_FTDC_OF_Close.value),
-            CombHedgeFlag=chr(TThostFtdcHedgeFlagType.THOST_FTDC_HF_Speculation.value),
-            IsAutoSuspend=0,
-            ForceCloseReason=TThostFtdcForceCloseReasonType.THOST_FTDC_FCC_NotForceClose,
-            IsSwapOrder=0,
-            ContingentCondition=TThostFtdcContingentConditionType.THOST_FTDC_CC_Immediately,
-            VolumeCondition=VolumeCondition,
-            MinVolume=1,
-            VolumeTotalOriginal=pVolume,
-            OrderPriceType=OrderPriceType,
-            TimeCondition=TimeCondition,
-            LimitPrice=LimitPrice,
-        )
+        f = CThostFtdcInputOrderField()
+        f.BrokerID=self.strToBytes(self.broker)
+        f.InvestorID=self.strToBytes(self.investor)
+        f.InstrumentID=self.strToBytes(pInstrument)
+        f.OrderRef=self.strToBytes("%06d%06d" % (self.getReqID(), pCustom % 1000000))
+        f.UserID=self.strToBytes(self.investor)
+        f.ExchangeID=self.strToBytes(self.instruments[pInstrument].ExchangeID)
+        # 此处ctp_enum与at_struct名称冲突
+        f.Direction=TThostFtdcDirectionType.THOST_FTDC_D_Buy if pDirection == DirectType.Buy else TThostFtdcDirectionType.THOST_FTDC_D_Sell
+        f.CombOffsetFlag=chr(TThostFtdcOffsetFlagType.THOST_FTDC_OF_Open.value if pOffset == OffsetType.Open else TThostFtdcOffsetFlagType.THOST_FTDC_OF_CloseToday.value if pOffset == OffsetType.CloseToday else TThostFtdcOffsetFlagType.THOST_FTDC_OF_Close.value)
+        f.CombHedgeFlag=chr(TThostFtdcHedgeFlagType.THOST_FTDC_HF_Speculation.value)
+        f.IsAutoSuspend=0
+        f.ForceCloseReason=TThostFtdcForceCloseReasonType.THOST_FTDC_FCC_NotForceClose
+        f.IsSwapOrder=0
+        f.ContingentCondition=TThostFtdcContingentConditionType.THOST_FTDC_CC_Immediately
+        f.VolumeCondition=VolumeCondition
+        f.MinVolume=1
+        f.VolumeTotalOriginal=pVolume
+        f.OrderPriceType=OrderPriceType
+        f.TimeCondition=TimeCondition
+        f.LimitPrice=LimitPrice
+        self.t.ReqOrderInsert(f, self.getReqID())
 
     def ReqOrderAction(self, OrderID: str):
         """撤单
@@ -579,21 +591,26 @@ class CtpTrade():
             return -1
         else:
             pOrderId = of.OrderID
-            return self.t.ReqOrderAction(
-                self.broker,
-                self.investor,
-                OrderRef=pOrderId.split('|')[2],
-                FrontID=int(pOrderId.split('|')[1]),
-                SessionID=int(pOrderId.split('|')[0]),
-                InstrumentID=of.InstrumentID,
-                ExchangeID=of.ExchangeID,
-                ActionFlag=TThostFtdcActionFlagType.THOST_FTDC_AF_Delete)
+            f = CThostFtdcInputOrderActionField()
+            f.BrokerID=self.strToBytes(self.broker)
+            f.InvestorID=self.strToBytes(self.investor)
+            f.OrderRef=self.strToBytes(pOrderId.split('|')[2])
+            f.FrontID=int(pOrderId.split('|')[1])
+            f.SessionID=int(pOrderId.split('|')[0])
+            f.InstrumentID=self.strToBytes(of.InstrumentID)
+            f.ExchangeID=self.strToBytes(of.ExchangeID)
+            f.ActionFlag=TThostFtdcActionFlagType.THOST_FTDC_AF_Delete
+
+            return self.t.ReqOrderAction(f, self.getReqID())
 
     def ReqUserLogout(self):
         """退出接口"""
         self.logined = False
         time.sleep(3)
-        self.t.ReqUserLogout(BrokerID=self.broker, UserID=self.investor)
+        f = CThostFtdcUserLogoutField()
+        f.BrokerID=self.strToBytes(self.broker)
+        f.InvestorID=self.strToBytes(self.investor)
+        self.t.ReqUserLogout(f, self.getReqID())
         self.t.RegisterSpi(None)
         self.t.Release()
         threading.Thread(target=self.OnDisConnected, args=(self, 0)).start()
