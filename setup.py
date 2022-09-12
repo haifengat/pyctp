@@ -29,19 +29,21 @@ for f in os.listdir(path):
 long_description = read_file('setup.md')
 
 # 生成requirements.txt pipreqs --encoding=utf8 --force py_ctp
-# rm dist -rf && python setup.py sdist && twine upload dist/*         //.tar.gz
+# .tar.gz
+# rm dist -rf && python setup.py sdist && twine upload -u haifengat dist/*
 # pip install --upgrade setuptools wheel keyring
-# python setup.py bdist_wheel && twine upload dist/*   //.whl
+# .whl
+# python setup.py bdist_wheel && twine upload -u haifengat dist/*
 setup(
     name='py_ctp',  # 包名
     python_requires='>=3.6.0',  # python环境
-    version='6.5.1.20220505',
+    version='6.6.8.20220912',
     description="Python CTP futures api",  # 包简介，显示在PyPI上
     long_description=long_description,  # 读取的Readme文档内容
     long_description_content_type = "text/markdown",  # 指定包文档格式为markdown
     author="HaiFengAT",  # 作者相关信息
     author_email='haifengat@vip.qq.com',
-    url='https://github.com/haifengat/hf_ctp_py_proxy',
+    url='https://github.com/haifengat/pyctp',
     # library_dirs = ['/usr/lib'],
     # extra_link_args.append（'-Wl，-rpath，'+ lib_path）
     # 指定包信息，还可以用find_packages()函数
@@ -51,10 +53,12 @@ setup(
     include_package_data=True,
     license="MIT License",
     platforms="any",
-    # data_files=['README.md', ('/usr/lib/py_ctp', ['py_ctp/lib64/thostmduserapi_se.so', 'py_ctp/lib64/thosttraderapi_se.so'])],
+    data_files=['README.md', ('/usr/lib/py_ctp', ['py_ctp/lib64/thostmduserapi_se.so', 'py_ctp/lib64/thosttraderapi_se.so'])],
     classifiers=[
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
