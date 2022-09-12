@@ -33,11 +33,11 @@ long_description = read_file('setup.md')
 # rm dist -rf && python setup.py sdist && twine upload -u haifengat dist/*
 # pip install --upgrade setuptools wheel keyring
 # .whl
-# python setup.py bdist_wheel && twine upload -u haifengat dist/*
+# python setup.py bdist_wheel && twine upload -u haifengat dist/*.whl
 setup(
     name='py_ctp',  # 包名
     python_requires='>=3.6.0',  # python环境
-    version='6.6.8.20220912',
+    version='6.6.8.20220913',
     description="Python CTP futures api",  # 包简介，显示在PyPI上
     long_description=long_description,  # 读取的Readme文档内容
     long_description_content_type = "text/markdown",  # 指定包文档格式为markdown
